@@ -12,87 +12,124 @@
   <br>
   <a href="https://www.tumblr.com/">Link to the site</a>
 
-  <form name="tumblr_survey" method="POST">
-    Name: <input type="text" name="name"><br>
+  <div id="main_form">
 
-    Proper Functionality: <br>
-    <input type="radio" name="opinionPF" value="Great">Great<br>
-    <input type="radio" name="opinionPF" value="Good">Good<br>
-    <input type="radio" name="opinionPF" value="Okay">Okay<br>
-    <input type="radio" name="opinionPF" value="Terrible">Terrible<br>
-    <input type="radio" name="opinionPF" value="Unknown">Unknown<br>
+    <p>
+      There are 6 main goals for creating great User Interfaces, and that gives us 6 main criteria to analyze the user interfaces of different websites and applications. <br>
+      This survey is intended to get your opinion on the user interface of the Tumblr main page, using these 6 criteria. Here is a brief description of each of the criteria. <br>
+    </p>
+    <ul>
+      <li>Proper Functionality: This criteria refers to the systems funtions, and whether or not they function as expected, based on the system specification and the users expectations. <br></li>
+      <li>Consistency: This criteria asks to what extent all the UI elements have the same type of behavior throughout the system. For example, clicking on a particular button that appears throughout the system should always have the same result. <br></li>
+      <li>Efficiency: This criteria judges how well the UI 'helps' the user complete taks in a timely manner, with no extra steps. <br></li>
+      <li>Usability: This criteria is based on the intuitiveness of the UI, how well a user can use the system without training. <br></li>
+      <li>Reliability: This criteria measures the how the system functions without major flaws or errors. <br></li>
+      <li>Security and Data integrity: This criteria discusses how well the system protects the users data. This is often difficult to determine using only the UI. <br></li>
+  </ul>
 
-    Consistency: <br>
-    <input type="radio" name="opinionCon" value="Great">Great<br>
-    <input type="radio" name="opinionCon" value="Good">Good<br>
-    <input type="radio" name="opinionCon" value="Okay">Okay<br>
-    <input type="radio" name="opinionCon" value="Terrible">Terrible<br>
-    <input type="radio" name="opinionCon" value="Unknown">Unknown<br>
+    <form name="tumblr_survey" method="POST">
+      <div id="survey_entry">
+        Your name (Optional) : <input type="text" name="name"><br>
+      </div>
 
-    Efficiency: <br>
-    <input type="radio" name="opinionEff" value="Great">Great<br>
-    <input type="radio" name="opinionEff" value="Good">Good<br>
-    <input type="radio" name="opinionEff" value="Okay">Okay<br>
-    <input type="radio" name="opinionEff" value="Terrible">Terrible<br>
-    <input type="radio" name="opinionEff" value="Unknown">Unknown<br>
+      <div id="survey_entry">
+        Please rate the Tumblr's main landing page using each of the criteria discussed above. You can see a picture of the site above, or click <a href="https://www.tumblr.com/">this</a> to visit the site in your browser.
+        <div id="survey_entry">
+          Proper Functionality: <br>
+          <input id="greatPF" type="radio" name="opinionPF" value="Great"><label for="greatPF">Great</label><br>
+          <input id="goodPF" type="radio" name="opinionPF" value="Good"><label for="goodPF">Good</label><br>
+          <input id="okayPF" type="radio" name="opinionPF" value="Okay"><label for="okayPF">Okay</label><br>
+          <input id="terriblePF" type="radio" name="opinionPF" value="Terrible"><label for="terriblePF">Terrible</label><br>
+          <input id="unknownPF" type="radio" name="opinionPF" value="Unknown"><label for="unknownPF">Unknown</label><br>
+        </div>
 
-    Usability: <br>
-    <input type="radio" name="opinionUse" value="Great">Great<br>
-    <input type="radio" name="opinionUse" value="Good">Good<br>
-    <input type="radio" name="opinionUse" value="Okay">Okay<br>
-    <input type="radio" name="opinionUse" value="Terrible">Terrible<br>
-    <input type="radio" name="opinionUse" value="Unknown">Unknown<br>
+        <div id="survey_entry">
+          Consistency: <br>
+          <input id="greatCon" type="radio" name="opinionCon" value="Great"><label for="greatCon">Great</label><br>
+          <input id="goodCon" type="radio" name="opinionCon" value="Good"><label for="goodCon">Good</label><br>
+          <input id="okayCon" type="radio" name="opinionCon" value="Okay"><label for="okayCon">Okay</label><br>
+          <input id="terribleCon" type="radio" name="opinionCon" value="Terrible"><label for="terribleCon">Terrible</label><br>
+          <input id="unknownCon" type="radio" name="opinionCon" value="Unknown"><label for="unknownCon">Unknown</label><br>
+        </div>
 
-    Reliability: <br>
-    <input type="radio" name="opinionRel" value="Great">Great<br>
-    <input type="radio" name="opinionRel" value="Good">Good<br>
-    <input type="radio" name="opinionRel" value="Okay">Okay<br>
-    <input type="radio" name="opinionRel" value="Terrible">Terrible<br>
-    <input type="radio" name="opinionRel" value="Unknown">Unknown<br>
+        <div id="survey_entry">
+          Efficiency: <br>
+          <input id="greatEff" type="radio" name="opinionEff" value="Great"><label for="greatEff">Great</label><br>
+          <input id="goodEff" type="radio" name="opinionEff" value="Good"><label for="goodEff">Good</label><br>
+          <input id="okayEff" type="radio" name="opinionEff" value="Okay"><label for="okayEff">Okay</label><br>
+          <input id="terribleEff" type="radio" name="opinionEff" value="Terrible"><label for="terribleEff">Terrible</label><br>
+          <input id="unknownEff" type="radio" name="opinionEff" value="Unknown"><label for="unknownEff">Unknown</label><br>
+        </div>
 
-    Security and Data integrity: <br>
-    <input type="radio" name="opinionSec" value="Great">Great<br>
-    <input type="radio" name="opinionSec" value="Good">Good<br>
-    <input type="radio" name="opinionSec" value="Okay">Okay<br>
-    <input type="radio" name="opinionSec" value="Terrible">Terrible<br>
-    <input type="radio" name="opinionSec" value="Unknown">Unknown<br>
+        <div id="survey_entry">
+          Usability: <br>
+          <input id="greatUse" type="radio" name="opinionUse" value="Great"><label for="greatUse">Great</label><br>
+          <input id="goodUse" type="radio" name="opinionUse" value="Good"><label for="goodUse">Good</label><br>
+          <input id="okayUse" type="radio" name="opinionUse" value="Okay"><label for="okayUse">Okay</label><br>
+          <input id="terribleUse" type="radio" name="opinionUse" value="Terrible"><label for="terribleUse">Terrible</label><br>
+          <input id="unknownUse" type="radio" name="opinionUse" value="Unknown"><label for="unknownUse">Unknown</label><br>
+        </div>
 
-    Of the six criteria discussed, which one scores the highest? <br>
-    <select name="best">
-      <option value="Proper Functionality">Proper Functionality</option>
-      <option value="Consistency">Consistency</option>
-      <option value="Efficiency">Efficiency</option>
-      <option value="Usability">Usability</option>
-      <option value="Reliability">Reliability</option>
-      <option value="Security and Data integrity">Security and Data integrity</option>
-    </select>
-    <br>
+        <div id="survey_entry">
+          Reliability: <br>
+          <input id="greatRel" type="radio" name="opinionRel" value="Great"><label for="greatRel">Great</label><br>
+          <input id="goodRel" type="radio" name="opinionRel" value="Good"><label for="goodRel">Good</label><br>
+          <input id="okayRel" type="radio" name="opinionRel" value="Okay"><label for="okayRel">Okay</label><br>
+          <input id="terribleRel" type="radio" name="opinionRel" value="Terrible"><label for="terribleRel">Terrible</label><br>
+          <input id="unknownRel" type="radio" name="opinionRel" value="Unknown"><label for="unknownRel">Unknown</label><br>
+        </div>
 
-    Of the six criteria discussed, which do you think needs the most improvement? <br>
-    (You may pick multiple answers): <br>
-    <input type="checkbox" name="Proper Functionality" value="Proper Functionality">Proper Functionality<br>
-    <input type="checkbox" name="Consistency" value="Consistency">Consistency<br>
-    <input type="checkbox" name="Efficiency" value="Efficiency">Efficiency<br>
-    <input type="checkbox" name="Usability" value="Usability">Usability<br>
-    <input type="checkbox" name="Reliability" value="Reliability">Reliability<br>
-    <input type="checkbox" name="Security and Data integrity" value="Security and Data integrity">Security and Data integrity<br>
+        <div id="survey_entry">
+          Security and Data integrity: <br>
+          <input id="greatSec" type="radio" name="opinionSec" value="Great"><label for="greatSec">Great</label><br>
+          <input id="goodSec" type="radio" name="opinionSec" value="Good"><label for="goodSec">Good</label><br>
+          <input id="okaySec" type="radio" name="opinionSec" value="Okay"><label for="okaySec">Okay</label><br>
+          <input id="terribleSec" type="radio" name="opinionSec" value="Terrible"><label for="terribleSec">Terrible</label><br>
+          <input id="unknownSec" type="radio" name="opinionSec" value="Unknown"><label for="unknownSec">Unknown</label><br>
+        </div>
+      </div>
 
-    Comments: <br>
-      <textarea rows="5" cols="30"></textarea>
+      <div id="survey_entry">
+        Of the six criteria discussed, which one scores the highest? <br>
+        <select name="best">
+          <option value="Proper Functionality">Proper Functionality</option>
+          <option value="Consistency">Consistency</option>
+          <option value="Efficiency">Efficiency</option>
+          <option value="Usability">Usability</option>
+          <option value="Reliability">Reliability</option>
+          <option value="Security and Data integrity">Security and Data integrity</option>
+        </select>
+        <br>
+      </div>
 
-    <br>
-    <input type="submit" value="Submit">
+      <div id="survey_entry">
+        Of the six criteria discussed, which do you think needs the most improvement? <br>
+        (You may pick multiple answers): <br>
+        <input id="PF" type="checkbox" name="Proper Functionality" value="Proper Functionality"><label for="PF">Proper Functionality</label><br>
+        <input id="Con" type="checkbox" name="Consistency" value="Consistency"><label for="Con">Consistency</label><br>
+        <input id="Eff" type="checkbox" name="Efficiency" value="Efficiency"><label for="Eff">Efficiency</label><br>
+        <input id="Use" type="checkbox" name="Usability" value="Usability"><label for="Use">Usability</label><br>
+        <input id="Rel" type="checkbox" name="Reliability" value="Reliability"><label for="Rel">Reliability</label><br>
+        <input id="Sec" type="checkbox" name="Security and Data integrity" value="Security and Data integrity"><label for="Sec">Security and Data integrity</label><br>
+        <!-- <input type="checkbox" name="Proper Functionality" value="Proper Functionality">Proper Functionality<br>
+        <input type="checkbox" name="Consistency" value="Consistency">Consistency<br>
+        <input type="checkbox" name="Efficiency" value="Efficiency">Efficiency<br>
+        <input type="checkbox" name="Usability" value="Usability">Usability<br>
+        <input type="checkbox" name="Reliability" value="Reliability">Reliability<br>
+        <input type="checkbox" name="Security and Data integrity" value="Security and Data integrity">Security and Data integrity<br> -->
+      </div>
 
-  </form>
+      <div id="survey_entry">
+        Comments: <br>
+          <textarea rows="15" cols="150"></textarea>
+      </div>
 
+        <br>
+        <input type="submit" value="Submit">
+
+    </form>
+
+  </div>
 
   </body>
 </html>
-
-
-<!-- <input type="checkbox" name="opinion1" value="Great">
-<label for="opinion1"> Great</label><br>
-<input type="checkbox" name="opinion2" value="Good">
-<label for="opinion2"> Good</label><br>
-<input type="checkbox" name="opinion3" value="Okay" checked>
-<label for="opinion3"> Okay</label><br><br> -->
