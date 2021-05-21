@@ -1,15 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <title>SEG3125 Survey for the UI of Tumblr main page</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Exo+2&display=swap" rel="stylesheet">
+  </head>
   <body>
 
-  <h1>Hello World</h1>
-  <p>I'm hosted with GitHub Pages.</p>
-  <img src="Tumblr_UI" alt="Screen Capture on the landing page of Tumblr" width="104" height="142">
+  <h1> Submit your opinion on Tumblr's main page </h1>
+  <img id="main_picture" src="Tumblr_UI.png" alt="Screen Capture on the landing page of Tumblr" width="1209" height="586">
+  <br>
   <a href="https://www.tumblr.com/">Link to the site</a>
 
+  <form name="tumblr_survey" method="POST">
+    Name: <input type="text" name="name"><br>
 
+    Proper Functionality: <br>
+    <input type="radio" name="opinionPF" value="Great">Great<br>
+    <input type="radio" name="opinionPF" value="Good">Good<br>
+    <input type="radio" name="opinionPF" value="Okay">Okay<br>
+    <input type="radio" name="opinionPF" value="Terrible">Terrible<br>
+    <input type="radio" name="opinionPF" value="Unknown">Unknown<br>
 
+    Consistency: <br>
+    <input type="radio" name="opinionCon" value="Great">Great<br>
+    <input type="radio" name="opinionCon" value="Good">Good<br>
+    <input type="radio" name="opinionCon" value="Okay">Okay<br>
+    <input type="radio" name="opinionCon" value="Terrible">Terrible<br>
+    <input type="radio" name="opinionCon" value="Unknown">Unknown<br>
+
+    Efficiency: <br>
+    <input type="radio" name="opinionEff" value="Great">Great<br>
+    <input type="radio" name="opinionEff" value="Good">Good<br>
+    <input type="radio" name="opinionEff" value="Okay">Okay<br>
+    <input type="radio" name="opinionEff" value="Terrible">Terrible<br>
+    <input type="radio" name="opinionEff" value="Unknown">Unknown<br>
+
+    Usability: <br>
+    <input type="radio" name="opinionUse" value="Great">Great<br>
+    <input type="radio" name="opinionUse" value="Good">Good<br>
+    <input type="radio" name="opinionUse" value="Okay">Okay<br>
+    <input type="radio" name="opinionUse" value="Terrible">Terrible<br>
+    <input type="radio" name="opinionUse" value="Unknown">Unknown<br>
+
+    Reliability: <br>
+    <input type="radio" name="opinionRel" value="Great">Great<br>
+    <input type="radio" name="opinionRel" value="Good">Good<br>
+    <input type="radio" name="opinionRel" value="Okay">Okay<br>
+    <input type="radio" name="opinionRel" value="Terrible">Terrible<br>
+    <input type="radio" name="opinionRel" value="Unknown">Unknown<br>
+
+    Security and Data integrity: <br>
+    <input type="radio" name="opinionSec" value="Great">Great<br>
+    <input type="radio" name="opinionSec" value="Good">Good<br>
+    <input type="radio" name="opinionSec" value="Okay">Okay<br>
+    <input type="radio" name="opinionSec" value="Terrible">Terrible<br>
+    <input type="radio" name="opinionSec" value="Unknown">Unknown<br>
+
+    Of the six criteria discussed, which one scores the highest? <br>
+    <select name="best">
+      <option value="Proper Functionality">Proper Functionality</option>
+      <option value="Consistency">Consistency</option>
+      <option value="Efficiency">Efficiency</option>
+      <option value="Usability">Usability</option>
+      <option value="Reliability">Reliability</option>
+      <option value="Security and Data integrity">Security and Data integrity</option>
+    </select>
+    <br>
+
+    Of the six criteria discussed, which do you think needs the most improvement? <br>
+    (You may pick multiple answers): <br>
+    <input type="checkbox" name="Proper Functionality" value="Proper Functionality">Proper Functionality<br>
+    <input type="checkbox" name="Consistency" value="Consistency">Consistency<br>
+    <input type="checkbox" name="Efficiency" value="Efficiency">Efficiency<br>
+    <input type="checkbox" name="Usability" value="Usability">Usability<br>
+    <input type="checkbox" name="Reliability" value="Reliability">Reliability<br>
+    <input type="checkbox" name="Security and Data integrity" value="Security and Data integrity">Security and Data integrity<br>
+
+    Comments: <br>
+      <textarea rows="5" cols="30"></textarea>
+
+    <br>
+    <input type="submit" value="Submit">
+
+  </form>
 
 
   </body>
 </html>
+
+
+<!-- <input type="checkbox" name="opinion1" value="Great">
+<label for="opinion1"> Great</label><br>
+<input type="checkbox" name="opinion2" value="Good">
+<label for="opinion2"> Good</label><br>
+<input type="checkbox" name="opinion3" value="Okay" checked>
+<label for="opinion3"> Okay</label><br><br> -->

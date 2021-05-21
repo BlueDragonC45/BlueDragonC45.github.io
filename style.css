@@ -1,0 +1,23 @@
+
+body {
+  position: relative;
+  width: 90%;
+}
+
+h1 {
+  font-family: 'Exo 2';
+  font-size: 275%;
+  position: relative;
+  left: 10%;
+  color: Blue;
+}
+
+#main_picture {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 55%;
+    width: 90%;
+    background-color: #000000;
+    position: relative;
+}
