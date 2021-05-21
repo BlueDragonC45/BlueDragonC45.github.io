@@ -10,7 +10,6 @@ h1 {
   font-size: 300%;
   position: relative;
   left: 10%;
-  color: Blue;
 }
 
 input {
@@ -52,6 +51,10 @@ textarea {
   resize: none;
 }
 
+footer {
+  float: right;
+}
+
 #main_picture {
     display: block;
     margin-left: auto;
@@ -84,4 +87,14 @@ textarea {
   padding: 5px;
   margin: 20px;
   margin-left: 35px;
+}
+
+#tumblr_link {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 55%;
+  width: 90%;
+  font-size: 90
+  position: relative;
 }
