@@ -3,6 +3,7 @@ body {
   position: relative;
   width: 90%;
   margin-left: 15px;
+  background-color: #f0ead6;
 }
 
 h1 {
@@ -77,6 +78,7 @@ footer {
   padding: 10px;
   padding-left: 20px;
   margin: 15px;
+  background-color: #FBF7EB;
 }
 
 #submit {
@@ -95,6 +97,5 @@ footer {
   margin-right: auto;
   height: 55%;
   width: 90%;
-  font-size: 90
   position: relative;
 }
