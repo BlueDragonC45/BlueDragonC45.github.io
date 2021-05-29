@@ -3,76 +3,78 @@
 // A set of ingredients should be added to products
 
 var products = [
-{
-  name: "Apples",
-  LactoseFree: true,
-  NutFree: true,
-  organic: true,
-  price: 2.50
-},
-{
-  name: "Bread",
-  LactoseFree: true,
-  NutFree: false,
-  organic: false,
-  price: 2.35
-},
-{
-  name: "Hamburger",
-  LactoseFree: true,
-  NutFree: true,
-  organic: false,
-  price: 6.00
-},
-{
-  name: "Peanuts",
-  LactoseFree: true,
-  NutFree: false,
-  organic: true,
-  price: 4.75
-},
-{
-  name: "Pizza",
-  LactoseFree: false,
-  NutFree: true,
-  organic: false,
-  price: 7.99
-},
-{
-  name: "Chocolate",
-  LactoseFree: false,
-  NutFree: false,
-  organic: false,
-  price: 1.99
-},
-{
-  name: "Swiss Cheese",
-  LactoseFree: false,
-  NutFree: true,
-  organic: true,
-  price: 0.99
-},
-{
-  name: "Muffins",
-  LactoseFree: true,
-  NutFree: false,
-  organic: false,
-  price: 3.50
-},
-{
-  name: "Spaghetti",
-  LactoseFree: true,
-  NutFree: true,
-  organic: false,
-  price: 10.99
-},
-{
-  name: "Whole Rabbit",
-  LactoseFree: true,
-  NutFree: true,
-  organic: true,
-  price: 31.99
-}
+
+  {
+    name: "Peanuts",
+    LactoseFree: true,
+    NutFree: false,
+    organic: true,
+    price: 0.99
+  },
+  {
+    name: "Chocolate",
+    LactoseFree: false,
+    NutFree: false,
+    organic: false,
+    price: 1.99
+  },
+  {
+    name: "Bread",
+    LactoseFree: true,
+    NutFree: false,
+    organic: false,
+    price: 2.35
+  },
+  {
+    name: "Apples",
+    LactoseFree: true,
+    NutFree: true,
+    organic: true,
+    price: 2.50
+  },
+  {
+    name: "Muffins",
+    LactoseFree: true,
+    NutFree: false,
+    organic: false,
+    price: 3.50
+  },
+  {
+    name: "Swiss Cheese",
+    LactoseFree: false,
+    NutFree: true,
+    organic: true,
+    price: 4.99
+  },
+  {
+    name: "Hamburger",
+    LactoseFree: true,
+    NutFree: true,
+    organic: false,
+    price: 6.00
+  },
+
+  {
+    name: "Spaghetti",
+    LactoseFree: true,
+    NutFree: true,
+    organic: false,
+    price: 7.99
+  },
+  {
+    name: "Pizza",
+    LactoseFree: false,
+    NutFree: true,
+    organic: false,
+    price: 10.99
+  },
+  {
+    name: "Whole Rabbit",
+    LactoseFree: true,
+    NutFree: true,
+    organic: true,
+    price: 31.99
+  }
 ];
 
 
@@ -87,21 +89,21 @@ function restrictListProducts(prods, restriction) {
     if ((restriction == "LactoseFree") && (prods[i].LactoseFree == true)){
       if (organic && prods[i].organic == true) {
         product_names.push(prods[i].name + ":  $" + prods[i].price);
-      } else if (!organic && prods[i].organic == false) {
+      } else if (!organic) {
         product_names.push(prods[i].name + ":  $" + prods[i].price);
       }
     }
     else if ((restriction == "NutFree") && (prods[i].NutFree == true)){
       if (organic && prods[i].organic == true) {
         product_names.push(prods[i].name + ":  $" + prods[i].price);
-      } else if (!organic && prods[i].organic == false) {
+      } else if (!organic) {
         product_names.push(prods[i].name + ":  $" + prods[i].price);
       }
     }
     else if (restriction == "None"){
       if (organic && prods[i].organic == true) {
         product_names.push(prods[i].name + ":  $" + prods[i].price);
-      } else if (!organic && prods[i].organic == false) {
+      } else if (!organic) {
         product_names.push(prods[i].name + ":  $" + prods[i].price);
       }
     }

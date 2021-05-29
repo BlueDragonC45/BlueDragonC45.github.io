@@ -18,7 +18,7 @@ function openInfo(evt, tabName) {
 
 	// Show the current tab, and add an "active" class to the button that opened the tab
 	document.getElementById(tabName).style.display = "block";
-	evt.currentTarget.className += " active";
+	document.getElementById(evt).className += " active";
 
 }
 
@@ -60,6 +60,7 @@ function populateListProductChoices(slct1, slct2) {
 		// create a breakline node and add in HTML DOM
 		s2.appendChild(document.createElement("br"));
 	}
+  openInfo('productsButton', 'Products');
 }
 
 // This function is called when the "Add selected items to cart" button in clicked
@@ -93,6 +94,7 @@ function selectedItems(){
 
 	// add paragraph and total price
 	c.appendChild(para);
-	c.appendChild(document.createTextNode("Total Price is " + getTotalPrice(chosenProducts)));
+	c.appendChild(document.createTextNode("Total Price is:  $" + getTotalPrice(chosenProducts)));
+  openInfo('cartButton', 'Cart');
 
 }

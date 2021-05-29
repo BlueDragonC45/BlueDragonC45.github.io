@@ -1,102 +1,79 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<! This style sheet is taken from  https://www.w3schools.com/howto/howto_js_tabs.asp>
-	<link href="styles/style.css" rel="stylesheet" type="text/css">
-</head>
+  <head>
+    <title>Kingdon Groceries</title>
+  	<!-- This style sheet is taken from  https://www.w3schools.com/howto/howto_js_tabs.asp> then modified to better suit the requirements-->
+  	<link href="styles/style.css" rel="stylesheet" type="text/css">
+    <script src="scripts/groceries.js"></script>
+    <script src="scripts/main.js"></script>
+  </head>
 
-<body>
+  <body>
 
-<!-- Tab links, each one with an onclick event associated with it -->
-<div class="tab">
-  <button class="tablinks active"onclick="openInfo(event, 'Main')">Main Screen</button>
-  <button class="tablinks" onclick="openInfo(event, 'Profile')">Profile</button>
-  <button class="tablinks" onclick="openInfo(event, 'Products')">Products</button>
-  <button class="tablinks" onclick="openInfo(event, 'Cart')">Cart</button>
-</div>
-
-<!-- Main screen -->
-<div id="Main" class="tabcontent">
-  <div id="content">
-    <div id="title">
-      <h3>Welcome to Kingdom Groceries</h3>
+    <!-- Tab links, each one with an onclick event associated with it -->
+    <div class="tab">
+      <button id="mainButton" class="tablinks active"onclick="openInfo('mainButton', 'Main')">Home</button>
+      <button id="profileButton" class="tablinks" onclick="openInfo('profileButton', 'Profile')">Profile</button>
+      <button id="productsButton" class="tablinks" onclick="openInfo('productsButton', 'Products')">Products</button>
+      <button id="cartButton" class="tablinks" onclick="openInfo('cartButton', 'Cart')">Cart</button>
     </div>
-    <p>Click on the 'profile' tab to get started creating a profile </p>
-  </div>
-</div>
 
-<!-- Tab content -->
-<div id="Profile" class="tabcontent">
-  <div id="content">
-    <h3>Profile Information</h3>
-    <p>Tell us a bit about you.</p>
-  	Do you have any dietary restrictions:
-  	<select id="dietSelect" name="dietSelect" onchange="populateListProductChoices(this.id, 'displayProduct')">
-      <option value=""></option>
-      <option value="None">None</option>
-  	  <option value="LactoseFree">Lactose Free</option>
-      <option value="NutFree">Nut Free</option>
-  	</select> <br> <br>
-
-    <input id="organic" type="checkbox" onchange="populateListProductChoices(this.id, 'displayProduct')"><label for="organic">Would you prefer organic foods?</label><br>
-
-    <button id="setProfile" type="button" class="block" onclick="XXXX()">
-     Set Preferences an Go to Products 
-   </button> <br>
-
-  </div>
-</div>
-
-<div id="Products" class="tabcontent">
-  <div id="content">
-    <div id="titletest">
-      <h3>Your targeted products</h3>
-
+    <!-- Main screen -->
+    <div id="Main" class="tabcontent">
+      <div id="content">
+        <div id="title">
+          <h3>Welcome to Kingdom Groceries</h3>
+        </div>
+        <p>We're glad to have you here! Kingdon Groceries is a small online store where you can create a profile to only get suggestions that are right for you. </p>
+        <p>Currently, you can choose to only show products that are lactose free, or nut free. You can also choose to only show organtic products. </p>
+        <p>Click on the 'profile' tab to get started creating a profile. </p>
+      </div>
     </div>
-    <p>We preselected products based on your restrictions.</p>
-  	 Choose items to buy:
-  	 <div id="displayProduct"></div>
-  	 <button id="addCart" type="button" class="block" onclick="selectedItems()">
-  		Add selected items to cart.
-  	</button>
-  </div>
-</div>
 
-<div id="Cart" class="tabcontent">
-  <div id="content">
-    <h3>Cart</h3>
-    <p>Here is your cart.</p>
-    <div id="displayCart"></div>
-  </div>
-</div>
+    <!-- Tab content -->
+    <div id="Profile" class="tabcontent">
+      <div id="content">
+        <h3>Profile Information</h3>
+        <p>Tell us a bit about you.</p>
+      	Do you have any dietary restrictions? <br>
+      	<select id="dietSelect" name="dietSelect">
+          <option value="None">None</option>
+      	  <option value="LactoseFree">Lactose Free</option>
+          <option value="NutFree">Nut Free</option>
+      	</select> <br> <br>
 
-<script src="scripts/groceries.js"></script>
-<script src="scripts/main.js"></script>
+        <input id="organic" type="checkbox"><label for="organic">Would you like to see only organic foods?</label><br>
 
-</body>
+        <button id="setProfile" type="button" class="submitButton" onclick="populateListProductChoices('dietSelect', 'displayProduct')">
+         Set Preferences and Go to Products
+       </button> <br>
+
+      </div>
+    </div>
+
+    <div id="Products" class="tabcontent">
+      <div id="content">
+        <h3>Here are your targeted products</h3>
+        <p>We preselected these products based on your profile.</p>
+      	 Choose items to buy:
+      	<div id="displayProduct"></div>
+      	<button id="addCart" type="button" class="submitButton" onclick="selectedItems()">
+      		Add selected items to cart
+      	</button>
+      </div>
+    </div>
+
+    <div id="Cart" class="tabcontent">
+      <div id="content">
+        <h3>Cart</h3>
+        <p>Here are the items currently in your cart.</p>
+        <div id="displayCart"></div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Created by: BlueDragonC45</p>
+    </footer>
+
+  </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- name="organic" value="organic -->
