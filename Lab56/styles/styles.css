@@ -1,0 +1,38 @@
+body {
+  background-color: rgb(232, 252, 253);
+}
+
+td{
+    font-size: 25px;
+}
+
+footer {
+  float: right;
+}
+
+a {
+  font-size: 95%;
+}
+
+a.nav-link {
+  font-size: 150%;
+  color: #000
+}
+
+.btn{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.navbar {
+  background-color: rgb(26, 221, 235);
+}
+
+.navbar-link {
+  border: 3px !important;
+  border-radius: 5px !important;
+}
+
+.content {
+  background-color: rgb(208, 248, 251);
+}
