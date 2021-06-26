@@ -64,14 +64,20 @@ $(document).ready(function(){
 		var date = validateDate();
 		var service = validateService();
 		if (validateCreditCard() && validatePhone() && vet != "" && date && service) {
-			alert("Booking was successful!");
 			$('#appointment-booking').modal('toggle');
+			$('#successful-booking').modal('toggle');
 		} else {
 			alert("You need to complete the booking!");
 		}
 	});
 
-	$("input[type='text']").hover(function() {
+	$("input").hover(function() {
+  	$(this).css("background-color", "rgb(232, 252, 253)");
+	}, function() {
+		$(this).css("background-color", "white");
+	});
+
+	$("#vets").hover(function() {
   	$(this).css("background-color", "rgb(232, 252, 253)");
 	}, function() {
 		$(this).css("background-color", "white");

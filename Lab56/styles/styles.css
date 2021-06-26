@@ -33,6 +33,18 @@ a.nav-link {
   border-radius: 5px !important;
 }
 
+.modal-header {
+  background-color: rgb(232, 252, 253);
+}
+
+.modal-footer {
+  background-color: rgb(232, 252, 253);
+}
+
+.modal-body {
+  background-color: rgb(208, 248, 251);
+}
+
 .content {
   background-color: rgb(208, 248, 251);
 }
