@@ -1,0 +1,103 @@
+[
+    {
+      	"id": "0",
+      	"title": "Terraria",
+      	"desc": "A 2D sandbox game. Adventure across the world and collect items, accessories, and weapons to defeat the bosses.",
+      	"rating": "4.7",
+      	"tags": "action adventure rpg singleplayer coop lessthantwenty",
+      	"price": "$5.99",
+      	"reviewer": "Jamuel",
+      	"reviewerrateing": "5",
+      	"review": "Excellent game, love the graphics and the gameplay equally!"
+    }, {
+      	"id": "1",
+      	"title": "Fortnite",
+      	"desc": "Drop down for the battle bus into this 100 player battle royale! Fight other players, but watch you back as the storm closes in.",
+      	"tags": "action singleplayer coop free",
+      	"rating": "4.3",
+      	"price": "Free",
+      	"reviewer": "BestShot135",
+      	"reviewerrateing": "3",
+      	"review": "Not bad at first, but going downhill fast"
+    }, {
+      	"id": "2",
+      	"title": "Valheim",
+      	"desc": "A viking based survival game. Travel across the procedually generated realm of valheim, the 10th realm in norse mythology. Take down the forsaken bosses to earn your place in valhalla!",
+      	"tags": "action adventure rpg coop lessthanfifty",
+      	"rating": "4.4",
+      	"price": "$22.99",
+      	"reviewer": "BlueDragonC45",
+      	"reviewerrateing": "5",
+	      "review": "Super fun, would be awesome to play with a few friends. Really looking forward to more content"
+    }, {
+      	"id": "3",
+      	"title": "Dead by Daylight",
+      	"desc": "A asymmetrical horror game. Play as a survivor desperately attempting to escape the trial, or a ruthless killer bent on hooking and sacrificing the survivors to the Entity.",
+      	"tags": "action coop lessthantwenty",
+      	"rating": "3.2",
+      	"price": "$19.99",
+      	"reviewer": "BlueDragonC45",
+      	"reviewerrateing": "5",
+      	"review": "Awesome game, fun to play with friends. Super challenging, makes you want to go another round"
+    }, {
+      	"id": "4",
+      	"title": "The Witness",
+      	"desc": "You wake up on a small island, surrounded by strange consoles, with no memory of how you got there. Find your way of the island by solving increasingly complex puzzles, and have fun doing it.",
+      	"tags": "adventure puzzle rpg singleplayer lessthanfive",
+      	"rating": "3.7",
+      	"price": "$2.99",
+      	"reviewer": "TheWinnerOfAll",
+      	"reviewerrateing": "4",
+      	"review": "Fun game for a while, but some of the puzzles are very difficult, sometimes it is very hard to get anywhere"
+    }, {
+      	"id": "5",
+      	"title": "Ark: Survival Evolved",
+      	"desc": "A brutal survival game. You waking up on a beach with nothing but a strange implant in your arm, and dinosaurs roaming around. Build, Tame dinosaurs, and kill bosses to rule to Ark. This purchase unlocks all avaliable DLC's.",
+      	"tags": "action adventure rpg singleplayer coop morethanhundred",
+      	"rating": "3.2",
+      	"price": "$119.99",
+      	"reviewer": "JaguarGirl",
+      	"reviewerrateing": "4",
+      	"review": "Nice game, but very difficult to play alone. Some communities are rather difficult to get along with, but other are amazing"
+    }, {
+      	"id": "6",
+      	"title": "Subnautica",
+      	"desc": "A stunning and immersive journey as you attempt to escape from a underwater planet, and uncover the mysteries of those that came before you.",
+      	"tags": "adventure singleplayer rpg lessthantwenty",
+      	"rating": "3.2",
+      	"price": "$15.99",
+      	"reviewer": "UnderWaterQueen",
+      	"reviewerrateing": "5",
+      	"review": "Amazing, really lives up to the description. I'm excited to try this game in VR!"
+    }, {
+      	"id": "7",
+      	"title": "Candy Crush",
+      	"desc": "Play the legendary match-three puzzle game that is as sweet as can be.",
+      	"tags": "puzzle singleplayer free",
+      	"rating": "2.5",
+      	"price": "Free",
+      	"reviewer": "Belladona",
+      	"reviewerrateing": "1",
+      	"review": "I really do not understand why people like this game, boring and repetitive. Not bad to kill a couple minutes, but not my type of game"
+    }, {
+      	"id": "8",
+      	"title": "Rocket League",
+      	"desc": "Get ready for chaos in this mix of cars and soccer! Complete with gravity defying stunts, try to get more goals than the opposing team.",
+      	"tags": "action coop free",
+      	"rating": "4.6",
+      	"price": "Free",
+      	"reviewer": "EmeraldOctane",
+      	"reviewerrateing": "4",
+      	"review": "Very easy to learn, but seeming impossible to master, at least for me. Still a great way to pass sometime."
+    }, {
+      	"id": "9",
+      	"title": "EVE online",
+      	"desc": "Join massive space wars in EVE online. EVE has a thriving market, diverse selection of spacecrafts, and contains some of the largest battles in video game history",
+      	"tags": "adventure rpg mmo lessthantwenty",
+      	"rating": "3.9",
+      	"price": "Free",
+      	"reviewer": "SpaceRacer1002",
+      	"reviewerrateing": "3",
+      	"review": "Cool game in concept, but very difficult to play well for free, as much of the content is behind a subscription pay wall. Still cool to a point, but I would prefer a one-time payment"
+    }
+]

@@ -1,0 +1,228 @@
+body {
+  background-color: #00c !important;
+}
+
+.navbar {
+  background-color: #000080 !important;
+  display: flex;
+  height: 16vh;
+  align-items: center;
+  border-bottom: 4px solid Black;
+  margin-left: 5% auto;
+  padding: 10px;
+}
+
+.navbar h1 {
+  font-size: 5rem;
+  color: #111;
+}
+
+.navbar .links {
+  margin-left: auto;
+}
+
+.navbar a {
+  font-size: 2.25rem;
+  background-color: #009 !important;
+  color: #000 !important;
+  border: 3px solid Black;
+  margin-left: 10px;
+  text-decoration: none;
+  padding: 6px;
+}
+
+.navbar a:hover {
+  text-decoration: none !important;
+  background-color: #00c !important;
+}
+
+.breadcrumbsContent {
+  position: relative;
+  margin: 1vh 0 0.5vh 3vw !important;
+}
+
+.breadcrumbsContent .link {
+  font-size: 1rem;
+  color: #000 !important;
+  text-decoration: none;
+  padding: 0.25vh 0.25vw;
+}
+
+.content {
+  background-color: #ccf !important;
+  position: relative;
+  border: 4px solid Black;
+  border-radius: 15px;
+  margin: 0 25px 0 25px !important;
+  padding: 20px;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
+}
+
+.exploreFiltersContent {
+  overflow: auto;
+  height: 75vh;
+  width: 15vw;
+  margin-right: 0px !important;
+}
+
+.exploreContent {
+  overflow: auto;
+  height: 75vh;
+  width: 75vw;
+}
+
+.cardTitle {
+  font-size: 1.25rem !important;
+  overflow: hidden;
+}
+
+.fullContent {
+  overflow: auto;
+  font-size: 2rem;
+  height: 74vh;
+  width: 97vw;
+}
+
+.fullContent h1 {
+  font-size: 4.4rem;
+}
+
+.longContent {
+  height: 32vh;
+  width: 67vw;
+  margin-right: 0px !important;
+  margin-top: 2vh !important;
+}
+
+.smallContent {
+  height: 32vh;
+  width: 23vw;
+  margin-top: 2vh !important;
+}
+
+.reviewProfile {
+  width: 25%;
+  border-right: 4px solid black;
+}
+
+.reviewContent {
+  width: 70%;
+}
+
+.longContent p {
+  font-size: 1.5rem;
+  margin-left: 2vw;
+  margin-right: 1vw;
+}
+
+.smallContent p {
+  font-size: 1.5rem;
+  margin-left: 2vw;
+  margin-right: 1vw;
+}
+
+.title {
+  margin: 10px 25px 0px 25px;
+}
+
+.filterButtons {
+  position: relative;
+  width: 12vw;
+  bottom: 0px;
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 0px;
+  margin: 0 0.75vw 0.25vw 0.75vw;
+}
+
+#searchFilters {
+  margin-bottom: 0.5vh;
+}
+
+#gameViewerButtons {
+  font-size: 2.25rem;
+  background-color: #b3b3ff !important;
+  color: #000 !important;
+  border: 3px solid Black;
+  text-decoration: none;
+  padding: 6px;
+  position: absolute;
+  bottom: 0px;
+  width: 15vw;
+  text-align: center;
+  font-size: 1.25rem;
+  margin: 0 4vw 0.75vw 4vw;
+}
+
+#tag {
+  background-color: #aaa !important;
+  width: auto;
+  font-size: 90%;
+  margin-right: 0.25vw;
+}
+
+.colored {
+  background-color: #99f !important;
+}
+
+@media screen and (max-width: 1050px) {
+  .navbar {
+    height: 28vh;
+  }
+
+  .exploreFiltersContent {
+    height: 65vh;
+    width: 20vw !important;
+  }
+
+  .exploreContent {
+    height: 65vh;
+    width: 72vw !important;
+  }
+
+  .fullContent {
+    height: 65vh;
+    width: 94vw !important;
+  }
+
+  .longContent {
+    height: 27vh;
+    width: 66vw;
+  }
+
+  .smallContent {
+    height: 27vh;
+    width: 24vw;
+  }
+
+  .reviewProfile {
+    width: 35%;
+    border-right: 4px solid black;
+  }
+
+  .reviewContent {
+    width: 62%;
+  }
+
+  .longContent p {
+    font-size: 1rem;
+    margin-left: 2vw;
+  }
+
+  .smallContent p {
+    font-size: 1rem;
+    margin-left: 2vw;
+  }
+
+  #searchFilters {
+    width: 100%;
+  }
+
+  #gameViewerButtons {
+    width: 20vw;
+    margin: 0 2vw 0.5vw 2vw;
+  }
+}
