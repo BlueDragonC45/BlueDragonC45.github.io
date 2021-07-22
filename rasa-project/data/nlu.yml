@@ -6,6 +6,10 @@ nlu:
     - Hallo
     - Good day
     - Good morning
+    - Hello
+    - Greetings
+    - Howdy
+    - Hi-ya
 
 - intent: subscribe
   examples: |
@@ -13,9 +17,37 @@ nlu:
     - Can you send me the newsletter?
     - Can you sign me up for the newsletter?
 
-- intent: inform
+- intent: informSubscribe
   examples: |
     - My email is example@example.com
     - random@example.com
     - Please send it to anything@example.com
     - Email is something@example.com
+
+- intent: unsubscribe
+  examples: |
+    - I don't want to get the newsletter anymore
+    - Can you unsubscribe me from the newsletter?
+    - Can you take me off the newsletter list?
+    - Please remove me from the newsletter
+
+- intent: informUnsubscribe
+  examples: |
+    - I am not interested
+    - I don't have enough time
+    - It was not what I expected
+    - I don't have a reason
+
+- intent: thanks
+  examples: |
+    - Thank you
+    - Thanks
+    - Thank you very much
+    - Much obliged
+
+- intent: goodbye
+  examples: |
+    - Goodbye!
+    - Bye!
+    - Have a nice day!
+    - Have a good day!

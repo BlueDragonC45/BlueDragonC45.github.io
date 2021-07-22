@@ -4,10 +4,17 @@ session_config:
   carry_over_slots_to_new_session: true
 intents:
 - greet
-- inform
 - subscribe
+- informSubscribe
+- unsubscribe
+- informUnsubscribe
+- thanks
+- goodbye
 slots:
   email:
+    type: unfeaturized
+    influence_conversation: false
+  reason:
     type: unfeaturized
     influence_conversation: false
 responses:
@@ -23,12 +30,56 @@ responses:
   - text: |
       Check your inbox at {email} in order to finish subscribing to the newsletter!
   - text: You're all set! Check your inbox at {email} to confirm your subscription.
+  utter_unsubscribed:
+  - text: |
+      Alright, could you give me the reason you want to unsubscribe?
+  - text: |
+      I can do that. Do you have a reason you could give me why?
+  - text: |
+      Sure, could you tell me why you want to unsubscribe?
+  - text: |
+      Of course. Could you tell me why you want to do that?
+  utter_empathy:
+  - text: |
+      Okay, we understand. Unsubscribe complete.
+  - text: |
+      Alright, we will try to do better. You have been unsubscribed
+  - text: |
+      You have been unsubscribed now. We are sorry to see you go
+  - text: |
+      No problem. You are now unsubscribed
+  utter_thanks:
+  - text: |
+      You are welcome!
+  - text: |
+      Your welcome!
+  - text: |
+      No problem!
+  - text: |
+      Glad I could help!
+  utter_goodbye:
+  - text: |
+      Goodbye!
+  - text: |
+      Bye!
+  - text: |
+      Have a nice day!
+  - text: |
+      Have a good day!
 actions:
 - '...'
 - utter_greet
 - utter_subscribed
+- utter_unsubscribed
+- utter_empathy
+- utter_thanks
+- utter_goodbye
 forms:
   newsletter_form:
     required_slots:
       email:
+      - type: from_text
+  unsubscribe_form:
+    required_slots:
+      reason:
       - type: from_text
