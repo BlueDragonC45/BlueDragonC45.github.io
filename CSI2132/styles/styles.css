@@ -1,0 +1,28 @@
+body {
+  background-color: rgb(232, 252, 253);
+}
+
+td{
+    font-size: 25px;
+}
+
+footer {
+  float: right;
+}
+
+a {
+  font-size: 150%;
+}
+
+.btn{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.navbar {
+  background-color: rgb(26, 221, 235);
+}
+
+.content {
+  background-color: rgb(208, 248, 251);
+}
