@@ -1,8 +1,4 @@
 <!doctype html>
-<!-- Here is a link to the code the documents this code is based on
-https://getbootstrap.com/docs/5.0/getting-started/introduction/
-This will help you get started with your code!
--->
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -11,18 +7,18 @@ This will help you get started with your code!
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link href="styles/styles.css" rel="stylesheet" type="text/css">
-    <title>Sunshine Veterinary clinic</title>
+    <title>Sunshine Dentist Clinic</title>
 </head>
 <body>
 
-<div class = "container-lg">
-
+<div class = "container-fluid">
 
     <nav class="navbar text-white px-3 pt-3 mt-3">
-      <h1 style="font-size: 350%"><img src="images/SunshineLogo.png" width="130" height="130"> Welcome to Sunshine Veterinary Clinic!</h1>
+      <h1 style="font-size: 400%"><img src="images/logo.png" width="80" height="80"> Welcome to Sunshine Dentist Clinic!</h1>
+      <button id="backButton" style="display: none;" onclick="openPane('main')">Back</button>
     </nav>
 
-    <nav class="navbar navbar-expand-lg text-white px-3 pb-3">
+    <!-- <nav class="navbar navbar-expand-lg text-white px-3 pb-3">
 
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -38,145 +34,36 @@ This will help you get started with your code!
             <a class="nav-link" href="#contact">Contact Us</a>
           </li>
         </ul>
-    </nav>
+    </nav> -->
 
-    <div class="content p-3 my-3 h-100 border"" id="about-us">
-      <h1 class=""> About us</h1>
-      <p class="p-2 my-3" style="font-size: 175%">We are a small clinic located in Norwood, Ontario</p>
-      <p class="p-2" style="font-size: 175%">We are dedicated to providing the <strong>best</strong> care to our customers, large and small</p>
-      <p class="p-2" style="font-size: 175%">We provide a range of services of all types of creatures, including a overnight stay for your pets if needed</p>
-      <p class="p-2" style="font-size: 175%">We would love to be able to help you and your critters as best we can!</p>
-      <p class="p-2" style="font-size: 175%">Continue through the site to see the range of services we provide, and meet our team, and book an appointment if needed</p>
-    </div>
-
-    <div class="content p-3 my-3 h-100 border" id="services">
-      <h1 class=""> Services</h1>
-
-      <p class="p-2 my-2" style="font-size: 175%">We offer a wide range of services to keep your animals happy and healthy:</p>
-
-      <table class="table table-primary table-hover table-bordered table-striped">
-        <thead>
-            <tr>
-                <th scope="col"><h2>Service</h2></th>
-                <th scope="col"><h2>Description</h2></th>
-            </tr>
-        </thead>
-        <tbody>
-          <tr>
-              <td>Routine Checkup: $25-100</td>
-              <td>Routine checkup to make sure your animal is heathy as can be, and is up to date on all their medications</td>
-          </tr>
-          <tr>
-              <td>Vaccine: $100-200</td>
-              <td>An appointment to give your animal the recommended vaccines</td>
-          </tr>
-          <tr>
-            <td>Microchipping: $50</td>
-            <td>An appointment to give your animal a microchip, to aid in finding them should they get lost</td>
-          </tr>
-          <tr>
-              <td>Neuter/Spay: $95-300</td>
-              <td>An appointment to neuter or spay your pets. Generally requires an overnight stay as well</td>
-          </tr>
-          <tr>
-              <td>Overnight Stay: $150</td>
-              <td>An additional cost, for when your creature requires frequent or high level care for longer then just one day</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="small">Note: price ranges are due to the many different types of animals we service, and may not always be accurate for less common animals</p>
-    </div>
-
-    <div class="content p-3 my-3 h-100 border" id="staff">
-      <h1 class=""> Meet our staff</h1> <br>
-      <div class="row justify-content-around">
-        <div class="card" style="width: 18rem;">
-            <img src="images/doctor.jpg" class="card-img-top my-3" alt="...">
-            <div class="card-body">
-                <p class="card-text">Meet Samuel, our head veterinarian. He has lead this facility for 6 years, and works primarly with household pets. He is excited to meet you pets!</p>
-            </div>
-        </div>
-        <div class="card" style="width: 18rem;">
-            <img src="images/doctor.jpg" class="card-img-top my-3" alt="...">
-            <div class="card-body">
-                <p class="card-text">Meet Danielle, our lead veterinarian for livestock. She has been working with livestock at various clinics for 20 years, and just joined our team this
-                  year. She is ready to meet your animals, and is also avaliable for off-site visits</p>
-            </div>
-        </div>
-        <div class="card" style="width: 18rem;">
-            <img src="images/doctor.jpg" class="card-img-top my-3" alt="...">
-            <div class="card-body">
-                <p class="card-text">Meet Casper, our veterinary surgeon. He works behind the scenes patching up all the creatures that come his way. </p>
-            </div>
-        </div>
-        <div class="card" style="width: 18rem;">
-            <img src="images/doctor.jpg" class="card-img-top my-3" alt="...">
-            <div class="card-body">
-                <p class="card-text">Meet Charline, our lovely receptionist. She's the first face you will see when you walk is, and she is happy talk with you over the phone if you have any questions </p>
-            </div>
+    <div class="content p-3 my-3 h-100 border"" id="main">
+      <h1> Views</h1>
+      <div class="px-2 py-3 my-3 border border-dark">
+        <div class="row justify-content-around">
+          <button class="card border-dark p-1" style="width: 20rem;" onclick="openPane('receptionists')" >Receptionists </button>
+          <button class="card border-dark p-1" style="width: 20rem;" onclick="openPane('dentists')" >Dentists </button>
+          <button class="card border-dark p-1" style="width: 20rem;" onclick="openPane('patients')" >Patients </button>
         </div>
       </div>
     </div>
 
-    <div class="content p-3 my-3 h-100 border" id="contact">
-      <h1> Contact Us!</h1>
-      <p class="p-2 my-2" style="font-size: 175%">We would love to hear from you! </p>
-      <p class="p-2 my-2" style="font-size: 175%">We are located at: </p>
-      <address class="p-1 mx-4" style="font-size: 125%">
-        <strong>Sunshine Veterinary Clinic</strong><br>
-        19 King Street<br>
-        Norwood, Ontario<br>
-        <abbr title="Phone">P:</abbr> 705-639-8989
-      </address>
-      <p class="p-2 my-2" style="font-size: 175%">It is also possible to book certain appointments online, if you prefer.</p>
-      <button type="button" class="btn btn-primary mx-3" data-bs-toggle="modal" data-bs-target="#appointment-booking">Click to book an appointment</button>
-
-      <div class="modal fade" id="appointment-booking" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title" id="Appointment-Modal">Book your appointment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-              <form>
-                <label for="creature">What kind of animal do you have:</label>
-                <input class="m-2" type="text" id="creature"> <br>
-
-                <label for="appointment">Appointment date:</label>
-                <input class="m-2" type="date" id="appointment"> <br>
-
-                <label for="service-type">What service do you require:</label>
-
-                <div class="p-2 mx-4"id="service-type">
-                  <input type="checkbox" id="checkup" value="checkup"> <label for="checkup">Routine Checkup</label><br>
-                  <input type="checkbox" id="vaccines" value="vaccines"> <label for="vaccines">Vaccines</label><br>
-                  <input type="checkbox" id="chipping" value="chipping"> <label for="chipping">Microchipping</label><br>
-                  <input type="checkbox" id="neuter" value="neuter" data-bs-toggle="collapse" data-bs-target="#neuter-alert"> <label for="neuter">Neuter/Spay</label><br>
-                </div>
-                <div class="alert alert-danger fade collapse" role="alert" id="neuter-alert">
-                  This service usually requires an overnight stay
-                </div>
-
-                <label for="phone">What is your phone number:</label>
-                <input class="m-2" type="tel" id="phone" placeholder="705-639-8989" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
-              </form>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Book appointment</button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="content p-3 my-3 h-100 border" id="receptionists">
+      <h1> Receptionist View</h1>
     </div>
+
+    <div class="content p-3 my-3 h-100 border" id="dentists">
+      <h1> Dentist View</h1>
+    </div>
+
+    <div class="content p-3 my-3 h-100 border" id="patients">
+      <h1> Patient View</h1>
+    </div>
+
     <footer>
       <p>Created by: BlueDragonC45</p>
     </footer>
 <!-- here we input our javascript helper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+<script src="scripts/main.js"></script>
 </body>
 </html>
