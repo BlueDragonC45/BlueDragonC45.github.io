@@ -14,6 +14,10 @@ a {
   font-size: 150%;
 }
 
+button {
+  text-align: center;
+}
+
 .btn{
     margin-top: 10px;
     margin-bottom: 10px;
