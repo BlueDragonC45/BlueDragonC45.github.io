@@ -18,7 +18,7 @@
     </nav>
 
     <div class="content p-3 my-3 h-100 border"" id="main">
-      <h1> Views</h1>
+      <h1> Main Menu</h1>
       <div class="p-1 my-1 border border-dark row justify-content-around">
         <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openPane('receptionists')" >Receptionists </button>
         <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openPane('dentists')" >Dentists </button>
@@ -275,11 +275,19 @@
           </div>
 
           <label for="role">Employee Role:</label><br>
-          <input class="m-1 form-control" type="text" id="role">
+          <select class="m-1 form-control" id="role">
+            <option value="dentist">Dentist</option>
+            <option value="hygenist">Hygentist</option>
+            <option value="receptionist">Receptionist</option>
+          </select>
 
-          <!-- one of these should be an select -->
           <label for="employeeType">Employee Type:</label><br>
-          <input class="m-1 form-control" type="text" id="employeeType">
+          <select class="m-1 form-control" id="employeeType">
+            <option value="partTime">Part-time</option>
+            <option value="fullTime">Full-time</option>
+            <option value="temp">Temporary</option>
+            <option value="student">Student</option>
+          </select>
 
           <label for="salary">Salary:</label><br>
           <input class="m-1 form-control" type="number" id="salary">
@@ -309,7 +317,7 @@
       <h1> Patient View</h1>
       <div class="p-1 my-1 border border-dark row justify-content-around" style="display: none;" id="patientNav">
         <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('upcomingAppt')" >Check Upcoming Appointments</button>
-        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientInfo ')" >View Patient Information</button>
+        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientInfo')" >View Patient Information</button>
         <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openPane('main')" >Go Back</button>
       </div>
 
