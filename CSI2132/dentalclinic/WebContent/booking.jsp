@@ -81,14 +81,14 @@
 								
 								
 								//String roomInfo = room.getRoomID() + "---" + room.getRoomStatus();
-								if (room.getBranchID().equals((String)request.getAttribute("branchid"))) {
+								
 									
 								
 					%>					
-							 	<option><%=room.getBranchID()%></option>
+							 	<option><%=room.getRoomID()%></option>
 								
 					<%
-								}
+								
 							}
 						}
 					%>

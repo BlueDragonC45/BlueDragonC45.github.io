@@ -7,44 +7,44 @@
  <!-- What matters is the servlet class and the url pattern -->
  <!-- Servelet name must match servlet name defined in mapping -->
   <display-name>Employee Login Servlet</display-name>
-  <servlet-name>employeeLoginServlet</servlet-name>
+  <servlet-name>EmployeeLoginServlet</servlet-name>
   <servlet-class>dentalclinic.servlet.EmployeeLoginServlet</servlet-class>
  </servlet>
  <servlet-mapping>
-  <servlet-name>employeeLoginServlet</servlet-name>
+  <servlet-name>EmployeeLoginServlet</servlet-name>
   <url-pattern>/employeeLogin</url-pattern>
  </servlet-mapping>
  
  <servlet>
  <description></description>
  <display-name>Patient Register Servlet</display-name>
- <servlet-name>patientRegisterServlet</servlet-name>
+ <servlet-name>PatientRegisterServlet</servlet-name>
  <servlet-class>dentalclinic.servlet.PatientRegisterServlet</servlet-class>
  </servlet>
  <servlet-mapping>
-  <servlet-name>patientRegisterServlet</servlet-name>
+  <servlet-name>PatientRegisterServlet</servlet-name>
   <url-pattern>/patientRegister</url-pattern>
  </servlet-mapping>
  
  <servlet>
  <description></description>
  <display-name>Patient Login Servlet</display-name>
- <servlet-name>patientLoginServlet</servlet-name>
+ <servlet-name>PatientLoginServlet</servlet-name>
  <servlet-class>dentalclinic.servlet.PatientLoginServlet</servlet-class>
  </servlet>
  <servlet-mapping>
-  <servlet-name>patientLoginServlet</servlet-name>
+  <servlet-name>PatientLoginServlet</servlet-name>
   <url-pattern>/patientLogin</url-pattern>
  </servlet-mapping>
  
  <servlet>
  <description></description>
  <display-name>Room Booking Servlet</display-name>
- <servlet-name>roomBookingServlet</servlet-name>
+ <servlet-name>RoomBookingServlet</servlet-name>
  <servlet-class>dentalclinic.servlet.RoomBookingServlet</servlet-class>
  </servlet>
  <servlet-mapping>
-  <servlet-name>roomBookingServlet</servlet-name>
+  <servlet-name>RoomBookingServlet</servlet-name>
   <url-pattern>/roomBooking</url-pattern>
  </servlet-mapping>
  
