@@ -1,5 +1,5 @@
 
-function openPane(paneName) {
+/*function openPane(paneName) {
 	validated = validate(paneName, true);
 	switch(paneName) {
 		case 'receptionists':
@@ -35,7 +35,7 @@ function openPane(paneName) {
 	}
 
 	document.getElementById(paneName).style.display = "block";
-};
+};*/
 
 function openTab(tabName) {
 
