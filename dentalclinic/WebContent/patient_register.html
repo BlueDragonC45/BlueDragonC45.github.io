@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Patient Registration</title>
+<script>
+
+	//From Sanu Antony, https://stackoverflow.com/questions/21085398/calculate-age-from-date-html-element
+	function calcAge() {
+		var date = new Date(document.getElementById("dateOfBirth").value)
+		var today = new Date();
+		
+		var difference = Math.abs(today.getTime() - date.getTime());
+		var age = Math.ceil(difference / (1000 * 3600 * 24)) / 365;
+		
+		return age;
+	}
+
+	function validate() {
+		var patientSIN = document.getElementById("patientSIN");
+		var userName = document.getElementById("userName");
+		
+		var firstName = document.getElementById("firstName");
+		var middleName = document.getElementById("middleName");
+		var lastName = document.getElementById("lastName");
+		
+		var dateOfBirth = document.getElementById("dateOfBirth");
+		document.getElementById("age").value = calcAge();
+		var gender = document.getElementById("gender");
+		var patientEmail = document.getElementById("patientEmail");
+		var patientPhoneNumber = document.getElementById("patientPhoneNumber");
+		var address = document.getElementById("address");
+		var patientPwd = document.getElementById("patientPwd");
+		var patientPwdagain = document.getElementById("patientPwdagain");
+		
+		if (patientSIN.value == "" || userName.value == "" || firstName.value == "" || lastName.value == "" || patientPwd.value == "" || patientPwdagain.value == "" || dateOfBirth == "" || gender == "" || patientEmail == "" || patientPhoneNumber == "" || address == ""){
+			alert("You need to fill all requiered fields");
+			return false;
+		}
+		
+		else if(patientSIN.value.length != 9){
+			alert("The length of SIN needs to be 9 digits long");
+			return false;
+		}
+		
+		else if(age < 18){
+			alert("Must be at least 18 years of age");
+			return false;
+		}
+		
+		else if(patientPwd.value != patientPwdagain.value){
+			alert("Passwords need to match!");
+			return false;
+		}
+		else
+			return true;
+	}
+
+</script>
+</head>
+<body>
+<!--
+post refers to the method dePost from PatientRegisterServlet.java
+patientRegister is the masked/shortened directory of PatientRegisterServlet.java
+-->
+<form method = "post" action="patientRegister">
+SIN:<br><input type="text" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required><br>
+<small>Format: 123456789</small><br><br>
+Username:<br><input type="text" id="userName" name="userName" required><br>
+<small>Note: Used to login</small><br><br>
+First Name:<br><input type="text" id="firstName" name="firstName" required><br><br>
+Middle Name:<br><input type="text" id="middleName" name="middleName"><br><br>
+Last Name:<br><input type="text" id="lastName" name="lastName" required><br><br>
+Date of Birth:<br><input type="date" id="dateOfBirth" name="dateOfBirth" required><br><br>
+<input type="hidden" id="age" name="age">
+Gender:<br><input type="text" id="gender" name="gender"><br><br>
+E-mail Address:<br><input type="email" id="patientEmail" name="patientEmail" required><br><br>
+Phone Number:<br><input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="patientPhoneNumber" name="patientPhoneNumber" required><br>
+<small>Format: 123-456-7890</small><br><br>
+Address:<br><input type="text" id="address" name="address" required><br><br>
+Enter Password:<br><input type="password" id="patientPwd" name="patientPwd" required><br><br>
+Re-enter Password:<br><input type="password" id="patientPwdagain" name="patientPwdagain" required><br><br>
+<button type="submit" value="submit" onclick="return validate();">Submit</button>
+<button type="reset" value="reset">Reset</button>
+</form>
+
+</body>
+</html>
