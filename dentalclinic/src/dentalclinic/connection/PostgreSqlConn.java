@@ -75,7 +75,7 @@ public class  PostgreSqlConn{
 
 		//@entity can be employee or patient; case-insensitive
 		public boolean isCorrectPwd(String entity, String userName, String Pwd){
-			System.out.println("validating");
+			
 			getConn();
 
 			String foundUser = "";
