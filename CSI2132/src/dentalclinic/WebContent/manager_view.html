@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link href="./styles/styles.css" rel="stylesheet" type="text/css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+<script src="./scripts/main.js"></script>
+<title>Sunshine Dentist Clinic</title>
+</head>
+<body>
+
+<div class = "container-fluid">
+
+    <nav class="navbar text-white px-3 pt-3 mt-3">
+      <h1 style="font-size: 400%"><img src="images/logo.png" width="80" height="80"> Welcome to Sunshine Dentist Clinic!</h1>
+    </nav>
+    
+    <div class="content p-3 my-3 h-100 border" id="dentists">
+      <h1> Manager View</h1>
+      <div class="p-1 my-1 border border-dark row justify-content-around" id="dentistNav">
+        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listEmployees')" >List Employees</button>
+        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newEmployee')" >Add a New Employee</button>
+        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('updateEmployee')" >Update Employee Information</button>
+        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='index.html'" >Go Back</button>
+      </div>
+
+      <div class="tab p-3 my-3" style="display: none;" id="listEmployees">
+        <h2> Employees</h2>
+        <div class="p-3 my-3" id="branchSearch">
+			<!-- jsp here with list of employees -->
+        </div>
+      </div>
+
+      <div class="tab p-3 my-3" style="display: none;" id="newEmployee">
+		  <h2> New Employee</h2>
+		  <form method="post" action="??">
+		    First Name:<input class="m-1 form-control" type="text" id="fNameNE">
+		    Middle Name:<input class="m-1 form-control" type="text" id="mNameNE">
+		    Last Name:<input class="m-1 form-control" type="text" id="lNameNE">
+		    Date of Birth:<input class="m-1 form-control" type="date" id="dateOfBirthNE" name="dateOfBirthNE" required>
+		    Gender:<div class="p-2 d-inline" id="genderNE">
+			        <form id="genderRadio">
+			            <input type="radio" class="m-1" name="gender" id="maleNE" value="male">Male
+			            <input type="radio" class="m-1" name="gender" id="femaleNE" value="female">Female
+			            <input type="radio" class="m-1" name="gender" id="otherNE" value="other">Other
+			        </form>
+		        </div>
+		    Email:<input class="m-1 form-control" type="email" id="emailNE">
+		    Phone number:<input class="m-1 form-control" type="tel" id="phoneNE" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+		    Social Insurance Number:<input class="m-1 form-control" type="text" id="sinNE">
+		    Address:<div class="px-2" id="addressNE">
+			    House Number:<input class="m-1 form-control" type="text" id="houseNumNE">
+			    Street:<input class="m-1 form-control" type="text" id="streetNE">
+			    City:<input class="m-1 form-control" type="text" id="cityNE">
+			    Province:<input class="m-1 form-control" type="text" id="provinceNE">
+		    </div>
+		    Employee Role:<select class="m-1 form-control" id="role">
+			   		<option value="dentist">Dentist</option>
+			    	<option value="hygienist">Hygienist</option>
+			    	<option value="receptionist">Receptionist</option>
+		    	</select>
+		    Employee Type:<select class="m-1 form-control" id="employeeType">
+			        <option value="partTime">Part-time</option>
+			        <option value="fullTime">Full-time</option>
+			        <option value="temp">Temporary</option>
+			        <option value="student">Student</option>
+			    </select>
+		    Salary:<input class="m-1 form-control" type="number" id="salary">
+			<button type="submit" value="submit" onclick="return validate();">Create Employee </button>
+	        <button type="reset" value="reset">Reset</button>
+	      </form>
+		</div>
+
+      <div class="tab p-3 my-3" style="display: none;" id="updateEmployee">
+        <h2> Update Employee</h2>
+        <div class="p-3 my-3" id="patientRecordSearch">
+			Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSIN">
+          	<button type="submit" value="submit" onclick="??">Search for Employee</button>
+			<button type="reset" value="reset">Reset</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
