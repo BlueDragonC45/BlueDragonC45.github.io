@@ -307,7 +307,7 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE ? = ANY(employeesinlist) "
-						               + "GROUP BY appointmentdate, starttime");
+						               + "GROUP BY appointmentdate, appointmentstarttime");
 	            ps.setString(1, employeeSIN);	
 	            
 	            System.out.println(ps.toString());   
@@ -316,8 +316,8 @@ public class  PostgreSqlConn{
 				while(rs.next()){
 					String appointmentDate = rs.getString("appointmentDate");
 					String appointmentType = rs.getString("appointmentType");
-					String startTime = rs.getString("startTime");
-					String endTime = rs.getString("endTime");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
 					String roomID = rs.getString("roomID");
 					String status = rs.getString("status");
 					Appointment appointment = new Appointment(appointmentDate, appointmentType,
