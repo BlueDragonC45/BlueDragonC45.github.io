@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
-import dentalclinic.entities.Patient;
+import dentalclinic.entities.Appointment;
+import java.util.ArrayList;
 
-public class PatientSearchServlet extends HttpServlet {
+public class ListEmployeeAppointmentsServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doPost(req, resp);
@@ -19,19 +20,14 @@ public class PatientSearchServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
-
-		//dentist must have their SIN at all times to
-		//be able to search for their appointments
+		
+		//MUST set employeeSIN again, it will not be sent otherwise
 		String employeeSIN = req.getParameter("employeeSIN");
 		req.setAttribute("employeeSIN", employeeSIN);
-		
+
 		PostgreSqlConn con = new PostgreSqlConn();
-
-		String patientSIN = req.getParameter("patientSIN");
-		Patient patient = con.getUserInfoByPatientSIN(patientSIN);
-		String patientStr = patient.toString();
-
-		req.setAttribute("patientStr", patientStr);
+		ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(employeeSIN);
+		req.setAttribute("appointments", appointments);
 
 		req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
 		return;	

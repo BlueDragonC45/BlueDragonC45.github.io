@@ -19,6 +19,17 @@
 	 </servlet-mapping>
 	 
 	 <servlet>
+		  <description></description>
+		  <display-name>List Employee Appointments Servlet</display-name>
+		  <servlet-name>ListEmployeeAppointmentsServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.ListEmployeeAppointmentsServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>ListEmployeeAppointmentsServlet</servlet-name>
+		  <url-pattern>/listAppointmentsEmployee</url-pattern>
+	 </servlet-mapping>
+	 
+	 <servlet>
 		 <description></description>
 		 <display-name>Patient Register Servlet</display-name>
 		 <servlet-name>PatientRegisterServlet</servlet-name>

@@ -20,7 +20,7 @@
 <script>
 
 	$(document).ready(function() {
-		if (<%dentists%> === null || <%dentists%>.length === 0) {
+		if (<%dentists%> === null || <%=dentists%>.length === 0) {
 			return;
 		} else {
 			document.getElementById(branchSearch).style.display = "none";

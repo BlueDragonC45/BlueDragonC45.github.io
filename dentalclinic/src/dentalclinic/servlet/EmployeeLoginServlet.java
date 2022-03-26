@@ -35,7 +35,7 @@ public class EmployeeLoginServlet extends HttpServlet {
 			//Get all the attributes of this user, matching the username (unique; enforced)
 			//We do this to get the patient's first name, which is userData[2]
 			Employee employee = con.getUserInfoByEmployeeUsername(userName);
-			String ssn = employee.getEmployeeSIN();
+			String employeeSIN = employee.getEmployeeSIN();
 			String role = employee.getRole();
 			String branchid = employee.getBranchID();
 			
@@ -45,6 +45,8 @@ public class EmployeeLoginServlet extends HttpServlet {
 			System.out.println(role);
 			
 			if (role.equals("manager")) {
+
+				req.setAttribute("branches", con.getDentistsByBranchId(branchid));
 				
 				req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 				
@@ -54,23 +56,22 @@ public class EmployeeLoginServlet extends HttpServlet {
 				//So that when they create a patient, it will alert them
 				//in the case where a username has been used
 				ArrayList<String> usernames = con.getAllUsernamesByEntity("employee");
+				req.setAttribute("branches", con.getDentistsByBranchId(branchid));
+				
 				req.setAttribute("usernames", usernames);
 				
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				
 			} else if (role.equals("dentist")) {
 				
-				ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(ssn);
 				
-				req.setAttribute("appointments", appointments);
-				req.setAttribute("branches", con.getDentistsByBranchId(branchid));
+				req.setAttribute("employeeSIN", employeeSIN);
 				
 				req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
 			} else if (role.equals("hygienist")) {
 				
-				ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(ssn);
-				
-				req.setAttribute("appointments", appointments);
+
+				req.setAttribute("employeeSIN", employeeSIN);
 				
 				req.getRequestDispatcher("hygienist_view.jsp").forward(req, resp);
 			}

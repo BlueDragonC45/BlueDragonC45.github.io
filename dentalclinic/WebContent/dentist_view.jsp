@@ -14,6 +14,10 @@
 </head>
 <body>
 
+<% //Get employeeSIN; must always be available to search the appointments
+   String employeeSIN = (String) request.getAttribute("employeeSIN");
+   System.out.println(employeeSIN);
+%>
 <div class = "container-fluid">
 
     <nav class="navbar text-white px-3 pt-3 mt-3">
@@ -31,10 +35,13 @@
 
       <div class="tab p-3 my-3" style="display: none;" id="listAppointments">
         <h2> Appointments</h2>
-			<ul>
+        <div class="p-3 my-3" id="patientSearch">
 
-			</ul>
-			<!-- list of appointments for this dentist -->
+			<form method="post" action="listAppointmentsEmployee">
+				<input type="hidden" id="employeeSIN" name="employeeSIN" value="<%=employeeSIN%>">
+				<button type="submit" value="submit" onclick="return validateSIN();">Search</button>
+			</form>
+        </div>
       </div>
 
       <div class="tab p-3 my-3" style="display: none;" id="searchPatient">
@@ -42,6 +49,7 @@
         <div class="p-3 my-3" id="patientSearch">
 			Search by Patient SIN:
 			<form method="post" action="patientSearch">
+				<input type="hidden" id="employeeSIN" name="employeeSIN" value="<%=employeeSIN%>">
 				<input class="m-1 form-control" type="text" id="patientSIN" name="patientSIN" pattern="[0-9]{9}" placeholder="123456789">
 				<button type="reset" value="reset">Reset</button>
 				<button type="submit" value="submit" onclick="return validateSIN();">Submit</button>
@@ -52,43 +60,56 @@
       <div class="tab p-3 my-3" style="display: none;" id="searchPatientRecord">
         <h2> Patient Records</h2>
         <div class="p-3 my-3" id="patientRecordSearch">
-			Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSIN">
-          	<button type="submit" value="submit" onclick="??">Search</button>
-			<button type="reset" value="reset">Reset</button>
+			Search by Patient SIN:
+			<form method="post" action="patientSearch">
+				<input type="hidden" id="employeeSIN" name="employeeSIN" value="<%=employeeSIN%>">
+				<input class="m-1 form-control" type="text" id="patientSIN" name="patientSIN" pattern="[0-9]{9}" placeholder="123456789">
+				<button type="reset" value="reset">Reset</button>
+				<button type="submit" value="submit" onclick="return validateSIN();">Submit</button>
+			</form>
         </div>
       </div>
-
-    </div>
-    
-		<%//Will show up once the employee clicks on Search
-		  //right below appointment
+      
+    </div>	
+          	<%//Appointment List
+          	  //Will show up only when appointments is non-empty
+			  //i.e. when the employee has clicked on search at least once
 			Object obj = request.getAttribute("appointments");
 			ArrayList<Appointment> appointmentList = null;
 			if (obj instanceof ArrayList) {
 				appointmentList = (ArrayList<Appointment>) obj;
 			}
 			if (appointmentList != null) {
-				for (Appointment appointment : appointmentList) {
-					%>
-					<li><%=appointment.toString()%></li>
-					<%
+				if (appointmentList.size() == 0) {
+					%><h3>No Appointments Found</h3><br><%
+				} else {
+					%><h3>Appointments Found!</h3><br><%
+					for (Appointment appointment : appointmentList) {
+						%>
+						<li><%=appointment.toString()%></li>
+						<%
+					}
+					%><br><%
+				}
+				
+
+			}
+			
+			%>
+			
+			<%//Patient Search
+			  //Won't show up if patientStr is empty
+			String patientStr = (String) request.getAttribute("patientStr");
+			if (patientStr != null) {
+				if (!patientStr.split(" ")[0].equals("null")) {
+					
+					%><h3>Patient Found!</h3><br><h6><%=patientStr%></h6><br><%
+				} else {
+					%><h3>Patient Not Found!</h3><br><%
 				}
 			}
-		%>
-    	
-    	<% 
-		String patientStr = (String) request.getAttribute("patientStr");
-		if (patientStr != null) {
-			if (!patientStr.split(" ")[0].equals("null")) {
-				
-				%><h3>Patient Found!</h3><br><h6><%=patientStr%></h6><br><%
-			} else {
-				%><h3>Patient Not Found!</h3><br><%
-			}
-		}
-		
-		%>
-		
+			
+			%>
   </div>
 
 </body>

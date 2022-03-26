@@ -22,7 +22,7 @@ public class  PostgreSqlConn{
 				
 				Class.forName("org.postgresql.Driver"); 
 																					//DB name
-				db = DriverManager.getConnection("jdbc:postgresql://192.168.0.4:5432/postgres",
+				db = DriverManager.getConnection("jdbc:postgresql://192.168.0.6:5432/postgres",
 						//username   password
 						"postgres", "password");
 															
@@ -309,6 +309,8 @@ public class  PostgreSqlConn{
 						               + "WHERE ? = ANY(employeesinlist) "
 						               + "GROUP BY appointmentdate, starttime");
 	            ps.setString(1, employeeSIN);	
+	            
+	            System.out.println(ps.toString());   
 	            
 	            rs = ps.executeQuery();
 				while(rs.next()){
