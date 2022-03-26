@@ -38,11 +38,12 @@ public class PatientLoginServlet extends HttpServlet {
 			//We do this to get the patient's first name, which is userData[2]
 			Patient patient = con.getUserInfoByPatientUsername(userName);
 
-			req.setAttribute("userSIN", patient.getPatientSIN());
-			req.setAttribute("userName", userName);
-			req.setAttribute("firstName", patient.getFirstName());
-			req.setAttribute("middleName", patient.getMiddleName());
-			req.setAttribute("lastName", patient.getLastName());
+//			req.setAttribute("userSIN", patient.getPatientSIN());
+//			req.setAttribute("userName", userName);
+//			req.setAttribute("firstName", patient.getFirstName());
+//			req.setAttribute("middleName", patient.getMiddleName());
+//			req.setAttribute("lastName", patient.getLastName());
+			req.setAttribute("patient", patient);
 
 			req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
 			return;	

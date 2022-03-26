@@ -271,6 +271,85 @@ public class  PostgreSqlConn{
 			
 		}
 		
+//		public ArrayList<Appointment> getAppointmentsByPatientSIN(String patientSIN){
+//			
+//			getConn();
+//			
+//			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+//			
+//			try {
+//				ps = db.prepareStatement("select * from dentalclinic.appointment where '"+patientSIN+"' ??? GROUP BY appointmentdate, starttime");
+//				rs = ps.executeQuery();
+//				while(rs.next()){
+//					String appointmentDate = rs.getString("appointmentDate");
+//					String appointmentType = rs.getString("appointmentType");
+//					String startTime = rs.getString("startTime");
+//					String endTime = rs.getString("endTime");
+//					String roomID = rs.getString("roomID");
+//					String status = rs.getString("status");
+//					Appointment appointment = new Appointment(appointmentDate, appointmentType, startTime,
+//															  endTime, roomID, status);
+//					appointments.add(appointment);
+//				}
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} finally {
+//	        	closeDB();
+//	        }
+//						
+//			return appointments;
+//			
+//		}
+		
+		public String getBranchByLocation(String province, String city) {
+			getConn();
+			
+			String branchId = "";
+			
+			try {
+				ps = db.prepareStatement("select * from dentalclinic.branches where dentalclinic.Branch.Province='?' and "
+						+ "dentalclinic.Branch.City='?'");
+				ps.setString(1, province);
+				ps.setString(2, city);	
+				rs = ps.executeQuery();
+				while(rs.next()){
+					branchId = rs.getString(branchId);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+			return branchId;
+		}
+		
+		public String[] getDentistsByBranchId(String branchId) {
+			getConn();
+			
+			String[] dentists = new String[]{};
+			int i = 0;
+			
+			try {
+				ps = db.prepareStatement("select * from dentalclinic.employee where dentalclinic.employee.BranchId='?' and "
+						+ "dentalclinic.employee.role='dentist'");
+				ps.setString(1, branchId);	
+				rs = ps.executeQuery();
+				while(rs.next()){
+					String fName = rs.getString("firstName");
+					String lName = rs.getString("lastName");
+					dentists[i++] = String.format("%s, %s", fName, lName);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+			return dentists;
+		}
+		
 		public  ArrayList<Room> getAllAvailRooms(){
 			
 			getConn();

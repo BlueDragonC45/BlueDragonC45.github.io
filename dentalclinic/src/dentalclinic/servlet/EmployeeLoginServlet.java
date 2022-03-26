@@ -58,6 +58,7 @@ public class EmployeeLoginServlet extends HttpServlet {
 				
 				ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(ssn);
 				req.setAttribute("appointments", appointments);
+				req.setAttribute("branches", con.getDentistsByBranchId(employee.getBranchID()));
 				
 				req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
 			} else if (role.equals("hygienist")) {

@@ -22,7 +22,6 @@ public class PatientRegisterServlet extends HttpServlet{
 
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		HttpSession session = req.getSession();
 //		employee account = new employee();
 		String patientSIN = req.getParameter("patientSIN");
