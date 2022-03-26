@@ -396,11 +396,10 @@ public class  PostgreSqlConn{
 		}
 		
 		//Returns all dentists in a certain branch
-		public String[] getDentistsByBranchId(String branchId) {
+		public ArrayList<String> getDentistsByBranchId(String branchId) {
 			getConn();
 			
-			String[] dentists = new String[]{};
-			int i = 0;
+			ArrayList<String> dentists = new ArrayList<String>();
 			
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.employee "
@@ -413,7 +412,7 @@ public class  PostgreSqlConn{
 				while(rs.next()){
 					String fName = rs.getString("firstName");
 					String lName = rs.getString("lastName");
-					dentists[i++] = String.format("%s, %s", fName, lName);
+					dentists.add(String.format("%s %s", fName, lName));
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

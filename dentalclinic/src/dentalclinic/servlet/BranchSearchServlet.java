@@ -1,6 +1,7 @@
 package dentalclinic.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +21,7 @@ public class BranchSearchServlet extends HttpServlet {
 		
 		String province = req.getParameter("branchProvinceSearchInput");
 		String city = req.getParameter("branchCitySearchInput");
-		String[] dentists = con.getDentistsByBranchId(con.getBranchByLocation(province, city));
+		ArrayList<String> dentists = con.getDentistsByBranchId(con.getBranchByLocation(province, city));
 		
 		req.setAttribute("dentists", dentists);
 		
