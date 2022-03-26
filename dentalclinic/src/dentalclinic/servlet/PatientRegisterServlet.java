@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
-import dentalclinic.entities.Room;
+import dentalclinic.entities.Patient;
 
 public class PatientRegisterServlet extends HttpServlet{
 
@@ -23,7 +23,8 @@ public class PatientRegisterServlet extends HttpServlet{
 	@Override
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
-//		employee account = new employee();
+
+		//12 columns total
 		String patientSIN = req.getParameter("patientSIN");
 		String userName = req.getParameter("userName");
 		String patientPwd = req.getParameter("patientPwd");
@@ -37,32 +38,36 @@ public class PatientRegisterServlet extends HttpServlet{
 		String patientPhoneNumber = req.getParameter("patientPhoneNumber");
 		String address = req.getParameter("address");
 		
-		String[] param = new String[] {patientSIN,userName,patientPwd,firstName,middleName,lastName,
-				           dateOfBirth,age,gender,patientEmail,patientPhoneNumber,address};
+		
+		Patient patient = new Patient();
+		patient.setPatientSIN(patientSIN);
+		patient.setUserName(userName);
+		//password goes separately
+		patient.setFirstName(firstName);
+		patient.setMiddleName(middleName);
+		patient.setLastName(lastName);
+		patient.setDateofBirth(dateOfBirth);
+		patient.setAge(age);
+		patient.setGender(gender);
+		patient.setPatientEmail(patientEmail);
+		patient.setPatientPhoneNumber(patientPhoneNumber);
+		patient.setAddress(address);
 		
 		PostgreSqlConn con = new PostgreSqlConn();
-		boolean pwdfromdb = con.insertNewPatient(param);
 		
-		System.out.println(pwdfromdb);
-		
-		if (pwdfromdb) {			
-				System.out.println("Success");
+		boolean isInserted = con.insertNewPatient(patient, patientPwd);
+		if (isInserted) {			
+				System.out.println("Successfully inserted a new patient");
 				
-				ArrayList<Room> bookedRooms = con.getBookedRooms(patientSIN);
-				
-				ArrayList<Room> allRooms = con.getAllAvailRooms();
-				
-				System.out.println(allRooms);
-				
-				req.setAttribute("firstName", firstName);
-				req.setAttribute("middleName", middleName);
-				req.setAttribute("lastName", lastName);
-				req.setAttribute("bookedRooms", bookedRooms);
-				req.setAttribute("allRooms", allRooms);
+				//firstName and lastName might have been used already
+				//...at receptionist_view.jsp
+				req.setAttribute("firstNameNEW", firstName);
+				req.setAttribute("lastNameNEW", lastName);
 
-				req.getRequestDispatcher("booking.jsp").forward(req, resp);
+				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				return;			
 		}
+		//Send to failed page
 		resp.sendRedirect("register_failure.jsp");
 		return;
 	}

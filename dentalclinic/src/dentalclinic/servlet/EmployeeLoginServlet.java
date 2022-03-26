@@ -21,24 +21,28 @@ public class EmployeeLoginServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
-//		employee account = new employee();
+		
 		String userName = req.getParameter("userName");//Entered userName
 		String pwd = req.getParameter("pwd");//Entered password
+		System.out.println(userName + " " + pwd);
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 		
 		//Sends entered pwd to DB, where it is checked
 		//Pwd from the DB is always encrypted
-		if (con.isCorrectPwd("employee",userName,pwd)) {	
+		if (con.isCorrectPwd("employee", userName, pwd)) {	
 
 			//Get all the attributes of this user, matching the username (unique; enforced)
 			//We do this to get the patient's first name, which is userData[2]
 			Employee employee = con.getUserInfoByEmployeeUsername(userName);
 			String ssn = employee.getEmployeeSIN();
 			String role = employee.getRole();
+			String branchid = employee.getBranchID();
 			
 			req.setAttribute("userName", userName);
 			req.setAttribute("role", role);
+			
+			System.out.println(role);
 			
 			if (role.equals("manager")) {
 				
@@ -57,13 +61,15 @@ public class EmployeeLoginServlet extends HttpServlet {
 			} else if (role.equals("dentist")) {
 				
 				ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(ssn);
+				
 				req.setAttribute("appointments", appointments);
-				req.setAttribute("branches", con.getDentistsByBranchId(employee.getBranchID()));
+				req.setAttribute("branches", con.getDentistsByBranchId(branchid));
 				
 				req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
 			} else if (role.equals("hygienist")) {
 				
 				ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(ssn);
+				
 				req.setAttribute("appointments", appointments);
 				
 				req.getRequestDispatcher("hygienist_view.jsp").forward(req, resp);

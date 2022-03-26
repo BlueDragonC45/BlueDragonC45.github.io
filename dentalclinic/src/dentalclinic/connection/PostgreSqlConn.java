@@ -15,14 +15,15 @@ public class  PostgreSqlConn{
 	    Statement st = null;
 	    String sql;
 
-
+	    //Attempts to establish a connection to the database
 		public void getConn(){
 			
 			try {
 				
 				Class.forName("org.postgresql.Driver"); 
-								
+																					//DB name
 				db = DriverManager.getConnection("jdbc:postgresql://192.168.0.4:5432/postgres",
+						//username   password
 						"postgres", "password");
 															
 			}catch(Exception e) {
@@ -32,64 +33,59 @@ public class  PostgreSqlConn{
 		}
 		
 		public void closeDB() {
-				try {
-					if(rs != null){
-						rs.close();
-					}
-					if(ps!=null){
-						ps.close();
-					}
-					if(st!=null){
-						st.close();
-					}
-					if(db!=null){
-						db.close();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
+			try {
+				if(rs != null){
+					rs.close();
 				}
+				if(ps!=null){
+					ps.close();
+				}
+				if(st!=null){
+					st.close();
+				}
+				if(db!=null){
+					db.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
-		
-		public ArrayList<String> getAllUsernamesByEntity(String entity){
-			getConn();
 
-			ArrayList<String> usernames = new ArrayList<String>();
-			
-	        try{
-	            ps = db.prepareStatement("select * from dentalclinic."+entity);
-	                          
-	            rs = ps.executeQuery();
-	
-				while(rs.next()) {
-					usernames.add(rs.getString(3));//Username at index 3
-				}
-	            
-	        }catch(SQLException e){
-	            e.printStackTrace();
-	        }finally {
-	        	closeDB();
-	        }
-			return usernames;       
-	    }
-
-		//@entity can be employee or patient; case-insensitive
+		//Returns true if the pwd entered matches the encrypted pwd in the DB
 		public boolean isCorrectPwd(String entity, String userName, String Pwd){
 			
 			getConn();
 
-			String foundUser = "";
 			boolean isCorrect = false;
 			
 	        try{
-	            ps = db.prepareStatement("select * from dentalclinic."+entity+
-	            		                " where username=?"+
-	            						" and "+entity+"pwd = crypt(?, "+entity+"pwd)");
+	        	
+	        	if (entity.equals("employee")) {
+		            ps = db.prepareStatement("SELECT * from dentalclinic.employee "
+			                +"WHERE username=? "
+							+"AND employeepwd = crypt(?, employeepwd)");	
+	        	} else if (entity.equals("patient")) {
+		            ps = db.prepareStatement("SELECT * from dentalclinic.patient "
+			                +"WHERE username=? "
+							+"AND patientpwd = crypt(?, patientpwd)");	
+	        	} else {
+	        		return isCorrect;//false
+	        	}
+
+	            System.out.println(ps.toString());   
 	            
 	            ps.setString(1, userName);	  
-	            ps.setString(2, Pwd);	             
+	            ps.setString(2, Pwd);
+	            
 	            rs = ps.executeQuery();
-	
+
+	            System.out.println(entity);
+	            System.out.println(userName);
+	            System.out.println(Pwd);
+	            System.out.println(ps.toString());   
+
+				String foundUser = "";
 				while(rs.next()) {
 					foundUser = rs.getString("username");
 					if (!foundUser.equals(""))
@@ -104,13 +100,15 @@ public class  PostgreSqlConn{
 			return isCorrect;       
 	    }
 		
+		//Searches an employee by their username (unique)
 		public Employee getUserInfoByEmployeeUsername(String userName){
 			getConn();
 
 			Employee employee = new Employee();
 			
 	        try{
-	            ps = db.prepareStatement("select * from dentalclinic.employee where username=?");
+	            ps = db.prepareStatement("SELECT * from dentalclinic.employee "
+	            		               + "WHERE username=?");
 	            
 	            ps.setString(1, userName);	               
 	            rs = ps.executeQuery();
@@ -144,14 +142,16 @@ public class  PostgreSqlConn{
 	        }
 			return employee;       
 	    }
-		
+
+		//Searches an patient by their username (unique)
 		public Patient getUserInfoByPatientUsername(String userName){
 			getConn();
 			
 			Patient patient = new Patient();
 			
 	        try{
-	            ps = db.prepareStatement("select * from dentalclinic.patient where username=?");
+	            ps = db.prepareStatement("SELECT * from dentalclinic.patient "
+	            		               + "WHERE username=?");
 	            
 	            ps.setString(1, userName);	               
 	            rs = ps.executeQuery();
@@ -170,8 +170,8 @@ public class  PostgreSqlConn{
 					String address = rs.getString("address");
 					
 					patient = new Patient(patientSIN, userName, firstName, middleName,
-							 					  lastName, dateofBirth, age, gender,
-												  patientEmail, patientPhoneNumber, address);
+							 		      lastName, dateofBirth, age, gender,
+										  patientEmail, patientPhoneNumber, address);
 				}
 	            
 	        }catch(SQLException e){
@@ -182,13 +182,16 @@ public class  PostgreSqlConn{
 			return patient;       
 	    }
 
+		//Searches and returns a Patient by their SIN
 		public Patient getUserInfoByPatientSIN(String patientSIN){
 			getConn();
 			
 			Patient patient = new Patient();
 			
 	        try{
-	            ps = db.prepareStatement("select * from dentalclinic.patient where patientSIN='"+patientSIN+"'");
+	            ps = db.prepareStatement("SELECT * from dentalclinic.patient "
+	            					   + "WHERE patientSIN=?");
+	            ps.setString(1, patientSIN);	
 	                           
 	            rs = ps.executeQuery();
 	
@@ -217,18 +220,72 @@ public class  PostgreSqlConn{
 			return patient;       
 	    }
 		
-		public boolean insertNewPatient(String[] data){
+		//Returns all usernames stored in either Patient or Employee
+		public ArrayList<String> getAllUsernamesByEntity(String entity){
 			getConn();
 
-			//todo: check username not used
+			ArrayList<String> usernames = new ArrayList<String>();
+			
 	        try{
-	        	st = db.createStatement();
-	        	sql = "insert into dentalclinic.patient values('"+data[0]+"','"+data[1]+"',crypt('"+data[2]+"', gen_salt('bf')),'"+data[3]
-	        			+"','"+data[4]+"','"+data[5]+"','"+data[6]+"',"+data[7]+",'"+data[8]+"','"+data[9]+"','"+data[10]+"','"+data[11]+"')";
+
+	        	if (entity.equals("employee")) {
+	        		ps = db.prepareStatement("SELECT * from dentalclinic.employee");	
+	        	} else if (entity.equals("patient")) {
+	        		ps = db.prepareStatement("SELECT * from dentalclinic.patient");
+	        	} else {
+	        		return usernames;//empty
+	        	}
 	        	
-	        	System.out.print(sql);
 	            
-	            st.executeUpdate(sql);
+	            ps.setString(1, entity);	
+	                          
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					usernames.add(rs.getString("username"));
+				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return usernames;       
+	    }
+		
+		//For receptionist only; inserts a new patient
+		public boolean insertNewPatient(Patient patient, String pwd){
+			getConn();
+
+			ArrayList<String> usernames = getAllUsernamesByEntity("patient");
+			for (int i = 0 ; i < usernames.size(); i++) {
+				if (patient.getUserName().equals(usernames.get(i))) {
+		            return false;
+				}
+			}
+
+	        try{
+
+				ps = db.prepareStatement("INSERT into dentalclinic.patient "
+									   + "values(?, ?, crypt(?, gen_salt('bf')), ?, "
+									   + "?, ?, ?, ?, ?, ?, ?,?)");
+				
+	            ps.setString(1, patient.getPatientSIN());	
+	            ps.setString(2, patient.getUserName());	
+	            ps.setString(3, pwd);	
+	            ps.setString(4, patient.getFirstName());	
+	            ps.setString(5, patient.getMiddleName());	
+	            ps.setString(7, patient.getLastName());	
+	            ps.setString(8, patient.getDateofBirth());	
+	            ps.setString(9, patient.getAge());	
+	            ps.setString(10, patient.getGender());	
+	            ps.setString(11, patient.getPatientEmail());	
+	            ps.setString(12, patient.getPatientPhoneNumber());	
+	            ps.setString(13, patient.getAddress());	
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new patient");
 	            
 	            return true;
 
@@ -240,6 +297,7 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
+		//Returns appointments that involve a certain employee using their SIN
 		public ArrayList<Appointment> getAppointmentsByEmployeeSIN(String employeeSIN){
 			
 			getConn();
@@ -247,8 +305,12 @@ public class  PostgreSqlConn{
 			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
 			
 			try {
-				ps = db.prepareStatement("select * from dentalclinic.appointment where '"+employeeSIN+"' = ANY(employeesinlist) GROUP BY appointmentdate, starttime");
-				rs = ps.executeQuery();
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE ? = ANY(employeesinlist) "
+						               + "GROUP BY appointmentdate, starttime");
+	            ps.setString(1, employeeSIN);	
+	            
+	            rs = ps.executeQuery();
 				while(rs.next()){
 					String appointmentDate = rs.getString("appointmentDate");
 					String appointmentType = rs.getString("appointmentType");
@@ -256,8 +318,8 @@ public class  PostgreSqlConn{
 					String endTime = rs.getString("endTime");
 					String roomID = rs.getString("roomID");
 					String status = rs.getString("status");
-					Appointment appointment = new Appointment(appointmentDate, appointmentType, startTime,
-															  endTime, roomID, status);
+					Appointment appointment = new Appointment(appointmentDate, appointmentType,
+														      startTime, endTime, roomID, status);
 					appointments.add(appointment);
 				}
 			} catch (SQLException e) {
@@ -270,7 +332,8 @@ public class  PostgreSqlConn{
 			return appointments;
 			
 		}
-		
+
+		//Returns appointments that involve a certain patient using their SIN
 //		public ArrayList<Appointment> getAppointmentsByPatientSIN(String patientSIN){
 //			
 //			getConn();
@@ -302,17 +365,22 @@ public class  PostgreSqlConn{
 //			
 //		}
 		
+		//Returns the branch by the location and city
 		public String getBranchByLocation(String province, String city) {
 			getConn();
 			
 			String branchId = "";
 			
 			try {
-				ps = db.prepareStatement("select * from dentalclinic.branches where dentalclinic.Branch.Province='?' and "
-						+ "dentalclinic.Branch.City='?'");
+				ps = db.prepareStatement("SELECT * from dentalclinic.branches "
+						               + "WHERE dentalclinic.Branch.Province=? "
+						               + "AND dentalclinic.Branch.City=?");
+				
 				ps.setString(1, province);
 				ps.setString(2, city);	
+				
 				rs = ps.executeQuery();
+				
 				while(rs.next()){
 					branchId = rs.getString(branchId);
 				}
@@ -325,6 +393,7 @@ public class  PostgreSqlConn{
 			return branchId;
 		}
 		
+		//Returns all dentists in a certain branch
 		public String[] getDentistsByBranchId(String branchId) {
 			getConn();
 			
@@ -332,10 +401,13 @@ public class  PostgreSqlConn{
 			int i = 0;
 			
 			try {
-				ps = db.prepareStatement("select * from dentalclinic.employee where dentalclinic.employee.BranchId='?' and "
-						+ "dentalclinic.employee.role='dentist'");
+				ps = db.prepareStatement("SELECT * from dentalclinic.employee "
+						               + "WHERE dentalclinic.employee.BranchId=? "
+						               + "AND dentalclinic.employee.role='dentist'");
 				ps.setString(1, branchId);	
+				
 				rs = ps.executeQuery();
+				
 				while(rs.next()){
 					String fName = rs.getString("firstName");
 					String lName = rs.getString("lastName");
@@ -350,99 +422,12 @@ public class  PostgreSqlConn{
 			return dentists;
 		}
 		
-		public  ArrayList<Room> getAllAvailRooms(){
-			
-			getConn();
-			
-			ArrayList<Room> Rooms = new ArrayList<Room>();
-			
-			try {
-				ps = db.prepareStatement("select * from dentalclinic.room where roomstatus='available'");
-				rs = ps.executeQuery();
-				while(rs.next()){
-					String roomid = rs.getString("roomid");
-					String branchid = rs.getString("branchid");
-					String roomstatus = rs.getString("roomstatus");
-					Room room = new Room(roomid, branchid, roomstatus);
-					Rooms.add(room);
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-	        	closeDB();
-	        }
-						
-			return Rooms;
-			
-		}
-		
-		public  ArrayList<Room> getBookedRooms(String patientSIN){
-			
-			getConn();
-			
-			ArrayList<Room> Rooms = new ArrayList<Room>();
-			
-			try {
-				ps = db.prepareStatement("select * from dentalclinic.room where patientsin='"+patientSIN+"'");
-				rs = ps.executeQuery();
-				while(rs.next()){
-					String roomid = rs.getString("roomid");
-					String branchid = rs.getString("branchid");
-					String roomstatus = rs.getString("roomstatus");
-					Room room = new Room(roomid, branchid, roomstatus);
-					Rooms.add(room);
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-	        	closeDB();
-	        }
-						
-			return Rooms;
-			
-		}
-		
-		public String bookRoom(String username, String roomid, String branchid){
-			getConn();
-			String patientSIN="";
-			
-	        try{
-	        	
-	        	ps = db.prepareStatement("select patientsin from dentalclinic.patient where username='"+username+"'");
-				rs = ps.executeQuery();
-				
-				while(rs.next()){
-					patientSIN = rs.getString("patientsin");
-				}
-				
-				
-	        	st = db.createStatement();
-	        	sql = "update dentalclinic.room set patientsin='"+patientSIN+"', roomstatus='booked' where roomid='"+roomid+"' and branchid='"+branchid+"'";
-	            st.executeUpdate(sql);
-	            
-	            
-	            return patientSIN;
-
-	        }catch(SQLException e){
-	            e.printStackTrace();
-	            return "";	 
-	        }finally {
-	        	closeDB();
-	        }
-			      
-	    }
-		
-		
-		
-		
-		
+		/*
 		public static void main(String []args) {
 			PostgreSqlConn con = new PostgreSqlConn();
 			con.getConn();
 				
-		}
+		}*/
 
 		
 	}

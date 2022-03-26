@@ -32,20 +32,7 @@
       <div class="tab p-3 my-3" style="display: none;" id="listAppointments">
         <h2> Appointments</h2>
 			<ul>
-				<%
-					Object obj = request.getAttribute("appointments");
-					ArrayList<Appointment> appointmentList = null;
-					if (obj instanceof ArrayList) {
-						appointmentList = (ArrayList<Appointment>) obj;
-					}
-					if (appointmentList != null) {
-						for (Appointment appointment : appointmentList) {
-							%>
-							<li><%=appointment.toString()%></li>
-							<%
-						}
-					}
-				%>
+
 			</ul>
 			<!-- list of appointments for this dentist -->
       </div>
@@ -72,6 +59,23 @@
       </div>
 
     </div>
+    
+		<%//Will show up once the employee clicks on Search
+		  //right below appointment
+			Object obj = request.getAttribute("appointments");
+			ArrayList<Appointment> appointmentList = null;
+			if (obj instanceof ArrayList) {
+				appointmentList = (ArrayList<Appointment>) obj;
+			}
+			if (appointmentList != null) {
+				for (Appointment appointment : appointmentList) {
+					%>
+					<li><%=appointment.toString()%></li>
+					<%
+				}
+			}
+		%>
+    	
     	<% 
 		String patientStr = (String) request.getAttribute("patientStr");
 		if (patientStr != null) {
@@ -84,6 +88,7 @@
 		}
 		
 		%>
+		
   </div>
 
 </body>
