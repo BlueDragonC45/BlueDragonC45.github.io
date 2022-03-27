@@ -13,14 +13,15 @@ public class Patient {
 	private String patientEmail;
 	private String patientPhoneNumber;
 	private String address;
+	private String guardian;
 	
 	public Patient() {
 		
 	}
 	
 	public Patient(String patientSIN, String userName, String firstName, String middleName, String lastName,
-					   String dateofBirth, String age, String gender,
-					   String patientEmail, String patientPhoneNumber, String address) {
+					   String dateofBirth, String age, String gender, String patientEmail,
+					   String patientPhoneNumber, String address, String guardian) {
 		this.patientSIN = patientSIN;
 		this.userName = userName;
 		this.firstName = firstName;
@@ -32,6 +33,7 @@ public class Patient {
 		this.patientEmail = patientEmail;
 		this.patientPhoneNumber = patientPhoneNumber;
 		this.address = address;
+		this.guardian = guardian;
 	}
 	
 	public String toString() {
@@ -117,4 +119,10 @@ public class Patient {
 		this.address = address;
 	}
 
+	public String getGuardian() {
+		return guardian;
+	}
+	public void setGuardian(String guardian) {
+		this.guardian = guardian;
+	}
 }

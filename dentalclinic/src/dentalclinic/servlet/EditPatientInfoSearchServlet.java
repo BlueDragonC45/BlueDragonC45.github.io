@@ -24,7 +24,7 @@ public class EditPatientInfoSearchServlet extends HttpServlet {
 //		Patient patient = con.getUserInfoByPatientSIN(patientSIN);
 		Patient patient = new Patient("741258963", "userName", "firstName", "middleName", "lastName",
 				   "1474-11-14", "20", "gender",
-				   "patientEmail", "705-698-4569", "address");
+				   "patientEmail", "705-698-4569", "address", "guardian");
 		
 		req.setAttribute("patient", patient);
 		req.setAttribute("patientSIN", patient.getPatientSIN());

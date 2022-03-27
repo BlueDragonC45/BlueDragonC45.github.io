@@ -168,10 +168,12 @@ public class  PostgreSqlConn{
 					String patientEmail = rs.getString("patientEmail");
 					String patientPhoneNumber = rs.getString("patientPhoneNumber");
 					String address = rs.getString("address");
+					String guardian = rs.getString("guardian");
 					
 					patient = new Patient(patientSIN, userName, firstName, middleName,
 							 		      lastName, dateofBirth, age, gender,
-										  patientEmail, patientPhoneNumber, address);
+										  patientEmail, patientPhoneNumber,
+										  guardian, address);
 				}
 	            
 	        }catch(SQLException e){
@@ -206,10 +208,12 @@ public class  PostgreSqlConn{
 					String patientEmail = rs.getString("patientEmail");
 					String patientPhoneNumber = rs.getString("patientPhoneNumber");
 					String address = rs.getString("address");
+					String guardian = rs.getString("guardian");
 					
 					patient = new Patient(patientSIN, userName, firstName, middleName,
 							 					  lastName, dateofBirth, age, gender,
-												  patientEmail, patientPhoneNumber, address);
+												  patientEmail, patientPhoneNumber,
+												  guardian, address);
 				}
 	            
 	        }catch(SQLException e){
