@@ -1,7 +1,6 @@
 package dentalclinic.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
-import dentalclinic.entities.Patient;
+import dentalclinic.entities.PatientRecord;
 
-public class PatientSearchServlet extends HttpServlet {
+public class RecordSearchServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doPost(req, resp);
@@ -29,10 +28,10 @@ public class PatientSearchServlet extends HttpServlet {
 		PostgreSqlConn con = new PostgreSqlConn();
 
 		String patientSIN = req.getParameter("patientSIN");
-		Patient patient = con.getUserInfoByPatientSIN(patientSIN);
-		String patientStr = patient.toString();
+		PatientRecord patientRecord = con.getPatientRecordByPatientSIN(patientSIN);
+		String patientRecordStr = patientRecord.toString();
 
-		req.setAttribute("patientStr", patientStr);
+		req.setAttribute("patientRecordStr", patientRecordStr);
 
 		String role = req.getParameter("role");
 		req.setAttribute("role", role);

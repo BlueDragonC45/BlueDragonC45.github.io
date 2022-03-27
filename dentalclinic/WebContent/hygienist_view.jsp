@@ -26,7 +26,7 @@
     </nav>
     
     <div class="content p-3 my-3 h-100 border" id="dentists">
-      <h1> Dentist View</h1>
+      <h1> Hygienist View</h1>
       <div class="p-1 my-1 border border-dark row justify-content-around" id="dentistNav">
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listAppointments')" >List Appointments</button>
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('searchPatient')" >Search Patient</button>

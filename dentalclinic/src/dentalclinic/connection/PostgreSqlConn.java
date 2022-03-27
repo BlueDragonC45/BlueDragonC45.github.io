@@ -2,6 +2,7 @@ package dentalclinic.connection;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import dentalclinic.entities.*; 
@@ -223,6 +224,36 @@ public class  PostgreSqlConn{
 	        }
 			return patient;       
 	    }
+
+		//Searches and returns a PatientRecord by their SIN
+		public PatientRecord getPatientRecordByPatientSIN(String patientSIN){
+			getConn();
+			
+			PatientRecord patientRecord = new PatientRecord();
+			
+	        try{
+	            ps = db.prepareStatement("SELECT * from dentalclinic.patientrecord "
+	            					   + "WHERE treatmentID IN " 
+	            		               + 	"(SELECT treatmentID from dentalclinic.treatment "
+	            					   + 	"WHERE patientSIN=?)");
+	            ps.setString(1, patientSIN);	
+	                           
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					String treatmentID = rs.getString("treatmentID");
+					String treatmentDetails = rs.getString("treatmentDetails");
+					
+					patientRecord = new PatientRecord(treatmentID, treatmentDetails);
+				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return patientRecord;       
+	    }
 		
 		//Returns all usernames stored in either Patient or Employee
 		public ArrayList<String> getAllUsernamesByEntity(String entity){
@@ -311,7 +342,7 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE ? = ANY(employeesinlist) "
-						               + "GROUP BY appointmentdate, appointmentstarttime");
+						               + "GROUP BY appointmentdate, appointmentstarttime, roomid, branchid");
 	            ps.setString(1, employeeSIN);	
 	            
 	            System.out.println(ps.toString());   
@@ -319,14 +350,19 @@ public class  PostgreSqlConn{
 	            rs = ps.executeQuery();
 				while(rs.next()){
 					String appointmentDate = rs.getString("appointmentDate");
-					String appointmentType = rs.getString("appointmentType");
 					String startTime = rs.getString("appointmentstartTime");
-					String endTime = rs.getString("appointmentendTime");
 					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String invoiceID = rs.getString("invoiceID");
+					String endTime = rs.getString("appointmentendTime");
+					String appointmentType = rs.getString("appointmentType");
 					String status = rs.getString("status");
-					Appointment appointment = new Appointment(appointmentDate, appointmentType,
-														      startTime, endTime, roomID, status);
+					Appointment appointment = new Appointment(appointmentDate, startTime, roomID,
+															  branchID, employeeSINList, invoiceID,
+															  endTime, appointmentType, status);
 					appointments.add(appointment);
+				 System.out.println(Arrays.toString(appointment.getEmployeeSINList()));
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

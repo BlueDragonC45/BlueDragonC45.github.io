@@ -85,6 +85,17 @@
 		<url-pattern>/patientSearch</url-pattern>
 	</servlet-mapping>
 	 
+	 <servlet>
+		<description></description>
+		<display-name>Record Search Servlet</display-name>
+		<servlet-name>RecordSearchServlet</servlet-name>
+		<servlet-class>dentalclinic.servlet.RecordSearchServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RecordSearchServlet</servlet-name>
+		<url-pattern>/recordSearch</url-pattern>
+	</servlet-mapping>
+	 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>

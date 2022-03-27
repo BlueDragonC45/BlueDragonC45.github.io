@@ -38,7 +38,8 @@ public class EmployeeLoginServlet extends HttpServlet {
 			String employeeSIN = employee.getEmployeeSIN();
 			String role = employee.getRole();
 			String branchid = employee.getBranchID();
-			
+
+			req.setAttribute("employeeSIN", employeeSIN);
 			req.setAttribute("userName", userName);
 			req.setAttribute("role", role);
 			
@@ -64,16 +65,12 @@ public class EmployeeLoginServlet extends HttpServlet {
 				
 			} else if (role.equals("dentist")) {
 				
-				
-				req.setAttribute("employeeSIN", employeeSIN);
-				
 				req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
+				
 			} else if (role.equals("hygienist")) {
 				
-
-				req.setAttribute("employeeSIN", employeeSIN);
-				
 				req.getRequestDispatcher("hygienist_view.jsp").forward(req, resp);
+				
 			}
 			
 			return;		
