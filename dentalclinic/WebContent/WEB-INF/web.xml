@@ -7,6 +7,29 @@
          
 	 <display-name>jspServletLoginTest</display-name>
 	 
+	 
+	 <servlet>
+		  <description></description>
+		  <display-name>List Branch Dentists Servlet</display-name>
+		  <servlet-name>BranchSearchServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.BranchSearchServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>BranchSearchServlet</servlet-name>
+		  <url-pattern>/listBranchDentists</url-pattern>
+	 </servlet-mapping>
+	 
+	 <servlet>
+		  <description></description>
+		  <display-name>Edit Patient Info Search Servlet</display-name>
+		  <servlet-name>EditPatientInfoSearchServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.EditPatientInfoSearchServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>EditPatientInfoSearchServlet</servlet-name>
+		  <url-pattern>/editPatientInfoSearch</url-pattern>
+	 </servlet-mapping>
+	 
 	 <servlet>
 		  <description></description>
 		  <display-name>Employee Login Servlet</display-name>
@@ -31,17 +54,6 @@
 	 
 	 <servlet>
 		 <description></description>
-		 <display-name>Patient Register Servlet</display-name>
-		 <servlet-name>PatientRegisterServlet</servlet-name>
-		 <servlet-class>dentalclinic.servlet.PatientRegisterServlet</servlet-class>
-	 </servlet>
-	 <servlet-mapping>
-		 <servlet-name>PatientRegisterServlet</servlet-name>
-		 <url-pattern>/patientRegister</url-pattern>
-	 </servlet-mapping>
-	 
-	 <servlet>
-		 <description></description>
 		 <display-name>Patient Login Servlet</display-name>
 		 <servlet-name>PatientLoginServlet</servlet-name>
 		 <servlet-class>dentalclinic.servlet.PatientLoginServlet</servlet-class>
@@ -51,6 +63,16 @@
 		 <url-pattern>/patientLogin</url-pattern>
 	 </servlet-mapping>
 	 
+	 <servlet>
+		 <description></description>
+		 <display-name>Patient Register Servlet</display-name>
+		 <servlet-name>PatientRegisterServlet</servlet-name>
+		 <servlet-class>dentalclinic.servlet.PatientRegisterServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		 <servlet-name>PatientRegisterServlet</servlet-name>
+		 <url-pattern>/patientRegister</url-pattern>
+	 </servlet-mapping>
 	 
 	 <servlet>
 		<description></description>
@@ -63,28 +85,6 @@
 		<url-pattern>/patientSearch</url-pattern>
 	</servlet-mapping>
 	 
-	 <servlet>
-		  <description></description>
-		  <display-name>List Branch Dentists Servlet</display-name>
-		  <servlet-name>BranchSearchServlet</servlet-name>
-		  <servlet-class>dentalclinic.servlet.BranchSearchServlet</servlet-class>
-	 </servlet>
-	 <servlet-mapping>
-		  <servlet-name>BranchSearchServlet</servlet-name>
-		  <url-pattern>/listBranchDentists</url-pattern>
-	 </servlet-mapping>
-	 
-	 	 <servlet>
-		  <description></description>
-		  <display-name>Edit Patient Info Search Servlet</display-name>
-		  <servlet-name>EditPatientInfoSearchServlet</servlet-name>
-		  <servlet-class>dentalclinic.servlet.EditPatientInfoSearchServlet</servlet-class>
-	 </servlet>
-	 <servlet-mapping>
-		  <servlet-name>EditPatientInfoSearchServlet</servlet-name>
-		  <url-pattern>/editPatientInfoSearch</url-pattern>
-	 </servlet-mapping>
-	  
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
