@@ -21,6 +21,17 @@
 	 
 	 <servlet>
 		  <description></description>
+		  <display-name>List Branch Employees Servlet</display-name>
+		  <servlet-name>ListBranchEmployeesServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.ListBranchEmployeesServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>ListBranchEmployeesServlet</servlet-name>
+		  <url-pattern>/listBranchEmployees</url-pattern>
+	 </servlet-mapping>
+	 
+	 <servlet>
+		  <description></description>
 		  <display-name>Employee Login Servlet</display-name>
 		  <servlet-name>EmployeeLoginServlet</servlet-name>
 		  <servlet-class>dentalclinic.servlet.EmployeeLoginServlet</servlet-class>
@@ -117,6 +128,17 @@
 		<servlet-name>UpdateGuardianInfoServlet</servlet-name>
 		<url-pattern>/updateGuardianInfo</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		  <description></description>
+		  <display-name>Employee Register Servlet</display-name>
+		  <servlet-name>EmployeeRegisterServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.EmployeeRegisterServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>EmployeeRegisterServlet</servlet-name>
+		  <url-pattern>/employeeRegister</url-pattern>
+	 </servlet-mapping>
 	 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

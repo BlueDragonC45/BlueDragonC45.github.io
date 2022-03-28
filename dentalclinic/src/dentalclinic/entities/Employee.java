@@ -4,6 +4,7 @@ public class Employee {
 
 	private String employeeSIN;
 	private String userName;
+	private String employeePwd;
 	private String branchID;
 	private String firstName;
 	private String middleName;
@@ -22,12 +23,13 @@ public class Employee {
 		
 	}
 	
-	public Employee(String employeeSIN, String userName, String branchID, String firstName, String middleName, 
-			        String lastName, String role, String employeeType, String salary,
+	public Employee(String employeeSIN, String userName, String employeePwd, String branchID, String firstName, 
+					String middleName, String lastName, String role, String employeeType, String salary,
 					String dateofBirth, String age, String gender,
 					String employeeEmail, String employeePhoneNumber, String address) {
 		this.employeeSIN = employeeSIN;
 		this.userName = userName;
+		this.employeePwd = employeePwd;
 		this.branchID = branchID;
 		this.firstName = firstName;
 		this.middleName = middleName;
@@ -61,6 +63,13 @@ public class Employee {
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	
+	public String getEmployeePwd() {
+		return employeePwd;
+	}
+	public void setEmployeePwd(String employeePwd) {
+		this.employeePwd = employeePwd;
 	}
 
 	public String getBranchID() {
@@ -153,7 +162,5 @@ public class Employee {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
-	
 
 }

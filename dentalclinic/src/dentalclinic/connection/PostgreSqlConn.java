@@ -119,6 +119,7 @@ public class  PostgreSqlConn{
 				while(rs.next()) {
 					String employeeSIN = rs.getString("employeeSIN");
 					//userName already have
+					String employeePwd = rs.getString("EmployeePwd");
 					String branchID = rs.getString("branchID");
 					String firstName = rs.getString("firstName");
 					String middleName = rs.getString("middleName");
@@ -133,7 +134,49 @@ public class  PostgreSqlConn{
 					String employeePhoneNumber = rs.getString("employeePhoneNumber");
 					String address = rs.getString("address");
 
-					employee = new Employee(employeeSIN, userName, branchID, firstName, middleName, 
+					employee = new Employee(employeeSIN, userName, employeePwd, branchID, firstName, middleName, 
+					        lastName, role, employeeType, salary, dateofBirth, age, gender,
+							employeeEmail, employeePhoneNumber, address); 
+				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return employee;       
+	    }
+		
+		public Employee getUserInfoByEmployeeSIN(String sin){
+			getConn();
+
+			Employee employee = new Employee();
+			
+	        try{
+	            ps = db.prepareStatement("SELECT * from dentalclinic.employee "
+	            		               + "WHERE EmployeeSIN=?");
+	            
+	            ps.setString(1, sin);	               
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					String userName = rs.getString("Username");
+					String employeePwd = rs.getString("EmployeePwd");
+					String branchID = rs.getString("branchID");
+					String firstName = rs.getString("firstName");
+					String middleName = rs.getString("middleName");
+					String lastName = rs.getString("lastName");
+					String role = rs.getString("role");
+					String employeeType = rs.getString("employeeType");
+					String salary = rs.getString("salary");
+					String dateofBirth = rs.getString("dateofBirth");
+					String age = rs.getString("age");
+					String gender = rs.getString("gender");
+					String employeeEmail = rs.getString("employeeEmail");
+					String employeePhoneNumber = rs.getString("employeePhoneNumber");
+					String address = rs.getString("address");
+
+					employee = new Employee(sin, userName, employeePwd, branchID, firstName, middleName, 
 					        lastName, role, employeeType, salary, dateofBirth, age, gender,
 							employeeEmail, employeePhoneNumber, address); 
 				}
@@ -431,6 +474,61 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
+		public boolean insertNewEmployee(Employee employee, String pwd){
+
+			ArrayList<String> usernames = getAllUsernamesByEntity("employee");
+			if (usernames.size() != 0) {
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (employee.getUserName().equals(usernames.get(i))) {
+			            return false;
+					}
+				}
+			}
+
+			getConn();//must be below above statement since getAllUsernamesByEntity
+			          //closed the connection
+
+	        try{
+
+				ps = db.prepareStatement("INSERT into dentalclinic.employee "
+									   + "values(?, ?, crypt(?, gen_salt('bf')), ?, "
+									   + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				
+	            ps.setString(1, employee.getEmployeeSIN());	
+	            ps.setString(2, employee.getUserName());	
+	            ps.setString(3, pwd);
+	            ps.setString(4, employee.getBranchID());	
+	            ps.setString(5, employee.getFirstName());	
+	            ps.setString(6, employee.getMiddleName());	
+	            ps.setString(7, employee.getLastName());
+	            ps.setString(8, employee.getRole());	
+	            ps.setString(9, employee.getEmployeeType());	
+	            ps.setString(10, employee.getSalary());
+
+	            String str = employee.getDateofBirth();  
+	            Date date = Date.valueOf(str);
+	            ps.setDate(11, date);
+	            
+	            ps.setInt(12, Integer.parseInt(employee.getAge()));	
+	            ps.setString(13, employee.getGender());	
+	            ps.setString(14, employee.getEmployeeEmail());	
+	            ps.setString(15, employee.getEmployeePhoneNumber());	
+	            ps.setString(16, employee.getAddress());	
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new employee");
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
 		//For receptionist only; inserts a new patient
 		public boolean updatePatientInfo(Patient newPatientInfo, String PatientSIN){
 			
@@ -535,6 +633,66 @@ public class  PostgreSqlConn{
 	            ps.setString(10, newGuardianInfo.getAddress());	
 	            
 	            ps.setString(11, GuardianSIN);	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//For manager only; updates an employee
+		public boolean updateEmployeeInfo(Employee newEmployeeInfo, String employeeSIN){
+			
+			if (!getUserInfoByEmployeeSIN(employeeSIN).getUserName()
+					.equals(newEmployeeInfo.getUserName())) {
+				ArrayList<String> usernames = getAllUsernamesByEntity("employee");
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (newEmployeeInfo.getUserName().equals(usernames.get(i))) {
+						System.out.println("Username "+newEmployeeInfo.getUserName()+" already exists!");
+			            return false;
+					}
+				}
+			}
+			
+			getConn();//must be below above statement since getAllUsernamesByEntity
+	          		  //closed the connection
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.employee "
+									   + "SET BranchID=?, username=?, firstname=?, middlename=?, lastname=?, "
+									   +     "dateofbirth=?, age=?, gender=?, EmployeeEmail=?, "
+									   +     "EmployeePhoneNumber=?, address=?, role=?, employeeType=?, salary=? "
+						               + "WHERE guardiansin=?");
+				
+				ps.setString(1, newEmployeeInfo.getBranchID());	
+	            ps.setString(2, newEmployeeInfo.getUserName());	
+	            ps.setString(3, newEmployeeInfo.getFirstName());	
+	            ps.setString(4, newEmployeeInfo.getMiddleName());	
+	            ps.setString(5, newEmployeeInfo.getLastName());
+	            
+	            String str = newEmployeeInfo.getDateofBirth();  
+	            Date date = Date.valueOf(str);
+	            ps.setDate(6, date);
+	            
+	            ps.setInt(7, Integer.parseInt(newEmployeeInfo.getAge()));	
+	            ps.setString(8, newEmployeeInfo.getGender());	
+	            ps.setString(9, newEmployeeInfo.getEmployeeEmail());	
+	            ps.setString(10, newEmployeeInfo.getEmployeePhoneNumber());	
+	            ps.setString(11, newEmployeeInfo.getAddress());
+	            ps.setString(12, newEmployeeInfo.getRole());
+	            ps.setString(13, newEmployeeInfo.getEmployeeType());
+	            ps.setString(14, newEmployeeInfo.getSalary());
+	            
+	            ps.setString(15, employeeSIN);	
 	            
 	            ps.executeUpdate();
 
@@ -710,7 +868,8 @@ public class  PostgreSqlConn{
 					while(rs.next()){
 						String employeeSIN = rs.getString("employeeSIN");
 						String userName = rs.getString("userName");
-						//3rd col: already have branchID
+						String employeePwd = rs.getString("EmployeePwd");
+						//4th col: already have branchID
 						String firstName = rs.getString("firstName");
 						String middleName = rs.getString("middleName");
 						String lastName = rs.getString("lastName");
@@ -724,7 +883,7 @@ public class  PostgreSqlConn{
 						String employeePhoneNumber = rs.getString("employeePhoneNumber");
 						String address = rs.getString("address");
 
-						dentist = new Employee(employeeSIN, userName, branchID, firstName, middleName, 
+						dentist = new Employee(employeeSIN, userName, employeePwd, branchID, firstName, middleName, 
 						        lastName, role, employeeType, salary, dateofBirth, age, gender,
 								employeeEmail, employeePhoneNumber, address); 
 						
@@ -743,6 +902,62 @@ public class  PostgreSqlConn{
 			}
 			
 			return dentists;
+		}
+		
+		public ArrayList<Employee> getEmployeesByBranchID(String branchID) {
+			getConn();
+			
+			ArrayList<Employee> employees = new ArrayList<Employee>();
+			
+			try { 
+				Integer.parseInt(branchID); 
+				try {
+
+					Employee employee = new Employee();
+					
+					ps = db.prepareStatement("SELECT * from dentalclinic.employee "
+							               + "WHERE BranchId=? ");
+					ps.setInt(1, Integer.valueOf(branchID));	
+					
+					rs = ps.executeQuery();
+					
+					while(rs.next()){
+						String employeeSIN = rs.getString("employeeSIN");
+						String userName = rs.getString("userName");
+						String employeePwd = rs.getString("EmployeePwd");
+						//4th col: already have branchID
+						String firstName = rs.getString("firstName");
+						String middleName = rs.getString("middleName");
+						String lastName = rs.getString("lastName");
+						String role = rs.getString("role");
+						String employeeType = rs.getString("employeeType");
+						String salary = rs.getString("salary");
+						String dateofBirth = rs.getString("dateofBirth");
+						String age = rs.getString("age");
+						String gender = rs.getString("gender");
+						String employeeEmail = rs.getString("employeeEmail");
+						String employeePhoneNumber = rs.getString("employeePhoneNumber");
+						String address = rs.getString("address");
+
+						employee = new Employee(employeeSIN, userName, employeePwd, branchID, firstName, middleName, 
+						        lastName, role, employeeType, salary, dateofBirth, age, gender,
+								employeeEmail, employeePhoneNumber, address); 
+						
+						employees.add(employee);
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					System.out.println("Branch #"+branchID+" might not exist."); 
+					e.printStackTrace();
+				} finally {
+		        	closeDB();
+		        }
+			}  
+			catch (NumberFormatException e) { 
+				System.out.println(branchID + " is not a valid integer."); 
+			}
+			
+			return employees;
 		}
 		
 		/*
