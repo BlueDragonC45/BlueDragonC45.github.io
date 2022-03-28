@@ -136,9 +136,6 @@
 		} else if(guardian.value.length > 0 && !validateSIN(guardian)){
 			alert("Guardian's SIN needs to be either 9 digits long or empty");
 			return false;
-		} else if(patientPwd.value != patientPwdagain.value){
-			alert("Passwords need to match!");
-			return false;
 		} else
 			return true;
 	}
@@ -164,9 +161,6 @@
 			return false;
 		} else if(ageG.value < 18){
 			alert("Must be at least 18 years of age");
-			return false;
-		} else if(guardianPwd.value != guardianPwdagain.value){
-			alert("Passwords need to match!");
 			return false;
 		} else
 			return true;
@@ -331,9 +325,7 @@
 	<div class="container-fluid">
 
 		<nav class="navbar text-white px-3 pt-3 mt-3">
-			<h1 style="font-size: 400%">
-				<img src="images/logo.png" width="80" height="80"> Welcome to Sunshine Dentist Clinic!
-			</h1>
+		    <h1 style="font-size: 400%">Welcome to Sunshine Dentist Clinic!</h1>
 		</nav>
 
 		<div class="content p-3 my-3 h-100 border" id="receptionists">

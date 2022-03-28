@@ -65,6 +65,41 @@ function validateEmployeeRegister() {
 		return true;
 }
 
+function validateEmployeeEdit() {
+	var employeeSIN = document.getElementById("sinEE");
+	var userName = document.getElementById("userNameEE");
+	var branchID = document.getElementById("branchIDEE");
+
+	var firstName = document.getElementById("fNameEE");
+	var lastName = document.getElementById("lNameEE");
+
+	var dateOfBirth = document.getElementById("dateOfBirthEE");
+	var age = document.getElementById("ageEE");
+	document.getElementById("age").value = calcAge(dateOfBirth.value);
+	var gender = document.getElementById("genderEE");
+	var email = document.getElementById("emailEE");
+	var phoneNumber = document.getElementById("phoneEE");
+	var address = document.getElementById("addressEE");
+	var role = document.getElementById("roleEE");
+	var employeeType = document.getElementById("employeeTypeEE");
+	var salary = document.getElementById("salaryEE");
+
+	if (employeeSIN.value == "" || userName.value == ""           || firstName.value == "" || lastName.value == ""
+							    || dateOfBirth.value == ""        || gender.value == ""    || email.value == ""
+							    || phoneNumber.value == "" 		  || address.value == ""   || role.value == "" 
+							    || employeeType.value == ""       || salary.value == ""	   || branchID.value == ""){
+		alert("You need to fill all requiered fields");
+		return false;
+	} else if(patientSIN.value.length != 9){
+		alert("The length of SIN needs to be 9 digits long");
+		return false;
+	} else if(age.value < 18){
+		alert("Must be at least 18 years of age");
+		return false;
+	} else
+		return true;
+}
+
 function resetEmployeeListing() {
 	document.getElementById("branchSearch").style.display = "block";
 	document.getElementById("branchList").style.display = "none";
@@ -162,7 +197,7 @@ $(document).ready(function() {
 <div class = "container-fluid">
 
     <nav class="navbar text-white px-3 pt-3 mt-3">
-      <h1 style="font-size: 400%"><img src="images/logo.png" width="80" height="80"> Welcome to Sunshine Dentist Clinic!</h1>
+      <h1 style="font-size: 400%">Welcome to Sunshine Dentist Clinic!</h1>
     </nav>
     
     <div class="content p-3 my-3 h-100 border" id="dentists">

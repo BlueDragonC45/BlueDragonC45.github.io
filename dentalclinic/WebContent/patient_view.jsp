@@ -39,8 +39,7 @@ String firstName = patient.getFirstName();
 
 		<nav class="navbar text-white px-3 pt-3 mt-3">
 			<h1 style="font-size: 400%">
-				<img src="images/logo.png" width="80" height="80"> Welcome to
-				Sunshine Dentist Clinic!
+				<h1 style="font-size: 400%">Welcome to Sunshine Dentist Clinic!</h1>
 			</h1>
 		</nav>
 
