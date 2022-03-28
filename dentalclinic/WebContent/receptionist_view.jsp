@@ -68,21 +68,21 @@
 
 	$(document).ready(function() {
 	<% Patient patientInfo = (Patient) request.getAttribute("patient");
-	if (patientInfo == null) {
-	 } else { %>
+	if (patientInfo != null) { %>
 	 	openTab('editPatient');
 		document.getElementById("editPatientSearch").style.display = "none";
 		document.getElementById("editPatientForm").style.display = "block";
-		document.getElementById("sinEP").value = <%=request.getAttribute("patientSIN")%>;
-		document.getElementById("userNameEP").value = <%=request.getAttribute("username")%>;
-		document.getElementById("fNameEP").value = <%=request.getAttribute("fName")%>;
-		document.getElementById("mNameEP").value = <%=request.getAttribute("mName")%>;
-		document.getElementById("lNameEP").value = <%=request.getAttribute("lName")%>;
-		document.getElementById("dobEP").value = <%=request.getAttribute("dob")%>;
-		document.getElementById("genderEP").value = <%=request.getAttribute("gender")%>;
-		document.getElementById("emailEP").value = <%=request.getAttribute("email")%>;
-		document.getElementById("phoneEP").value = <%=request.getAttribute("phone")%>;
-		document.getElementById("addressEP").value = <%=request.getAttribute("address")%>;
+		document.getElementById("sinEP").value = <%=patientInfo.getPatientSIN()%>;
+		document.getElementById("userNameEP").value = "<%=patientInfo.getUserName()%>";
+		document.getElementById("fNameEP").value = "<%=patientInfo.getFirstName()%>";
+		document.getElementById("mNameEP").value = "<%=patientInfo.getMiddleName()%>";
+		document.getElementById("lNameEP").value = "<%=patientInfo.getLastName()%>";
+		document.getElementById("dobEP").value = "<%=patientInfo.getDateOfBirth()%>";
+		document.getElementById("genderEP").value = "<%=patientInfo.getGender()%>";
+		document.getElementById("emailEP").value = "<%=patientInfo.getPatientEmail()%>";
+		document.getElementById("phoneEP").value = "<%=patientInfo.getPatientPhoneNumber()%>";
+		document.getElementById("addressEP").value = "<%=patientInfo.getAddress()%>";
+		document.getElementById("guardianEP").value = "<%=patientInfo.getGuardian()%>";
 	<% }; %>
 	});
 
@@ -175,24 +175,38 @@
 				<h2>Edit Patient Information</h2>
 				<div class="p-3 my-3" id="editPatientSearch">
 					<form method="post" action="editPatientInfoSearch">
-						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINEP">
+						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINEP" name="patientSINEP">
 						<button type="submit" value="submit" onclick="return validateSIN()">Search for Patient</button>
 						<button type="reset" value="reset">Reset</button>
 					</form>
 				</div>
 
 				<div class="p-3 my-3" style="display: none;" id="editPatientForm">
-					<form>
+					<form method="post" action="updatePatientInfo">
 						<input class="m-1 form-control" type="hidden" id="sinEP">
+						
+						<%if (patientInfo != null) {%>
+							<input type="hidden" id="sinEP" name="sinEP" value="<%=patientInfo.getPatientSIN()%>"><%
+						}
+						%>
+						
 						Username:<input type="text" class="m-1 form-control" id="userNameEP" name="userNameEP" required> 
 						First Name:<input class="m-1 form-control" type="text"id="fNameEP" name="fNameEP" required> 
-						Middle Name:<input class="m-1 form-control" type="text" id="mNameEP" name="mNameEP" required> 
+						Middle Name:<input class="m-1 form-control" type="text" id="mNameEP" name="mNameEP"> 
 						Last Name:<input class="m-1 form-control" type="text" id="lNameEP" name="lNameEP" required> 
 						Date Of Birth:<input class="m-1 form-control" type="date" id="dobEP" name="dobEP" required>
+						
+						<!-- replace this with correct age; recalculate age from new dobEP
+						     This statement is just a filler, so it does not produce errors-->
+						<%if (patientInfo != null) {%>
+							<input type="hidden" id="ageEP" name="ageEP" value="<%=patientInfo.getAge()%>"><%
+						}
+						%>
 						Gender:<input class="m-1 form-control" type="text" id="genderEP" name="genderEP" required>
 						Email:<input class="m-1 form-control" type="email" id="emailEP" name="emailEP" required>
 						Phone number:<input class="m-1 form-control" type="tel" id="phoneEP" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEP" required> 
 						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
+						Guardian's SIN:<input class="m-1 form-control" type="text" id="guardianEP" name="guardianEP">
 						<button type="submit" value="submit" onclick="??">Update Patient</button>
 						<button type="reset" value="reset" onclick="resetEditPatient()">Reset</button>
 					</form>

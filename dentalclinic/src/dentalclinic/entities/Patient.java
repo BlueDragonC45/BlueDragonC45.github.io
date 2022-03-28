@@ -7,7 +7,7 @@ public class Patient {
 	private String firstName;
 	private String middleName;
 	private String lastName;
-	private String dateofBirth;
+	private String dateOfBirth;
 	private String age;
 	private String gender;
 	private String patientEmail;
@@ -20,14 +20,14 @@ public class Patient {
 	}
 	
 	public Patient(String patientSIN, String userName, String firstName, String middleName, String lastName,
-					   String dateofBirth, String age, String gender, String patientEmail,
+					   String dateOfBirth, String age, String gender, String patientEmail,
 					   String patientPhoneNumber, String address, String guardian) {
 		this.patientSIN = patientSIN;
 		this.userName = userName;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
-		this.dateofBirth = dateofBirth;
+		this.dateOfBirth = dateOfBirth;
 		this.age = age;
 		this.gender = gender;
 		this.patientEmail = patientEmail;
@@ -77,11 +77,11 @@ public class Patient {
 		this.lastName = lastName;
 	}
 
-	public String getDateofBirth() {
-		return dateofBirth;
+	public String getDateOfBirth() {
+		return dateOfBirth;
 	}
-	public void setDateofBirth(String dateofBirth) {
-		this.dateofBirth = dateofBirth;
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
 	}
 
 	public String getAge() {

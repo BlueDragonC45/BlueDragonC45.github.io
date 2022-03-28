@@ -90,7 +90,7 @@ String firstName = patient.getFirstName();
 						</tr>
 						<tr>
 							<td>Date of Birth</td>
-							<td><%=patient.getDateofBirth()%></td>
+							<td><%=patient.getDateOfBirth()%></td>
 						</tr>
 						<tr>
 							<td>Age</td>

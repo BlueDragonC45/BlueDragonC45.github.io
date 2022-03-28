@@ -24,7 +24,7 @@ public class PatientRegisterServlet extends HttpServlet{
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
 
-		//12 columns total
+		//13 columns total
 		String patientSIN = req.getParameter("patientSIN");
 		String userName = req.getParameter("userName");
 		String patientPwd = req.getParameter("patientPwd");
@@ -37,6 +37,7 @@ public class PatientRegisterServlet extends HttpServlet{
 		String patientEmail = req.getParameter("patientEmail");
 		String patientPhoneNumber = req.getParameter("patientPhoneNumber");
 		String address = req.getParameter("address");
+		String guardian = req.getParameter("guardian");
 		
 		
 		Patient patient = new Patient();
@@ -46,12 +47,13 @@ public class PatientRegisterServlet extends HttpServlet{
 		patient.setFirstName(firstName);
 		patient.setMiddleName(middleName);
 		patient.setLastName(lastName);
-		patient.setDateofBirth(dateOfBirth);
+		patient.setDateOfBirth(dateOfBirth);
 		patient.setAge(age);
 		patient.setGender(gender);
 		patient.setPatientEmail(patientEmail);
 		patient.setPatientPhoneNumber(patientPhoneNumber);
 		patient.setAddress(address);
+		patient.setGuardian(guardian);
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 		

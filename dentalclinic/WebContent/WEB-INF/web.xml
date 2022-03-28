@@ -96,6 +96,17 @@
 		<url-pattern>/recordSearch</url-pattern>
 	</servlet-mapping>
 	 
+	 <servlet>
+		<description></description>
+		<display-name>Update Patient Info Servlet</display-name>
+		<servlet-name>UpdatePatientInfoServlet</servlet-name>
+		<servlet-class>dentalclinic.servlet.UpdatePatientInfoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UpdatePatientInfoServlet</servlet-name>
+		<url-pattern>/updatePatientInfo</url-pattern>
+	</servlet-mapping>
+	 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
