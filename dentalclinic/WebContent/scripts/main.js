@@ -15,6 +15,15 @@
 			return true;
 	}
 	
+	function validateSIN(SIN) {
+		var numbers = /^[0-9]+$/;
+		if(SIN.value.match(numbers) && SIN.value.length == 9) {
+		      return true;
+		} else {
+			return false
+		}
+	}
+	
 /*function openPane(paneName) {
 	validated = validate(paneName, true);
 	switch(paneName) {

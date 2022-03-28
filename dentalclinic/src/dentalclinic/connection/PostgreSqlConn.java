@@ -378,6 +378,57 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For receptionist only; inserts a new patient
+		public boolean insertNewGuardian(Guardian guardian, String pwd){
+
+			ArrayList<String> usernames = getAllUsernamesByEntity("patient");
+			for (int i = 0 ; i < usernames.size(); i++) {
+				if (guardian.getUserName().equals(usernames.get(i))) {
+		            return false;
+				}
+			}
+
+			getConn();//must be below above statement since getAllUsernamesByEntity
+			          //closed the connection
+
+	        try{
+
+				ps = db.prepareStatement("INSERT into dentalclinic.guardian "
+									   + "values(?, ?, crypt(?, gen_salt('bf')), ?, "
+									   + "?, ?, ?, ?, ?, ?, ?, ?)");
+				
+	            ps.setString(1, guardian.getGuardianSIN());	
+	            ps.setString(2, guardian.getUserName());	
+	            ps.setString(3, pwd);	
+	            ps.setString(4, guardian.getFirstName());	
+	            ps.setString(5, guardian.getMiddleName());	
+	            ps.setString(6, guardian.getLastName());	
+
+	            String str = guardian.getDateOfBirth();  
+	            Date date = Date.valueOf(str);
+	            ps.setDate(7, date);
+	            
+	            ps.setInt(8, Integer.parseInt(guardian.getAge()));	
+	            ps.setString(9, guardian.getGender());	
+	            ps.setString(10, guardian.getGuardianEmail());	
+	            ps.setString(11, guardian.getGuardianPhoneNumber());	
+	            ps.setString(12, guardian.getAddress());	
+	            ps.setString(13, guardian.getGuardianSIN());	
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new guardian");
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//For receptionist only; inserts a new patient
 		public boolean updatePatientInfo(Patient newPatientInfo, String PatientSIN){
 			
 			if (!getUserInfoByPatientSIN(PatientSIN).getUserName()
@@ -425,6 +476,62 @@ public class  PostgreSqlConn{
 	            }
 	            
 	            ps.setString(12, PatientSIN);	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//For receptionist only; inserts a new patient
+		public boolean updateGuardianInfo(Guardian newGuardianInfo, String GuardianSIN){
+			
+			if (!getUserInfoByPatientSIN(GuardianSIN).getUserName()
+					.equals(newGuardianInfo.getUserName())) {
+				ArrayList<String> usernames = getAllUsernamesByEntity("patient");
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (newGuardianInfo.getUserName().equals(usernames.get(i))) {
+						System.out.println("Username "+newGuardianInfo.getUserName()+" already exists!");
+			            return false;
+					}
+				}
+			}
+			
+			getConn();//must be below above statement since getAllUsernamesByEntity
+	          		  //closed the connection
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.guardian "
+									   + "SET username=?, firstname=?, middlename=?, lastname=?, "
+									   +     "dateofbirth=?, age=?, gender=?, guardianemail=?, "
+									   +     "guardianphonenumber=?, address=? "
+						               + "WHERE guardiansin=?");
+					
+	            ps.setString(1, newGuardianInfo.getUserName());	
+	            ps.setString(2, newGuardianInfo.getFirstName());	
+	            ps.setString(3, newGuardianInfo.getMiddleName());	
+	            ps.setString(4, newGuardianInfo.getLastName());
+	            
+	            String str = newGuardianInfo.getDateOfBirth();  
+	            Date date = Date.valueOf(str);
+	            ps.setDate(5, date);
+	            
+	            ps.setInt(6, Integer.parseInt(newGuardianInfo.getAge()));	
+	            ps.setString(7, newGuardianInfo.getGender());	
+	            ps.setString(8, newGuardianInfo.getGuardianEmail());	
+	            ps.setString(9, newGuardianInfo.getGuardianPhoneNumber());	
+	            ps.setString(10, newGuardianInfo.getAddress());	
+	            
+	            ps.setString(11, GuardianSIN);	
 	            
 	            ps.executeUpdate();
 
@@ -579,36 +686,57 @@ public class  PostgreSqlConn{
 		}
 		
 		//Returns all dentists in a certain branch
-		public ArrayList<String> getDentistsByBranchId(String branchId) {
+		public ArrayList<Employee> getDentistsByBranchID(String branchID) {
 			getConn();
 			
-			ArrayList<String> dentists = new ArrayList<String>();
+			ArrayList<Employee> dentists = new ArrayList<Employee>();
 			
 			try { 
-				Integer.parseInt(branchId); 
+				Integer.parseInt(branchID); 
 				try {
+
+					Employee dentist = new Employee();
+					
 					ps = db.prepareStatement("SELECT * from dentalclinic.employee "
 							               + "WHERE BranchId=? "
 							               + "AND role='dentist'");
-					ps.setInt(1, Integer.valueOf(branchId));	
+					ps.setInt(1, Integer.valueOf(branchID));	
 					
 					rs = ps.executeQuery();
 					
 					while(rs.next()){
-						String fName = rs.getString("firstName");
-						String lName = rs.getString("lastName");
-						dentists.add(String.format("%s %s", fName, lName));
+						String employeeSIN = rs.getString("employeeSIN");
+						String userName = rs.getString("userName");
+						//3rd col: already have branchID
+						String firstName = rs.getString("firstName");
+						String middleName = rs.getString("middleName");
+						String lastName = rs.getString("lastName");
+						String role = rs.getString("role");
+						String employeeType = rs.getString("employeeType");
+						String salary = rs.getString("salary");
+						String dateofBirth = rs.getString("dateofBirth");
+						String age = rs.getString("age");
+						String gender = rs.getString("gender");
+						String employeeEmail = rs.getString("employeeEmail");
+						String employeePhoneNumber = rs.getString("employeePhoneNumber");
+						String address = rs.getString("address");
+
+						dentist = new Employee(employeeSIN, userName, branchID, firstName, middleName, 
+						        lastName, role, employeeType, salary, dateofBirth, age, gender,
+								employeeEmail, employeePhoneNumber, address); 
+						
+						dentists.add(dentist);
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					System.out.println("Branch #"+branchId+" might not exist."); 
+					System.out.println("Branch #"+branchID+" might not exist."); 
 					e.printStackTrace();
 				} finally {
 		        	closeDB();
 		        }
 			}  
 			catch (NumberFormatException e) { 
-				System.out.println(branchId + " is not a valid integer"); 
+				System.out.println(branchID + " is not a valid integer."); 
 			}
 			
 			return dentists;

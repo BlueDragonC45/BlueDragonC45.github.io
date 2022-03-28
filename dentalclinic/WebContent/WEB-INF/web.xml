@@ -11,23 +11,12 @@
 	 <servlet>
 		  <description></description>
 		  <display-name>List Branch Dentists Servlet</display-name>
-		  <servlet-name>BranchSearchServlet</servlet-name>
-		  <servlet-class>dentalclinic.servlet.BranchSearchServlet</servlet-class>
+		  <servlet-name>ListBranchDentistsServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.ListBranchDentistsServlet</servlet-class>
 	 </servlet>
 	 <servlet-mapping>
-		  <servlet-name>BranchSearchServlet</servlet-name>
+		  <servlet-name>ListBranchDentistsServlet</servlet-name>
 		  <url-pattern>/listBranchDentists</url-pattern>
-	 </servlet-mapping>
-	 
-	 <servlet>
-		  <description></description>
-		  <display-name>Edit Patient Info Search Servlet</display-name>
-		  <servlet-name>EditPatientInfoSearchServlet</servlet-name>
-		  <servlet-class>dentalclinic.servlet.EditPatientInfoSearchServlet</servlet-class>
-	 </servlet>
-	 <servlet-mapping>
-		  <servlet-name>EditPatientInfoSearchServlet</servlet-name>
-		  <url-pattern>/editPatientInfoSearch</url-pattern>
 	 </servlet-mapping>
 	 
 	 <servlet>
@@ -75,6 +64,17 @@
 	 </servlet-mapping>
 	 
 	 <servlet>
+		 <description></description>
+		 <display-name>Guardian Register Servlet</display-name>
+		 <servlet-name>GuardianRegisterServlet</servlet-name>
+		 <servlet-class>dentalclinic.servlet.GuardianRegisterServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		 <servlet-name>GuardianRegisterServlet</servlet-name>
+		 <url-pattern>/guardianRegister</url-pattern>
+	 </servlet-mapping>
+	 
+	 <servlet>
 		<description></description>
 		<display-name>Patient Search Servlet</display-name>
 		<servlet-name>PatientSearchServlet</servlet-name>
@@ -105,6 +105,17 @@
 	<servlet-mapping>
 		<servlet-name>UpdatePatientInfoServlet</servlet-name>
 		<url-pattern>/updatePatientInfo</url-pattern>
+	</servlet-mapping>
+	 
+	 <servlet>
+		<description></description>
+		<display-name>Update Guardian Info Servlet</display-name>
+		<servlet-name>UpdateGuardianInfoServlet</servlet-name>
+		<servlet-class>dentalclinic.servlet.UpdateGuardianInfoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UpdateGuardianInfoServlet</servlet-name>
+		<url-pattern>/updateGuardianInfo</url-pattern>
 	</servlet-mapping>
 	 
 	<welcome-file-list>

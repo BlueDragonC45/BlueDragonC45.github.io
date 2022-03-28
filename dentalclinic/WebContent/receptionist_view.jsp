@@ -1,6 +1,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="dentalclinic.entities.Patient"%>
 <%@page import="dentalclinic.entities.Branch"%>
+<%@page import="dentalclinic.entities.Employee"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -95,7 +96,7 @@
 		} else if(age.value < 18){
 			alert("Must be at least 18 years of age");
 			return false;
-		} else if(guardian.value.length > 0 && guardian.value.length != 9){
+		} else if(guardian.value.length > 0 && !validateSIN(guardian)){
 			alert("Guardian's SIN needs to be either 9 digits long or empty");
 			return false;
 		} else if(patientPwd.value != patientPwdagain.value){
@@ -112,7 +113,20 @@
 			document.getElementById("outcome").value = "";
 		}
 	}
+	
+	function resetEditGuardian() {
+		document.getElementById("editGuardianSearch").style.display = "block";
+		document.getElementById("editGuardianForm").style.display = "none";
+		if (document.getElementById("outcomeG") != null) {
+			document.getElementById("outcomeG").value = "";
+		}
+	}
 
+	function resetDentistListing() {
+		document.getElementById("branchSearch").style.display = "block";
+		document.getElementById("branchList").style.display = "none";
+		document.getElementById("branchSearchResults").style.display = "none";
+	}
 
 	$(document).ready(function() {
 	<% Patient patientInfo = (Patient) request.getAttribute("patient");
@@ -138,82 +152,91 @@
 
 	<% String outcome = (String) request.getAttribute("outcome");
 	if (outcome != null) { 
-	
+		%>
+		var fName = "<%=(String) request.getAttribute("firstNameNEW")%>";
+		var lName = "<%=(String) request.getAttribute("lastNameNEW")%>";
+		<%
 		if (outcome.equals("updateSuccess")) {%>
 
-			var fName = "<%=(String) request.getAttribute("updatedFirstName")%>";
-			var lName = "<%=(String) request.getAttribute("updatedLastName")%>";
 			alert("Patient entry for "+fName+" "+lName+" successfully updated.");
 			
 		<%} else if (outcome.equals("updateFailed")) {
 			%>
-
-			var fName = "<%=(String) request.getAttribute("updatedFirstName")%>";
-			var lName = "<%=(String) request.getAttribute("updatedLastName")%>";
-			
 			alert("Patient entry for "+fName+" "+lName+" could not be updated; username chosen or guardian non-existent.");
 			<%
 		} else if (outcome.equals("registerSuccess")) {
 			%>
-
-			var fName = "<%=(String) request.getAttribute("firstNameNEW")%>";
-			var lName = "<%=(String) request.getAttribute("lastNameNEW")%>";
-			
 			alert("Patient entry for "+fName+" "+lName+" added successfully.");
 			<%
 		} else if (outcome.equals("registerFailed")) {
 			%>
-
-			var fName = "<%=(String) request.getAttribute("firstNameNEW")%>";
-			var lName = "<%=(String) request.getAttribute("lastNameNEW")%>";
-			
 			alert("Patient entry for "+fName+" "+lName+" could not be added; username & SIN must be unique.");
 			<%
-		}
 		
 		%>
+	<% }}; %>
 	
-	<% }; %>
-	
-	<% Patient patientInfo = (Patient) request.getAttribute("patient");
-	if (patientInfo != null) { %>
-	 	openTab('editPatient');
-		document.getElementById("editPatientSearch").style.display = "none";
-		document.getElementById("editPatientForm").style.display = "block";
-		document.getElementById("sinEP").value = <%=patientInfo.getPatientSIN()%>;
-		document.getElementById("userNameEP").value = "<%=patientInfo.getUserName()%>";
-		document.getElementById("fNameEP").value = "<%=patientInfo.getFirstName()%>";
-		document.getElementById("mNameEP").value = "<%=patientInfo.getMiddleName()%>";
-		document.getElementById("lNameEP").value = "<%=patientInfo.getLastName()%>";
-		document.getElementById("dobEP").value = "<%=patientInfo.getDateOfBirth()%>";
-		document.getElementById("genderEP").value = "<%=patientInfo.getGender()%>";
-		document.getElementById("emailEP").value = "<%=patientInfo.getPatientEmail()%>";
-		document.getElementById("phoneEP").value = "<%=patientInfo.getPatientPhoneNumber()%>";
-		document.getElementById("addressEP").value = "<%=patientInfo.getAddress()%>";
-		document.getElementById("guardianEP").value = "<%=patientInfo.getGuardianSIN()%>";
-		if (document.getElementById("guardianEP").value == "null") {
-			document.getElementById("guardianEP").value = "";
-		}
-		
-		<%//Dentist List
-    	  //Will show up only when dentists is non-empty
-		Object obj = request.getAttribute("branches");
-		ArrayList<Branch> branchList = null;
-		if (obj instanceof ArrayList) {
-			branchList = (ArrayList<Branch>) obj;
-		}
-		if (branchList != null) {
-			if (branchList.size() == 0) {
-				%>alert("No branches available at the moment.");<%
-			} else {
-				%><h3>Branches:</h3><br><%
-			}
-		}
+	<% String outcomeG = (String) request.getAttribute("outcomeG");
+	if (outcomeG != null) { 
 		%>
-		
+		var fNameG = "<%=(String) request.getAttribute("firstNameNEW")%>";
+		var lNameG = "<%=(String) request.getAttribute("lastNameNEW")%>";
+		<%
+		if (outcomeG.equals("updateSuccess")) {%>
 
+			alert("Guardian entry for "+fNameG+" "+lNameG+" successfully updated.");
+			
+		<%} else if (outcomeG.equals("updateFailed")) {
+			%>
+			alert("Guardian entry for "+fNameG+" "+lNameG+" could not be updated; username chosen or guardian non-existent.");
+			<%
+		} else if (outcomeG.equals("registerSuccess")) {
+			%>
+			alert("Guardian entry for "+fNameG+" "+lNameG+" added successfully.");
+			<%
+		} else if (outcomeG.equals("registerFailed")) {
+			%>
+			alert("Guardian entry for "+fNameG+" "+lNameG+" could not be added; username & SIN must be unique.");
+			<%
 		
-	<% }; %>
+		%>
+	<% }}; %>
+	
+	<% 
+	Object obj = request.getAttribute("branches");
+	ArrayList<Branch> branchList = null;
+	if (obj instanceof ArrayList) 
+		branchList = (ArrayList<Branch>) obj;
+	
+	if (branchList != null) {
+		if (branchList.size() == 0) {
+			%>alert("No branches available at the moment.");<%
+		} else {
+			%>
+		 	openTab('listDentists');
+			document.getElementById("branchSearch").style.display = "none";
+			document.getElementById("branchList").style.display = "block";<%
+		}
+	}
+	%>
+
+	<% 
+	Object obj2 = request.getAttribute("dentists");
+	ArrayList<Employee> dentistList = null;
+	if (obj2 instanceof ArrayList) 
+		dentistList = (ArrayList<Employee>) obj2;
+	
+	if (dentistList != null) {
+		if (dentistList.size() == 0) {
+			%>alert("No dentists available in this branch.");<%
+		} else {
+			%>
+		 	openTab('listDentists');
+			document.getElementById("branchSearch").style.display = "none";
+			document.getElementById("branchSearchResults").style.display = "block";<%
+		}
+	}
+	%>
 	
 
 	});
@@ -234,50 +257,25 @@
 			<h1>Receptionist View</h1>
 			<div class="p-1 my-1 border border-dark row justify-content-around"
 				id="receptionistNav">
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newApppointment')">Set a New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newAppointment')">Set a New Appointment</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editguardian')">Edit Guardian Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='index.html'">Go Back</button>
 			</div>
 
-			<div class="tab p-3 my-3" style="display: none;" id="patientRegister">
-				<h2>New Patient</h2>
-				<!--
-		post refers to the method doPost from PatientRegisterServlet.java
-		patientRegister is the masked/shortened directory of PatientRegisterServlet.java
-		-->
-				<form method="post" action="patientRegister">
-					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required>
-					Username:<input type="text" class="m-1 form-control" id="userName" name="userName" required> 
-					First Name:<input type="text" class="m-1 form-control" id="firstName" name="firstName" required> 
-					Middle Name:<input type="text" class="m-1 form-control" id="middleName" name="middleName"> 
-					Last Name:<input type="text" class="m-1 form-control" id="lastName" name="lastName" required>
-					Date of Birth:<input type="date" class="m-1 form-control" id="dateOfBirth" name="dateOfBirth" required> 
-					<input type="hidden" id="age" class="m-1 form-control" name="age">
-					Gender:<input type="text" class="m-1 form-control" id="gender" name="gender" required> 
-					E-mail Address:<input type="email" class="m-1 form-control" id="patientEmail" name="patientEmail" required> 
-					Phone Number:<input type="tel" class="m-1 form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="patientPhoneNumber" name="patientPhoneNumber" required> 
-					<small>Format: 123-456-7890</small><br>
-					Address:<input class="m-1 form-control" type="text" id="address" name="address" required> 
-					Guardian's SIN:<input class="m-1 form-control" type="text" id="guardian" name="guardian"> 
-					Enter Password:<input type="password" class="m-1 form-control" id="patientPwd" name="patientPwd" required> 
-					Re-enter Password:<input type="password" class="m-1 form-control" id="patientPwdagain" name="patientPwdagain" required>
-					<button type="submit" value="submit" onclick="return validateRegister();">Create Patient</button>
-					<button type="reset" value="reset">Reset</button>
-				</form>
-			</div>
 
-
-			<div class="tab p-3 my-3" style="display: none;" id="newApppointment">
+			<div class="tab p-3 my-3" style="display: none;" id="newAppointment">
 				<h2>New Appointment</h2>
 				<form>
 					First Name:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
 					Middle Name:<input type="text" class="m-1 form-control" id="middleNameNA" name="middleName"> 
 					Last Name:<input type="text" class="m-1 form-control" id="lastNameNA" name="lastName" required>
 					Date:<input class="m-1 form-control" type="date" id="date">
-					Start Time:<input class="m-1 form-control" type="time" id="sTime">
-					End Time:<input class="m-1 form-control" type="time" id="eTime">
+					Start Time:<input class="m-1 form-control" type="time" id="sTime" step="600" min="07:00" max="23:00">
+					End Time:<input class="m-1 form-control" type="time" id="eTime" step="600" min="07:00" max="23:00">
 					Room Assigned:<select class="m-1 form-control" id="roomNum">
 						<option value="1">Room 1</option>
 						<option value="2">Room 2</option>
@@ -302,10 +300,39 @@
 				<br>
 			</div>
 
+
+			<div class="tab p-3 my-3" style="display: none;" id="patientRegister">
+				<h2>New Patient</h2>
+				<!--
+				post refers to the method doPost from PatientRegisterServlet.java
+				patientRegister is the masked/shortened directory of PatientRegisterServlet.java
+				-->
+				<form method="post" action="patientRegister">
+					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required>
+					Username:<input type="text" class="m-1 form-control" id="userName" name="userName" required> 
+					First Name:<input type="text" class="m-1 form-control" id="firstName" name="firstName" required> 
+					Middle Name:<input type="text" class="m-1 form-control" id="middleName" name="middleName"> 
+					Last Name:<input type="text" class="m-1 form-control" id="lastName" name="lastName" required>
+					Date of Birth:<input type="date" class="m-1 form-control" id="dateOfBirth" name="dateOfBirth" required> 
+					<input type="hidden" id="age" class="m-1 form-control" name="age">
+					Gender:<input type="text" class="m-1 form-control" id="gender" name="gender" required> 
+					E-mail Address:<input type="email" class="m-1 form-control" id="patientEmail" name="patientEmail" required> 
+					Phone Number:<input type="tel" class="m-1 form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="patientPhoneNumber" name="patientPhoneNumber" required> 
+					<small>Format: 123-456-7890</small><br>
+					Address:<input class="m-1 form-control" type="text" id="address" name="address" required> 
+					Guardian's SIN:<input class="m-1 form-control" type="text" id="guardian" name="guardian"> 
+					Enter Password:<input type="password" class="m-1 form-control" id="patientPwd" name="patientPwd" required> 
+					Re-enter Password:<input type="password" class="m-1 form-control" id="patientPwdagain" name="patientPwdagain" required>
+					<button type="submit" value="submit" onclick="return validateRegister();">Create Patient</button>
+					<button type="reset" value="reset">Reset</button>
+				</form>
+			</div>
+
+
 			<div class="tab p-3 my-3" style="display: none;" id="editPatient">
 				<h2>Edit Patient Information</h2>
 				<div class="p-3 my-3" id="editPatientSearch">
-					<form method="post" action="editPatientInfoSearch">
+					<form method="post" action="updatePatientInfo">
 						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINEP" name="patientSINEP">
 						<button type="submit" value="submit" onclick="return validateSIN()">Search for Patient</button>
 						<button type="reset" value="reset">Reset</button>
@@ -336,83 +363,121 @@
 					<br>
 				</div>
 			</div>
+
+
+			<div class="tab p-3 my-3" style="display: none;" id="guardianRegister">
+				<h2>New Patient</h2>
+				<!--
+				post refers to the method doPost from PatientRegisterServlet.java
+				patientRegister is the masked/shortened directory of PatientRegisterServlet.java
+				-->
+				<form method="post" action="guardianRegister">											<!-- not guardianSIN to be able to use valiedateRegister() -->
+					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required>
+					Username:<input type="text" class="m-1 form-control" id="userName" name="userName" required> 
+					First Name:<input type="text" class="m-1 form-control" id="firstName" name="firstName" required> 
+					Middle Name:<input type="text" class="m-1 form-control" id="middleName" name="middleName"> 
+					Last Name:<input type="text" class="m-1 form-control" id="lastName" name="lastName" required>
+					Date of Birth:<input type="date" class="m-1 form-control" id="dateOfBirth" name="dateOfBirth" required> 
+					<input type="hidden" class="m-1 form-control" id="age" name="age">
+					Gender:<input type="text" class="m-1 form-control" id="gender" name="gender" required> 
+					E-mail Address:<input type="email" class="m-1 form-control" id="patientEmail" name="patientEmail" required> 
+					Phone Number:<input type="tel" class="m-1 form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="patientPhoneNumber" name="patientPhoneNumber" required> 
+					<small>Format: 123-456-7890</small><br>
+					Address:<input class="m-1 form-control" type="text" id="address" name="address" required> 
+					<input class="m-1 form-control" type="hidden" id="guardian" name="guardian" value="">
+					Enter Password:<input type="password" class="m-1 form-control" id="patientPwd" name="patientPwd" required> 
+					Re-enter Password:<input type="password" class="m-1 form-control" id="patientPwdagain" name="patientPwdagain" required>
+					<button type="submit" value="submit" onclick="return validateRegister();">Create Guardian</button>
+					<button type="reset" value="reset">Reset</button>
+				</form>
+			</div>
+
+
+			<div class="tab p-3 my-3" style="display: none;" id="editGuardian">
+				<h2>Edit Patient Information</h2>
+				<div class="p-3 my-3" id="editGuardianSearch">
+					<form method="post" action="updateGuardianInfo">
+						Social Insurance Number:<input class="m-1 form-control" type="text" id="guardianSIN" name="guardianSIN">
+						<button type="submit" value="submit" onclick="return validateSIN()">Search for Guardian</button>
+						<button type="reset" value="reset">Reset</button>
+					</form>
+				</div>
+
+				<div class="p-3 my-3" style="display: none;" id="editGuardianForm">
+					<form method="post" action="updateGuardianInfo">
+						<%if (patientInfo != null) {%>
+							<input type="hidden" id="guardianSINEdit" name="guardianSINEdit" value="<%=patientInfo.getPatientSIN()%>"><%
+						}
+						%>
+						Username:<input type="text" class="m-1 form-control" id="userNameEP" name="userNameEP" required> 
+						First Name:<input class="m-1 form-control" type="text"id="fNameEP" name="fNameEP" required> 
+						Middle Name:<input class="m-1 form-control" type="text" id="mNameEP" name="mNameEP"> 
+						Last Name:<input class="m-1 form-control" type="text" id="lNameEP" name="lNameEP" required> 
+						Date Of Birth:<input class="m-1 form-control" type="date" id="dobEP" name="dobEP" required>
+						<!-- age -->
+						<input type="hidden" id="ageEP" name="ageEP">
+						Gender:<input class="m-1 form-control" type="text" id="genderEP" name="genderEP" required>
+						Email:<input class="m-1 form-control" type="email" id="emailEP" name="emailEP" required>
+						Phone number:<input class="m-1 form-control" type="tel" id="phoneEP" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEP" required> 
+						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
+						<input class="m-1 form-control" type="hidden" id="guardianEP" name="guardianEP" value="">
+						<button type="submit" value="submit" onclick="return validateEdit()">Update Patient</button>
+						<button type="reset" value="reset" onclick="resetEditGuardian()">Reset</button>
+					</form>
+					<br>
+				</div>
+			</div>
+
 			
 			<div class="tab p-3 my-3" style="display: none;" id="listDentists">
 				<h2>List Branch Dentists</h2>
 				<div class="p-3 my-3" id="branchSearch">
-					<form method="post" action="listBranches">
-						<button type="submit" value="submit" onclick="return True">Search Available Provinces</button>
+					<form method="post" action="listBranchDentists">
+						<button type="submit" value="submit" onclick="return True">View All Branches</button>
 					</form>
 				</div>
 				
 				<div class="p-3 my-3" id="branchList">
+					<form method="post" action="listBranchDentists">
 				<%//Branch List
 			  	  //Will show up only when branches is non-empty
-					Object obj = request.getAttribute("branches");
-					ArrayList<Branch> branchList = null;
-					if (obj instanceof ArrayList) {
-						branchList = (ArrayList<Branch>) obj;
-					}
 					if (branchList != null) {
-						if (branchList.size() == 0) {
-							%><h3>No Branches Found</h3><br><%
-						} else {
-							%><h3>Branches:</h3><br><%
-							for (Branch branch : branchList) {
-								%>
-								<li><%=branch.toString()%></li>
+						if (branchList.size() != 0) {
+							%><h3>Branches:</h3><br>
+							<select class="m-1 form-control" type="text" id="branchIDSelected" name="branchIDSelected">
 								<%
-							}
-							%><br><%
+								for (Branch branch : branchList) {
+									%>
+									<option value=<%=branch.getBranchID()%>><%=branch.toString()%></option>
+									<%
+								}
+								%>
+							</select>
+							<button type="submit" value="submit" onclick="return True">Select</button>
+							<button type="reset" value="reset" onclick="resetDentistListing()">Go Back</button>
+						<%
 						}
 					}
 					%>
-				</div>
-				
-				<div class="p-3 my-3" id="branchSearch">
-					<form method="post" action="listBranchDentists">
-						Branch City: <input class="m-1 form-control" type="text" id="branchCitySearchInput" name="branchCitySearchInput"> <br> 
-						Branch Province: <select class="m-1 form-control" type="text" id="branchProvinceSearchInput" name="branchProvinceSearchInput">
-							<option value="Alberta">Alberta</option>
-							<option value="British Columbia">British Columbia</option>
-							<option value="Manitoba">Manitoba</option>
-							<option value="New Brunswick">New Brunswick</option>
-							<option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
-							<option value="Northwest Territories">Northwest Territories</option>
-							<option value="Nova Scotia">Nova Scotia</option>
-							<option value="Nunavut">Nunavut</option>
-							<option value="Ontario">Ontario</option>
-							<option value="Prince Edward Island">Prince Edward Island</option>
-							<option value="Quebec">Quebec</option>
-							<option value="Saskatchewan">Saskatchewan</option>
-							<option value="Yukon">Yukon</option>
-						</select>
-						<button type="submit" value="submit" onclick="return True">Login</button>
 					</form>
 				</div>
 				
 				<div class="p-3 my-3" style="display: none;" id="branchSearchResults">
 					<%//Dentist List
 		          	  //Will show up only when dentists is non-empty
-					Object obj = request.getAttribute("dentists");
-					ArrayList<String> dentistList = null;
-					if (obj instanceof ArrayList) {
-						dentistList = (ArrayList<String>) obj;
-					}
 					if (dentistList != null) {
-						if (dentistList.size() == 0) {
-							%><h3>No Dentists Found</h3><br><%
-						} else {
-							%><h3>Branch Dentists:</h3><br><%
-							for (String dentist : dentistList) {
+						if (dentistList.size() != 0) {
+							for (Employee dentist : dentistList) {
 								%>
-								<li><%=dentist%></li>
+								<li><%=dentist.toString()%></li>
 								<%
 							}
 							%><br><%
 						}
 					}
 					%>
+					<button type="reset" value="reset" onclick="resetDentistListing()">Go Back</button>
+					
 				</div>
 			</div>
 

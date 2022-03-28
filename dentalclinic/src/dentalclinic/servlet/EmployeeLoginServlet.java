@@ -46,20 +46,10 @@ public class EmployeeLoginServlet extends HttpServlet {
 			System.out.println(role);
 			
 			if (role.equals("manager")) {
-
-				req.setAttribute("branches", con.getDentistsByBranchId(branchid));
 				
 				req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 				
 			} else if (role.equals("receptionist")) {
-
-				//Send employee to receptionist_view.jsp with this list
-				//So that when they create a patient, it will alert them
-				//in the case where a username has been used
-				ArrayList<String> usernames = con.getAllUsernamesByEntity("employee");
-				req.setAttribute("branches", con.getDentistsByBranchId(branchid));
-				
-				req.setAttribute("usernames", usernames);
 				
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				

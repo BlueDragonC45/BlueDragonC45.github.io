@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dentalclinic.connection.PostgreSqlConn;
-import dentalclinic.entities.Patient;
+import dentalclinic.entities.Guardian;
 
-public class UpdatePatientInfoServlet extends HttpServlet {
+public class UpdateGuardianInfoServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doPost(req, resp);
@@ -21,12 +21,12 @@ public class UpdatePatientInfoServlet extends HttpServlet {
 
 		PostgreSqlConn con = new PostgreSqlConn();
 		
-		String patientSINEdit = req.getParameter("sinEP");
+		String patientSINEdit = req.getParameter("guardianSINEdit");
 		if (patientSINEdit == null) {
 			
-			String patientSIN = req.getParameter("patientSINEP");
+			String patientSIN = req.getParameter("guardianSIN");
 			System.out.println(patientSIN);
-			Patient patient = con.getUserInfoByPatientSIN(patientSIN);
+			Guardian patient = con.getUserInfoByGuardianSIN(patientSIN);
 			
 			req.setAttribute("patient", patient);
 			
@@ -34,47 +34,44 @@ public class UpdatePatientInfoServlet extends HttpServlet {
 		} else {
 			System.out.println("Patient to update: "+patientSINEdit);
 			
-			Patient newPatientInfo = new Patient();
+			Guardian newGuardianInfo = new Guardian();
 
 			String userName = req.getParameter("userNameEP");
-			newPatientInfo.setUserName(userName);
+			newGuardianInfo.setUserName(userName);
 			
 			String firstName = req.getParameter("fNameEP");
-			newPatientInfo.setFirstName(firstName);
+			newGuardianInfo.setFirstName(firstName);
 			
 			String middleName = req.getParameter("mNameEP");
-			newPatientInfo.setMiddleName(middleName);
+			newGuardianInfo.setMiddleName(middleName);
 			
 			String lastName = req.getParameter("lNameEP");
-			newPatientInfo.setLastName(lastName);
+			newGuardianInfo.setLastName(lastName);
 			
 			String dateOfBirth = req.getParameter("dobEP");
-			newPatientInfo.setDateOfBirth(dateOfBirth);
+			newGuardianInfo.setDateOfBirth(dateOfBirth);
 			
 			String age = req.getParameter("ageEP");//TODO calculate in a function
-			newPatientInfo.setAge(age);
+			newGuardianInfo.setAge(age);
 			
 			String gender = req.getParameter("genderEP");
-			newPatientInfo.setGender(gender);
+			newGuardianInfo.setGender(gender);
 			
 			String patientEmail = req.getParameter("emailEP");
-			newPatientInfo.setPatientEmail(patientEmail);
+			newGuardianInfo.setGuardianEmail(patientEmail);
 			
 			String patientPhoneNumber = req.getParameter("phoneEP");
-			newPatientInfo.setPatientPhoneNumber(patientPhoneNumber);
+			newGuardianInfo.setGuardianPhoneNumber(patientPhoneNumber);
 			
 			String address = req.getParameter("addressEP");
-			newPatientInfo.setAddress(address);
+			newGuardianInfo.setAddress(address);
 			
-			String guardian = req.getParameter("guardianEP");
-			newPatientInfo.setGuardianSIN(guardian);
-			
-			if (con.updatePatientInfo(newPatientInfo, patientSINEdit)) {//successful
+			if (con.updateGuardianInfo(newGuardianInfo, patientSINEdit)) {//successful
 				
 				//something happens if successful
 				req.setAttribute("firstNameNEW", firstName);
 				req.setAttribute("lastNameNEW", lastName);
-				req.setAttribute("outcome", "updateSuccess");
+				req.setAttribute("outcomeG", "updateSuccess");
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				
 			} else {//failed; could be an SQL error
@@ -82,7 +79,7 @@ public class UpdatePatientInfoServlet extends HttpServlet {
 				//something happens if failed
 				req.setAttribute("firstNameNEW", firstName);
 				req.setAttribute("lastNameNEW", lastName);
-				req.setAttribute("outcome", "updateFailed");
+				req.setAttribute("outcomeG", "updateFailed");
 				
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				
