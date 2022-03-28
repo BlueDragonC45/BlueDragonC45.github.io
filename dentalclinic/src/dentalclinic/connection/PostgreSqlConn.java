@@ -146,6 +146,45 @@ public class  PostgreSqlConn{
 			return employee;       
 	    }
 
+		//Searches and returns a Patient by their SIN
+		public Guardian getUserInfoByGuardianSIN(String guardianSIN){
+			getConn();
+			
+			Guardian guardian = new Guardian();
+			
+	        try{
+	            ps = db.prepareStatement("SELECT * from dentalclinic.guardian "
+	            					   + "WHERE guardianSIN=?");
+	            ps.setString(1, guardianSIN);	
+	                           
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					String userName = rs.getString("userName");
+					String firstName = rs.getString("firstName");
+					String middleName = rs.getString("middleName");
+					String lastName = rs.getString("lastName");
+					String dateofBirth = rs.getString("dateofBirth");
+					String age = rs.getString("age");
+					String gender = rs.getString("gender");
+					String patientEmail = rs.getString("guardianEmail");
+					String patientPhoneNumber = rs.getString("guardianPhoneNumber");
+					String address = rs.getString("address");
+					
+					guardian = new Guardian(guardianSIN, userName, firstName, middleName,
+							 					  lastName, dateofBirth, age, gender,
+												  patientEmail, patientPhoneNumber,
+												  address);
+				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return guardian;       
+	    }
+
 		//Searches an patient by their username (unique)
 		public Patient getUserInfoByPatientUsername(String userName){
 			getConn();
@@ -171,12 +210,12 @@ public class  PostgreSqlConn{
 					String patientEmail = rs.getString("patientEmail");
 					String patientPhoneNumber = rs.getString("patientPhoneNumber");
 					String address = rs.getString("address");
-					String guardian = rs.getString("guardian");
+					String guardianSIN = rs.getString("guardianSIN");
 					
 					patient = new Patient(patientSIN, userName, firstName, middleName,
 							 		      lastName, dateofBirth, age, gender,
 										  patientEmail, patientPhoneNumber,
-										  guardian, address);
+										  guardianSIN, address);
 				}
 	            
 	        }catch(SQLException e){
@@ -211,12 +250,12 @@ public class  PostgreSqlConn{
 					String patientEmail = rs.getString("patientEmail");
 					String patientPhoneNumber = rs.getString("patientPhoneNumber");
 					String address = rs.getString("address");
-					String guardian = rs.getString("guardian");
+					String guardianSIN = rs.getString("guardianSIN");
 					
 					patient = new Patient(patientSIN, userName, firstName, middleName,
 							 					  lastName, dateofBirth, age, gender,
 												  patientEmail, patientPhoneNumber,
-												  address, guardian);
+												  address, guardianSIN);
 				}
 	            
 	        }catch(SQLException e){
@@ -304,20 +343,25 @@ public class  PostgreSqlConn{
 
 				ps = db.prepareStatement("INSERT into dentalclinic.patient "
 									   + "values(?, ?, crypt(?, gen_salt('bf')), ?, "
-									   + "?, ?, ?, ?, ?, ?, ?,?)");
+									   + "?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				
 	            ps.setString(1, patient.getPatientSIN());	
 	            ps.setString(2, patient.getUserName());	
 	            ps.setString(3, pwd);	
 	            ps.setString(4, patient.getFirstName());	
 	            ps.setString(5, patient.getMiddleName());	
-	            ps.setString(7, patient.getLastName());	
-	            ps.setString(8, patient.getDateOfBirth());	
-	            ps.setString(9, patient.getAge());	
-	            ps.setString(10, patient.getGender());	
-	            ps.setString(11, patient.getPatientEmail());	
-	            ps.setString(12, patient.getPatientPhoneNumber());	
-	            ps.setString(13, patient.getAddress());	
+	            ps.setString(6, patient.getLastName());	
+
+	            String str = patient.getDateOfBirth();  
+	            Date date = Date.valueOf(str);
+	            ps.setDate(7, date);
+	            
+	            ps.setInt(8, Integer.parseInt(patient.getAge()));	
+	            ps.setString(9, patient.getGender());	
+	            ps.setString(10, patient.getPatientEmail());	
+	            ps.setString(11, patient.getPatientPhoneNumber());	
+	            ps.setString(12, patient.getAddress());	
+	            ps.setString(13, patient.getGuardianSIN());	
 	            
 	            ps.executeUpdate();
 	            
@@ -336,12 +380,14 @@ public class  PostgreSqlConn{
 		//For receptionist only; inserts a new patient
 		public boolean updatePatientInfo(Patient newPatientInfo, String PatientSIN){
 			
-
-			ArrayList<String> usernames = getAllUsernamesByEntity("patient");
-			for (int i = 0 ; i < usernames.size(); i++) {
-				if (newPatientInfo.getUserName().equals(usernames.get(i))) {
-					System.out.println("Username "+newPatientInfo.getUserName()+" already exists!");
-		            return false;
+			if (!getUserInfoByPatientSIN(PatientSIN).getUserName()
+					.equals(newPatientInfo.getUserName())) {
+				ArrayList<String> usernames = getAllUsernamesByEntity("patient");
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (newPatientInfo.getUserName().equals(usernames.get(i))) {
+						System.out.println("Username "+newPatientInfo.getUserName()+" already exists!");
+			            return false;
+					}
 				}
 			}
 			
@@ -353,7 +399,7 @@ public class  PostgreSqlConn{
 				ps = db.prepareStatement("UPDATE dentalclinic.patient "
 									   + "SET username=?, firstname=?, middlename=?, lastname=?, "
 									   +     "dateofbirth=?, age=?, gender=?, patientemail=?, "
-									   +     "patientphonenumber=?, address=?, guardian=? "
+									   +     "patientphonenumber=?, address=?, guardianSIN=? "
 						               + "WHERE patientsin=?");
 					
 	            ps.setString(1, newPatientInfo.getUserName());	
@@ -370,7 +416,14 @@ public class  PostgreSqlConn{
 	            ps.setString(8, newPatientInfo.getPatientEmail());	
 	            ps.setString(9, newPatientInfo.getPatientPhoneNumber());	
 	            ps.setString(10, newPatientInfo.getAddress());	
-	            ps.setString(11, newPatientInfo.getGuardian());	
+	            
+	            String guardianSIN = newPatientInfo.getGuardianSIN();
+	            if (guardianSIN.isEmpty()) {
+	            	ps.setNull(11, Types.VARCHAR);
+	            } else {
+		            ps.setString(11, guardianSIN);	
+	            }
+	            
 	            ps.setString(12, PatientSIN);	
 	            
 	            ps.executeUpdate();
@@ -427,6 +480,41 @@ public class  PostgreSqlConn{
 	        }
 						
 			return appointments;
+			
+		}
+		
+		//Returns an ArrayList containing all Branches
+		public ArrayList<Branch> getAllBranches(){
+			
+			getConn();
+			
+			ArrayList<Branch> branches = new ArrayList<Branch>();
+			
+			try {
+				ps = db.prepareStatement("SELECT branchid, city, province, managerid "
+									   + "FROM dentalclinic.branch "
+									   + "ORDER BY province, city");
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String branchID = rs.getString("branchID");
+					String city = rs.getString("city");
+					String province = rs.getString("province");
+					String managerID = rs.getString("managerID");
+					Branch branch = new Branch(branchID, city,
+											   province, managerID);
+					branches.add(branch);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return branches;
 			
 		}
 

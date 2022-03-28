@@ -1,8 +1,8 @@
 package dentalclinic.entities;
 
-public class Patient {
+public class Guardian {
 
-	private String patientSIN;
+	private String guardianSIN;
 	private String userName;
 	private String firstName;
 	private String middleName;
@@ -10,19 +10,18 @@ public class Patient {
 	private String dateOfBirth;
 	private String age;
 	private String gender;
-	private String patientEmail;
-	private String patientPhoneNumber;
+	private String guardianEmail;
+	private String guardianPhoneNumber;
 	private String address;
-	private String guardianSIN;
 	
-	public Patient() {
+	public Guardian() {
 		
 	}
 	
-	public Patient(String patientSIN, String userName, String firstName, String middleName, String lastName,
-					   String dateOfBirth, String age, String gender, String patientEmail,
-					   String patientPhoneNumber, String address, String guardianSIN) {
-		this.patientSIN = patientSIN;
+	public Guardian(String guardianSIN, String userName, String firstName, String middleName, String lastName,
+					   String dateOfBirth, String age, String gender, String guardianEmail,
+					   String guardianPhoneNumber, String address) {
+		this.guardianSIN = guardianSIN;
 		this.userName = userName;
 		this.firstName = firstName;
 		this.middleName = middleName;
@@ -30,23 +29,22 @@ public class Patient {
 		this.dateOfBirth = dateOfBirth;
 		this.age = age;
 		this.gender = gender;
-		this.patientEmail = patientEmail;
-		this.patientPhoneNumber = patientPhoneNumber;
+		this.guardianEmail = guardianEmail;
+		this.guardianPhoneNumber = guardianPhoneNumber;
 		this.address = address;
-		this.guardianSIN = guardianSIN;
 	}
 	
 	public String toString() {
 		String str = firstName+" "+lastName+": a "+age+" year-old identifying as: "+gender
-				+".\nContact them at: "+patientEmail;
+				+".\nContact them at: "+guardianEmail;
 		return str;
 	}
 	
-	public String getPatientSIN() {
-		return patientSIN;
+	public String getGuardianSIN() {
+		return guardianSIN;
 	}
-	public void setPatientSIN(String patientSIN) {
-		this.patientSIN = patientSIN;
+	public void setGuardianSIN(String guardianSIN) {
+		this.guardianSIN = guardianSIN;
 	}
 
 	public String getUserName() {
@@ -98,18 +96,18 @@ public class Patient {
 		this.gender = gender;
 	}
 
-	public String getPatientEmail() {
-		return patientEmail;
+	public String getGuardianEmail() {
+		return guardianEmail;
 	}
-	public void setPatientEmail(String patientEmail) {
-		this.patientEmail = patientEmail;
+	public void setGuardianEmail(String guardianEmail) {
+		this.guardianEmail = guardianEmail;
 	}
 
-	public String getPatientPhoneNumber() {
-		return patientPhoneNumber;
+	public String getGuardianPhoneNumber() {
+		return guardianPhoneNumber;
 	}
-	public void setPatientPhoneNumber(String patientPhoneNumber) {
-		this.patientPhoneNumber = patientPhoneNumber;
+	public void setGuardianPhoneNumber(String guardianPhoneNumber) {
+		this.guardianPhoneNumber = guardianPhoneNumber;
 	}
 
 	public String getAddress() {
@@ -119,10 +117,4 @@ public class Patient {
 		this.address = address;
 	}
 
-	public String getGuardianSIN() {
-		return guardianSIN;
-	}
-	public void setGuardianSIN(String guardianSIN) {
-		this.guardianSIN = guardianSIN;
-	}
 }

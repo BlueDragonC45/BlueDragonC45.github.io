@@ -57,16 +57,21 @@ public class UpdatePatientInfoServlet extends HttpServlet {
 		newPatientInfo.setAddress(address);
 		
 		String guardian = req.getParameter("guardianEP");
-		newPatientInfo.setGuardian(guardian);
+		newPatientInfo.setGuardianSIN(guardian);
 		
 		if (con.updatePatientInfo(newPatientInfo, patientSIN)) {//successful
 			
 			//something happens if successful
+			req.setAttribute("updatedFirstName", firstName);
+			req.setAttribute("updatedLastName", lastName);
+			req.setAttribute("outcome", "updateSuccess");
 			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 			
 		} else {//failed; could be an SQL error
 			
 			//something happens if failed
+			req.setAttribute("outcome", "updateFailed");
+			
 			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 			
 		}

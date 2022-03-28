@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
-import dentalclinic.entities.Room;
 import dentalclinic.entities.Patient;
 
 public class PatientLoginServlet extends HttpServlet {

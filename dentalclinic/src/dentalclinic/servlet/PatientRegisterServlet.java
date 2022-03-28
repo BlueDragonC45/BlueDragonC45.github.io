@@ -33,6 +33,7 @@ public class PatientRegisterServlet extends HttpServlet{
 		String lastName = req.getParameter("lastName");
 		String dateOfBirth = req.getParameter("dateOfBirth");
 		String age = req.getParameter("age");
+		System.out.println(age+" years");
 		String gender = req.getParameter("gender");
 		String patientEmail = req.getParameter("patientEmail");
 		String patientPhoneNumber = req.getParameter("patientPhoneNumber");
@@ -53,25 +54,33 @@ public class PatientRegisterServlet extends HttpServlet{
 		patient.setPatientEmail(patientEmail);
 		patient.setPatientPhoneNumber(patientPhoneNumber);
 		patient.setAddress(address);
-		patient.setGuardian(guardian);
+		patient.setGuardianSIN(guardian);
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 		
 		boolean isInserted = con.insertNewPatient(patient, patientPwd);
 		if (isInserted) {			
-				System.out.println("Successfully inserted a new patient");
 				
 				//firstName and lastName might have been used already
 				//...at receptionist_view.jsp
 				req.setAttribute("firstNameNEW", firstName);
 				req.setAttribute("lastNameNEW", lastName);
 
+				req.setAttribute("outcome", "registerSuccess");
+
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				return;			
+		} else {
+
+			req.setAttribute("firstNameNEW", firstName);
+			req.setAttribute("lastNameNEW", lastName);
+			
+			req.setAttribute("outcome", "registerFailed");
+
+			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			return;
 		}
-		//Send to failed page
-		resp.sendRedirect("register_failure.jsp");
-		return;
+		
 	}
 	
 
