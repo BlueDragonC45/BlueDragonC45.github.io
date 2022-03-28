@@ -1,6 +1,7 @@
 <%@page import="java.util.ArrayList"%>
-<%@page import="dentalclinic.entities.Patient"%>
 <%@page import="dentalclinic.entities.Branch"%>
+<%@page import="dentalclinic.entities.Patient"%>
+<%@page import="dentalclinic.entities.Guardian"%>
 <%@page import="dentalclinic.entities.Employee"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -33,7 +34,7 @@
 		return Math.floor(age);
 	}
 
-	function validateRegister() {
+	function validatePatientRegister() {
 		var patientSIN = document.getElementById("patientSIN");
 		var userName = document.getElementById("userName");
 
@@ -72,8 +73,44 @@
 		} else
 			return true;
 	}
+
+	function validateGuardianRegister() {
+		var guardianSIN = document.getElementById("guardianSIN");
+		var userNameG = document.getElementById("userNameG");
+
+		var firstNameG = document.getElementById("firstNameG");
+		var lastNameG = document.getElementById("lastNameG");
+
+		var dateOfBirthG = document.getElementById("dateOfBirthG");
+		var ageG = document.getElementById("ageG");
+		document.getElementById("ageG").value = calcAge(dateOfBirthG.value);
+		var genderG = document.getElementById("genderG");
+		var guardianEmail = document.getElementById("guardianEmail");
+		var guardianPhoneNumber = document.getElementById("guardianPhoneNumber");
+		var addressG = document.getElementById("addressG");
+		var guardianPwd = document.getElementById("guardianPwd");
+		var guardianPwdagain = document.getElementById("guardianPwdagain");
+
+		if (guardianSIN.value == "" || userNameG.value == ""           || firstNameG.value == "" || lastNameG.value == ""
+								    || guardianPwd.value == ""         || guardianPwdagain.value == ""
+								    || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
+								    || guardianPhoneNumber.value == "" || addressG.value == ""){
+			alert("You need to fill all requiered fields");
+			return false;
+		} else if(guardianSIN.value.length != 9){
+			alert("The length of SIN needs to be 9 digits long");
+			return false;
+		} else if(ageG.value < 18){
+			alert("Must be at least 18 years of age");
+			return false;
+		} else if(guardianPwd.value != guardianPwdagain.value){
+			alert("Passwords need to match!");
+			return false;
+		} else
+			return true;
+	}
 	
-	function validateEdit() {
+	function validatePatientEdit() {
 		var userName = document.getElementById("userNameEP");
 
 		var firstName = document.getElementById("fNameEP");
@@ -100,6 +137,35 @@
 			alert("Guardian's SIN needs to be either 9 digits long or empty");
 			return false;
 		} else if(patientPwd.value != patientPwdagain.value){
+			alert("Passwords need to match!");
+			return false;
+		} else
+			return true;
+	}
+	
+	function validateGuardianEdit() {
+		var userNameG = document.getElementById("userNameEG");
+
+		var firstNameG = document.getElementById("fNameEG");
+		var lastNameG = document.getElementById("lNameEG");
+
+		var dateOfBirthG = document.getElementById("dobEG");
+		var ageG = document.getElementById("ageEG");
+		document.getElementById("ageEG").value = calcAge(dateOfBirthG.value);
+		var genderG = document.getElementById("genderEG");
+		var guardianEmail = document.getElementById("emailEG");
+		var guardianPhoneNumber = document.getElementById("phoneEG");
+		var addressG = document.getElementById("addressEG");
+
+		if (userNameG.value == ""           || firstNameG.value == "" || lastNameG.value == ""
+		 || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
+		 || guardianPhoneNumber.value == "" || addressG.value == ""){
+			alert("You need to fill all requiered fields");
+			return false;
+		} else if(ageG.value < 18){
+			alert("Must be at least 18 years of age");
+			return false;
+		} else if(guardianPwd.value != guardianPwdagain.value){
 			alert("Passwords need to match!");
 			return false;
 		} else
@@ -148,6 +214,23 @@
 		if (document.getElementById("guardianEP").value == "null") {
 			document.getElementById("guardianEP").value = "";
 		}
+	<% }; %>
+	
+	<% Guardian guardianInfo = (Guardian) request.getAttribute("guardian");
+	if (guardianInfo != null) { %>
+	 	openTab('editGuardian');
+		document.getElementById("editGuardianSearch").style.display = "none";
+		document.getElementById("editGuardianForm").style.display = "block";
+		document.getElementById("guardianSINEdit").value = <%=guardianInfo.getGuardianSIN()%>;
+		document.getElementById("userNameEG").value = "<%=guardianInfo.getUserName()%>";
+		document.getElementById("fNameEG").value = "<%=guardianInfo.getFirstName()%>";
+		document.getElementById("mNameEG").value = "<%=guardianInfo.getMiddleName()%>";
+		document.getElementById("lNameEG").value = "<%=guardianInfo.getLastName()%>";
+		document.getElementById("dobEG").value = "<%=guardianInfo.getDateOfBirth()%>";
+		document.getElementById("genderEG").value = "<%=guardianInfo.getGender()%>";
+		document.getElementById("emailEG").value = "<%=guardianInfo.getGuardianEmail()%>";
+		document.getElementById("phoneEG").value = "<%=guardianInfo.getGuardianPhoneNumber()%>";
+		document.getElementById("addressEG").value = "<%=guardianInfo.getAddress()%>";
 	<% }; %>
 
 	<% String outcome = (String) request.getAttribute("outcome");
@@ -261,7 +344,7 @@
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editguardian')">Edit Guardian Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='index.html'">Go Back</button>
 			</div>
@@ -323,7 +406,7 @@
 					Guardian's SIN:<input class="m-1 form-control" type="text" id="guardian" name="guardian"> 
 					Enter Password:<input type="password" class="m-1 form-control" id="patientPwd" name="patientPwd" required> 
 					Re-enter Password:<input type="password" class="m-1 form-control" id="patientPwdagain" name="patientPwdagain" required>
-					<button type="submit" value="submit" onclick="return validateRegister();">Create Patient</button>
+					<button type="submit" value="submit" onclick="return validatePatientRegister();">Create Patient</button>
 					<button type="reset" value="reset">Reset</button>
 				</form>
 			</div>
@@ -357,7 +440,7 @@
 						Phone number:<input class="m-1 form-control" type="tel" id="phoneEP" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEP" required> 
 						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
 						Guardian's SIN:<input class="m-1 form-control" type="text" id="guardianEP" name="guardianEP">
-						<button type="submit" value="submit" onclick="return validateEdit()">Update Patient</button>
+						<button type="submit" value="submit" onclick="return validatePatientEdit()">Update Patient</button>
 						<button type="reset" value="reset" onclick="resetEditPatient()">Reset</button>
 					</form>
 					<br>
@@ -366,38 +449,37 @@
 
 
 			<div class="tab p-3 my-3" style="display: none;" id="guardianRegister">
-				<h2>New Patient</h2>
+				<h2>New Guardian</h2>
 				<!--
 				post refers to the method doPost from PatientRegisterServlet.java
 				patientRegister is the masked/shortened directory of PatientRegisterServlet.java
 				-->
-				<form method="post" action="guardianRegister">											<!-- not guardianSIN to be able to use valiedateRegister() -->
-					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required>
-					Username:<input type="text" class="m-1 form-control" id="userName" name="userName" required> 
-					First Name:<input type="text" class="m-1 form-control" id="firstName" name="firstName" required> 
-					Middle Name:<input type="text" class="m-1 form-control" id="middleName" name="middleName"> 
-					Last Name:<input type="text" class="m-1 form-control" id="lastName" name="lastName" required>
-					Date of Birth:<input type="date" class="m-1 form-control" id="dateOfBirth" name="dateOfBirth" required> 
-					<input type="hidden" class="m-1 form-control" id="age" name="age">
-					Gender:<input type="text" class="m-1 form-control" id="gender" name="gender" required> 
-					E-mail Address:<input type="email" class="m-1 form-control" id="patientEmail" name="patientEmail" required> 
-					Phone Number:<input type="tel" class="m-1 form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="patientPhoneNumber" name="patientPhoneNumber" required> 
+				<form method="post" action="guardianRegister">										
+					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="guardianSIN" name="guardianSIN" required>
+					Username:<input type="text" class="m-1 form-control" id="userNameG" name="userNameG" required> 
+					First Name:<input type="text" class="m-1 form-control" id="firstNameG" name="firstNameG" required> 
+					Middle Name:<input type="text" class="m-1 form-control" id="middleNameG" name="middleNameG"> 
+					Last Name:<input type="text" class="m-1 form-control" id="lastNameG" name="lastNameG" required>
+					Date of Birth:<input type="date" class="m-1 form-control" id="dateOfBirthG" name="dateOfBirthG" required> 
+					<input type="hidden" class="m-1 form-control" id="ageG" name="ageG">
+					Gender:<input type="text" class="m-1 form-control" id="genderG" name="genderG" required> 
+					E-mail Address:<input type="email" class="m-1 form-control" id="guardianEmail" name="guardianEmail" required> 
+					Phone Number:<input type="tel" class="m-1 form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="guardianPhoneNumber" name="guardianPhoneNumber" required> 
 					<small>Format: 123-456-7890</small><br>
-					Address:<input class="m-1 form-control" type="text" id="address" name="address" required> 
-					<input class="m-1 form-control" type="hidden" id="guardian" name="guardian" value="">
-					Enter Password:<input type="password" class="m-1 form-control" id="patientPwd" name="patientPwd" required> 
-					Re-enter Password:<input type="password" class="m-1 form-control" id="patientPwdagain" name="patientPwdagain" required>
-					<button type="submit" value="submit" onclick="return validateRegister();">Create Guardian</button>
+					Address:<input class="m-1 form-control" type="text" id="addressG" name="addressG" required> 
+					Enter Password:<input type="password" class="m-1 form-control" id="guardianPwd" name="guardianPwd" required> 
+					Re-enter Password:<input type="password" class="m-1 form-control" id="guardianPwdagain" name="guardianPwdagain" required>
+					<button type="submit" value="submit" onclick="return validateGuardianRegister();">Create Guardian</button>
 					<button type="reset" value="reset">Reset</button>
 				</form>
 			</div>
 
 
 			<div class="tab p-3 my-3" style="display: none;" id="editGuardian">
-				<h2>Edit Patient Information</h2>
+				<h2>Edit Guardian Information</h2>
 				<div class="p-3 my-3" id="editGuardianSearch">
 					<form method="post" action="updateGuardianInfo">
-						Social Insurance Number:<input class="m-1 form-control" type="text" id="guardianSIN" name="guardianSIN">
+						Social Insurance Number:<input class="m-1 form-control" type="text" id="guardianSINSearch" name="guardianSINSearch">
 						<button type="submit" value="submit" onclick="return validateSIN()">Search for Guardian</button>
 						<button type="reset" value="reset">Reset</button>
 					</form>
@@ -405,23 +487,22 @@
 
 				<div class="p-3 my-3" style="display: none;" id="editGuardianForm">
 					<form method="post" action="updateGuardianInfo">
-						<%if (patientInfo != null) {%>
-							<input type="hidden" id="guardianSINEdit" name="guardianSINEdit" value="<%=patientInfo.getPatientSIN()%>"><%
+						<%if (guardianInfo != null) {%>
+							<input type="hidden" id="guardianSINEdit" name="guardianSINEdit" value="<%=guardianInfo.getGuardianSIN()%>"><%
 						}
 						%>
-						Username:<input type="text" class="m-1 form-control" id="userNameEP" name="userNameEP" required> 
-						First Name:<input class="m-1 form-control" type="text"id="fNameEP" name="fNameEP" required> 
-						Middle Name:<input class="m-1 form-control" type="text" id="mNameEP" name="mNameEP"> 
-						Last Name:<input class="m-1 form-control" type="text" id="lNameEP" name="lNameEP" required> 
-						Date Of Birth:<input class="m-1 form-control" type="date" id="dobEP" name="dobEP" required>
+						Username:<input type="text" class="m-1 form-control" id="userNameEG" name="userNameEG" required> 
+						First Name:<input class="m-1 form-control" type="text"id="fNameEG" name="fNameEG" required> 
+						Middle Name:<input class="m-1 form-control" type="text" id="mNameEG" name="mNameEG"> 
+						Last Name:<input class="m-1 form-control" type="text" id="lNameEG" name="lNameEG" required> 
+						Date Of Birth:<input class="m-1 form-control" type="date" id="dobEG" name="dobEG" required>
 						<!-- age -->
-						<input type="hidden" id="ageEP" name="ageEP">
-						Gender:<input class="m-1 form-control" type="text" id="genderEP" name="genderEP" required>
-						Email:<input class="m-1 form-control" type="email" id="emailEP" name="emailEP" required>
-						Phone number:<input class="m-1 form-control" type="tel" id="phoneEP" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEP" required> 
-						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
-						<input class="m-1 form-control" type="hidden" id="guardianEP" name="guardianEP" value="">
-						<button type="submit" value="submit" onclick="return validateEdit()">Update Patient</button>
+						<input type="hidden" id="ageEG" name="ageEG">
+						Gender:<input class="m-1 form-control" type="text" id="genderEG" name="genderEG" required>
+						Email:<input class="m-1 form-control" type="email" id="emailEG" name="emailEG" required>
+						Phone number:<input class="m-1 form-control" type="tel" id="phoneEG" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEG" required> 
+						Address:<input class="m-1 form-control" type="text" id="addressEG" name="addressEG" required>
+						<button type="submit" value="submit" onclick="return validateGuardianEdit()">Update Guardian</button>
 						<button type="reset" value="reset" onclick="resetEditGuardian()">Reset</button>
 					</form>
 					<br>

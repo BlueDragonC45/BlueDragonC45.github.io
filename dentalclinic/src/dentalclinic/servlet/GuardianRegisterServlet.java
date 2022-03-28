@@ -25,19 +25,19 @@ public class GuardianRegisterServlet extends HttpServlet{
 		HttpSession session = req.getSession();
 
 		//13 columns total
-		String guardianSIN = req.getParameter("patientSIN");
-		String userName = req.getParameter("userName");
+		String guardianSIN = req.getParameter("guardianSIN");
+		String userName = req.getParameter("userNameG");
 		String guardianPwd = req.getParameter("guardianPwd");
-		String firstName = req.getParameter("firstName");
-		String middleName = req.getParameter("middleName");
-		String lastName = req.getParameter("lastName");
-		String dateOfBirth = req.getParameter("dateOfBirth");
-		String age = req.getParameter("age");
+		String firstName = req.getParameter("firstNameG");
+		String middleName = req.getParameter("middleNameG");
+		String lastName = req.getParameter("lastNameG");
+		String dateOfBirth = req.getParameter("dateOfBirthG");
+		String age = req.getParameter("ageG");
 		System.out.println(age+" years");
-		String gender = req.getParameter("gender");
-		String patientEmail = req.getParameter("patientEmail");
-		String patientPhoneNumber = req.getParameter("patientPhoneNumber");
-		String address = req.getParameter("address");
+		String gender = req.getParameter("genderG");
+		String guardianEmail = req.getParameter("guardianEmail");
+		String guardianPhoneNumber = req.getParameter("guardianPhoneNumber");
+		String address = req.getParameter("addressG");
 		
 		
 		Guardian guardian = new Guardian();
@@ -50,8 +50,8 @@ public class GuardianRegisterServlet extends HttpServlet{
 		guardian.setDateOfBirth(dateOfBirth);
 		guardian.setAge(age);
 		guardian.setGender(gender);
-		guardian.setGuardianEmail(patientEmail);
-		guardian.setGuardianPhoneNumber(patientPhoneNumber);
+		guardian.setGuardianEmail(guardianEmail);
+		guardian.setGuardianPhoneNumber(guardianPhoneNumber);
 		guardian.setAddress(address);
 		
 		PostgreSqlConn con = new PostgreSqlConn();

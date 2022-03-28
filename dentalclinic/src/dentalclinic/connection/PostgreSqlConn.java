@@ -330,9 +330,11 @@ public class  PostgreSqlConn{
 		public boolean insertNewPatient(Patient patient, String pwd){
 
 			ArrayList<String> usernames = getAllUsernamesByEntity("patient");
-			for (int i = 0 ; i < usernames.size(); i++) {
-				if (patient.getUserName().equals(usernames.get(i))) {
-		            return false;
+			if (usernames.size() != 0) {
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (patient.getUserName().equals(usernames.get(i))) {
+			            return false;
+					}
 				}
 			}
 
@@ -380,10 +382,12 @@ public class  PostgreSqlConn{
 		//For receptionist only; inserts a new patient
 		public boolean insertNewGuardian(Guardian guardian, String pwd){
 
-			ArrayList<String> usernames = getAllUsernamesByEntity("patient");
-			for (int i = 0 ; i < usernames.size(); i++) {
-				if (guardian.getUserName().equals(usernames.get(i))) {
-		            return false;
+			ArrayList<String> usernames = getAllUsernamesByEntity("guardian");
+			if (usernames.size() != 0) {
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (guardian.getUserName().equals(usernames.get(i))) {
+			            return false;
+					}
 				}
 			}
 
@@ -412,7 +416,6 @@ public class  PostgreSqlConn{
 	            ps.setString(10, guardian.getGuardianEmail());	
 	            ps.setString(11, guardian.getGuardianPhoneNumber());	
 	            ps.setString(12, guardian.getAddress());	
-	            ps.setString(13, guardian.getGuardianSIN());	
 	            
 	            ps.executeUpdate();
 	            
@@ -494,9 +497,9 @@ public class  PostgreSqlConn{
 		//For receptionist only; inserts a new patient
 		public boolean updateGuardianInfo(Guardian newGuardianInfo, String GuardianSIN){
 			
-			if (!getUserInfoByPatientSIN(GuardianSIN).getUserName()
+			if (!getUserInfoByGuardianSIN(GuardianSIN).getUserName()
 					.equals(newGuardianInfo.getUserName())) {
-				ArrayList<String> usernames = getAllUsernamesByEntity("patient");
+				ArrayList<String> usernames = getAllUsernamesByEntity("guardian");
 				for (int i = 0 ; i < usernames.size(); i++) {
 					if (newGuardianInfo.getUserName().equals(usernames.get(i))) {
 						System.out.println("Username "+newGuardianInfo.getUserName()+" already exists!");

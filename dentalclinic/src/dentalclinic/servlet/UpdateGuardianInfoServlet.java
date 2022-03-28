@@ -21,52 +21,52 @@ public class UpdateGuardianInfoServlet extends HttpServlet {
 
 		PostgreSqlConn con = new PostgreSqlConn();
 		
-		String patientSINEdit = req.getParameter("guardianSINEdit");
-		if (patientSINEdit == null) {
+		String guardianSINEdit = req.getParameter("guardianSINEdit");
+		if (guardianSINEdit == null) {
 			
-			String patientSIN = req.getParameter("guardianSIN");
-			System.out.println(patientSIN);
-			Guardian patient = con.getUserInfoByGuardianSIN(patientSIN);
+			String guardianSIN = req.getParameter("guardianSINSearch");
+			System.out.println(guardianSIN);
+			Guardian guardian = con.getUserInfoByGuardianSIN(guardianSIN);
 			
-			req.setAttribute("patient", patient);
+			req.setAttribute("guardian", guardian);
 			
 			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 		} else {
-			System.out.println("Patient to update: "+patientSINEdit);
+			System.out.println("Patient to update: "+guardianSINEdit);
 			
 			Guardian newGuardianInfo = new Guardian();
 
-			String userName = req.getParameter("userNameEP");
+			String userName = req.getParameter("userNameEG");
 			newGuardianInfo.setUserName(userName);
 			
-			String firstName = req.getParameter("fNameEP");
+			String firstName = req.getParameter("fNameEG");
 			newGuardianInfo.setFirstName(firstName);
 			
-			String middleName = req.getParameter("mNameEP");
+			String middleName = req.getParameter("mNameEG");
 			newGuardianInfo.setMiddleName(middleName);
 			
-			String lastName = req.getParameter("lNameEP");
+			String lastName = req.getParameter("lNameEG");
 			newGuardianInfo.setLastName(lastName);
 			
-			String dateOfBirth = req.getParameter("dobEP");
+			String dateOfBirth = req.getParameter("dobEG");
 			newGuardianInfo.setDateOfBirth(dateOfBirth);
 			
-			String age = req.getParameter("ageEP");//TODO calculate in a function
+			String age = req.getParameter("ageEG");
 			newGuardianInfo.setAge(age);
 			
-			String gender = req.getParameter("genderEP");
+			String gender = req.getParameter("genderEG");
 			newGuardianInfo.setGender(gender);
 			
-			String patientEmail = req.getParameter("emailEP");
+			String patientEmail = req.getParameter("emailEG");
 			newGuardianInfo.setGuardianEmail(patientEmail);
 			
-			String patientPhoneNumber = req.getParameter("phoneEP");
+			String patientPhoneNumber = req.getParameter("phoneEG");
 			newGuardianInfo.setGuardianPhoneNumber(patientPhoneNumber);
 			
-			String address = req.getParameter("addressEP");
+			String address = req.getParameter("addressEG");
 			newGuardianInfo.setAddress(address);
 			
-			if (con.updateGuardianInfo(newGuardianInfo, patientSINEdit)) {//successful
+			if (con.updateGuardianInfo(newGuardianInfo, guardianSINEdit)) {//successful
 				
 				//something happens if successful
 				req.setAttribute("firstNameNEW", firstName);

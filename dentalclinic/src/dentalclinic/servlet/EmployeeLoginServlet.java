@@ -42,6 +42,7 @@ public class EmployeeLoginServlet extends HttpServlet {
 			req.setAttribute("employeeSIN", employeeSIN);
 			req.setAttribute("userName", userName);
 			req.setAttribute("role", role);
+			req.setAttribute("branchid", branchid);
 			
 			System.out.println(role);
 			
