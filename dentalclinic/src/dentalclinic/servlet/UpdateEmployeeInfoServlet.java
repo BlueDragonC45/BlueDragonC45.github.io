@@ -30,9 +30,9 @@ public class UpdateEmployeeInfoServlet extends HttpServlet {
 			
 			req.setAttribute("employee", employee);
 			
-			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 		} else {
-			System.out.println("Patient to update: "+ employeeSINEdit);
+			System.out.println("Employee to update: "+ employeeSINEdit);
 			
 			Employee newEmployeeInfo = new Employee();
 

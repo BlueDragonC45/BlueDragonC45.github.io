@@ -25,12 +25,12 @@ public class EmployeeRegisterServlet extends HttpServlet{
 
 		//16 columns total
 		String employeeSIN = req.getParameter("employeeSIN");
-		String userName = req.getParameter("userName");
+		String userName = req.getParameter("username");
 		String employeePwd = req.getParameter("employeePwd");
 		String branchID = req.getParameter("branchID");
-		String firstName = req.getParameter("firstName");
-		String middleName = req.getParameter("middleName");
-		String lastName = req.getParameter("lastName");
+		String firstName = req.getParameter("fName");
+		String middleName = req.getParameter("mName");
+		String lastName = req.getParameter("lName");
 		String role = req.getParameter("role");
 		String employeeType = req.getParameter("employeeType");
 		String salary = req.getParameter("salary");
@@ -38,15 +38,15 @@ public class EmployeeRegisterServlet extends HttpServlet{
 		String age = req.getParameter("age");
 		System.out.println(age+" years");
 		String gender = req.getParameter("gender");
-		String employeeEmail = req.getParameter("employeeEmail");
-		String employeePhoneNumber = req.getParameter("employeePhoneNumber");
+		String employeeEmail = req.getParameter("email");
+		String employeePhoneNumber = req.getParameter("phone");
 		String address = req.getParameter("address");
 		
 		
 		Employee employee = new Employee();
 		employee.setEmployeeSIN(employeeSIN);
 		employee.setUserName(userName);
-		//password goes separately
+		employee.setEmployeePwd(employeePwd);
 		employee.setBranchID(branchID);
 		employee.setFirstName(firstName);
 		employee.setMiddleName(middleName);
@@ -64,7 +64,7 @@ public class EmployeeRegisterServlet extends HttpServlet{
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 		
-		boolean isInserted = con.insertNewEmployee(employee, employeePwd);
+		boolean isInserted = con.insertNewEmployee(employee, employeeSIN);
 		if (isInserted) {			
 				
 				//firstName and lastName might have been used already

@@ -34,6 +34,6 @@ public class ListBranchEmployeesServlet extends HttpServlet {
 		ArrayList<Employee> employees = con.getEmployeesByBranchID(branchID);
 		req.setAttribute("employees", employees);
 		
-		req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+		req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 	}
 }

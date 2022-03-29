@@ -1,5 +1,6 @@
 package dentalclinic.connection;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -491,19 +492,20 @@ public class  PostgreSqlConn{
 	        try{
 
 				ps = db.prepareStatement("INSERT into dentalclinic.employee "
-									   + "values(?, ?, crypt(?, gen_salt('bf')), ?, "
-									   + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+									   + "values(?, ?, ?, crypt(?, gen_salt('bf')), ?, "
+									   + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				
 	            ps.setString(1, employee.getEmployeeSIN());	
-	            ps.setString(2, employee.getUserName());	
-	            ps.setString(3, pwd);
-	            ps.setString(4, employee.getBranchID());	
-	            ps.setString(5, employee.getFirstName());	
-	            ps.setString(6, employee.getMiddleName());	
-	            ps.setString(7, employee.getLastName());
-	            ps.setString(8, employee.getRole());	
-	            ps.setString(9, employee.getEmployeeType());	
-	            ps.setString(10, employee.getSalary());
+	            ps.setInt(2, Integer.parseInt(employee.getBranchID()));	
+	            ps.setString(3, employee.getUserName());	
+	            ps.setString(4, pwd);
+	            ps.setString(5, employee.getRole());	
+	            ps.setString(6, employee.getEmployeeType());	
+	            ps.setBigDecimal(7, new BigDecimal(employee.getSalary()));
+	            ps.setString(8, employee.getFirstName());	
+	            ps.setString(9, employee.getMiddleName());	
+	            ps.setString(10, employee.getLastName());
+
 
 	            String str = employee.getDateofBirth();  
 	            Date date = Date.valueOf(str);
@@ -668,31 +670,35 @@ public class  PostgreSqlConn{
 	        try{
 
 				ps = db.prepareStatement("UPDATE dentalclinic.employee "
-									   + "SET BranchID=?, username=?, firstname=?, middlename=?, lastname=?, "
-									   +     "dateofbirth=?, age=?, gender=?, EmployeeEmail=?, "
-									   +     "EmployeePhoneNumber=?, address=?, role=?, employeeType=?, salary=? "
-						               + "WHERE guardiansin=?");
+									   + "SET employeesin=?, BranchID=?, username=?, role=?, employeeType=?, salary=? "
+									   + "firstname=?, middlename=?, lastname=?, "
+									   + "dateofbirth=?, age=?, gender=?, EmployeeEmail=?, "
+									   + "EmployeePhoneNumber=?, address=? "
+									   + "WHERE employeeSIN=?");
 				
-				ps.setString(1, newEmployeeInfo.getBranchID());	
-	            ps.setString(2, newEmployeeInfo.getUserName());	
-	            ps.setString(3, newEmployeeInfo.getFirstName());	
-	            ps.setString(4, newEmployeeInfo.getMiddleName());	
-	            ps.setString(5, newEmployeeInfo.getLastName());
+				System.out.println(employeeSIN);
+				ps.setString(1, employeeSIN);
+				ps.setInt(2, Integer.parseInt(newEmployeeInfo.getBranchID()));	
+	            ps.setString(3, newEmployeeInfo.getUserName());
+	            ps.setString(4, newEmployeeInfo.getRole());
+	            ps.setString(5, newEmployeeInfo.getEmployeeType());
+	            ps.setBigDecimal(6, new BigDecimal(newEmployeeInfo.getSalary()));	
+	            ps.setString(7, newEmployeeInfo.getFirstName());	
+	            ps.setString(8, newEmployeeInfo.getMiddleName());	
+	            ps.setString(9, newEmployeeInfo.getLastName());
 	            
 	            String str = newEmployeeInfo.getDateofBirth();  
 	            Date date = Date.valueOf(str);
-	            ps.setDate(6, date);
+	            ps.setDate(10, date);
 	            
-	            ps.setInt(7, Integer.parseInt(newEmployeeInfo.getAge()));	
-	            ps.setString(8, newEmployeeInfo.getGender());	
-	            ps.setString(9, newEmployeeInfo.getEmployeeEmail());	
-	            ps.setString(10, newEmployeeInfo.getEmployeePhoneNumber());	
-	            ps.setString(11, newEmployeeInfo.getAddress());
-	            ps.setString(12, newEmployeeInfo.getRole());
-	            ps.setString(13, newEmployeeInfo.getEmployeeType());
-	            ps.setString(14, newEmployeeInfo.getSalary());
+	            ps.setInt(10, Integer.parseInt(newEmployeeInfo.getAge()));	
+	            ps.setString(12, newEmployeeInfo.getGender());	
+	            ps.setString(13, newEmployeeInfo.getEmployeeEmail());	
+	            ps.setString(14, newEmployeeInfo.getEmployeePhoneNumber());	
+	            ps.setString(15, newEmployeeInfo.getAddress());
+
 	            
-	            ps.setString(15, employeeSIN);	
+	            ps.setString(16, employeeSIN);	
 	            
 	            ps.executeUpdate();
 

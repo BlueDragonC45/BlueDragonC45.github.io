@@ -140,6 +140,17 @@
 		<url-pattern>/updateGuardianInfo</url-pattern>
 	</servlet-mapping>
 	
+		 <servlet>
+		<description></description>
+		<display-name>Update Employee Info Servlet</display-name>
+		<servlet-name>UpdateEmployeeInfoServlet</servlet-name>
+		<servlet-class>dentalclinic.servlet.UpdateEmployeeInfoServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UpdateEmployeeInfoServlet</servlet-name>
+		<url-pattern>/updateEmployeeInfo</url-pattern>
+	</servlet-mapping>
+	
 	<servlet>
 		  <description></description>
 		  <display-name>Employee Register Servlet</display-name>
