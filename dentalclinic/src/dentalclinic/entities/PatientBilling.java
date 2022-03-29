@@ -12,8 +12,9 @@ public class PatientBilling {
 
 	private @Getter @Setter String patientSIN;
 	private @Getter @Setter String invoiceID;
+	private @Getter @Setter String guardianSIN;
 	private @Getter @Setter String employeeSIN;
-	private @Getter @Setter String patientPortion;
+	private @Getter @Setter String userPortion;
 	private @Getter @Setter String employeePortion;
 	private @Getter @Setter String insurancePortion;
 	private @Getter @Setter String totalAmount;
@@ -26,9 +27,18 @@ public class PatientBilling {
 	}
 	
 	public String toStringLonger() {
+		String patientOrGuardian = "";
+		if (guardianSIN == null) {
+			patientOrGuardian = patientSIN;
+		} else if (guardianSIN.isEmpty()) {
+			patientOrGuardian = patientSIN;
+		} else {
+			patientOrGuardian = guardianSIN;
+		}
+		
 		String str = "["+patientSIN+", "+invoiceID+"] Accounting for "
 					 +totalAmount+" CAD towards invoice ["+invoiceID+"]."
-				   +" The patient with SIN: "+patientSIN+" paid "+patientPortion+" CAD "
+				   +" The user with SIN: "+patientOrGuardian+" paid "+userPortion+" CAD "
 				   + "in "+paymentType+" with "+insurancePortion+" CAD from insurance. "
 				   + "An employee covered "+employeePortion+" CAD of the bill.";
 		return str;

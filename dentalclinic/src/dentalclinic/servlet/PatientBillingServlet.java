@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Invoice;
+import dentalclinic.entities.Patient;
 import dentalclinic.entities.PatientBilling;
+import dentalclinic.entities.InsuranceClaim;
 
 @SuppressWarnings("serial")
 public class PatientBillingServlet extends HttpServlet {
@@ -31,7 +33,10 @@ public class PatientBillingServlet extends HttpServlet {
 
 				String patientSINBill = req.getParameter("patientSINBill");
 				
+				Patient patient = con.getUserInfoByPatientSIN(patientSINBill);
+				
 				ArrayList<Invoice> invoices = con.getAllInvoicesByPatientSIN(patientSINBill);
+				
 				req.setAttribute("invoices", invoices);
 				
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
@@ -61,19 +66,26 @@ public class PatientBillingServlet extends HttpServlet {
 
 			//patientSINBillForm defined before first if statement
 			String invoiceID = req.getParameter("invoiceIDBillForm");
+			String guardianSIN = req.getParameter("guardianSINBillForm");
 			String employeeSIN = req.getParameter("employeeSINBillForm");
-			String patientPortion = req.getParameter("patientPortionBillForm");
+			String userPortion = req.getParameter("userPortionBillForm");
 			String insurancePortion = req.getParameter("insurancePortionBillForm");
 			String employeePortion = req.getParameter("employeePortionBillForm");
 			String payMethod = req.getParameter("payMethodBillForm");
 			String total = req.getParameter("totalBillForm");
+
+			String insuranceCompany = req.getParameter("insuranceCompanyBillForm");
 			
 			PatientBilling newBill =
 					new PatientBilling(patientSINBillForm, invoiceID,
-									   employeeSIN, patientPortion, employeePortion,
-									   insurancePortion, total, payMethod);
+									   guardianSIN, employeeSIN, userPortion,
+									   employeePortion, insurancePortion, total, payMethod);
 			
-			if (con.billPatient(newBill)) {
+			InsuranceClaim insuranceClaim = 
+					new InsuranceClaim(patientSINBillForm, insuranceCompany,
+								       invoiceID, insurancePortion);
+			
+			if (con.billUser(newBill, insuranceClaim)) {
 
 				req.setAttribute("patientSINAfterBill", patientSINBillForm);
 				req.setAttribute("billTotal", total);

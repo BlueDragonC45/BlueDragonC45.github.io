@@ -373,14 +373,33 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For receptionist only; inserts a new patient
-		public boolean insertNewPatient(Patient patient, String pwd){
+		public int insertNewPatient(Patient patient, String pwd){
 
+			String patientSIN = patient.getPatientSIN();
+			if (getUserInfoByPatientSIN(patientSIN).getAge() != null) {
+				System.out.println("Patient with SIN: "+patientSIN+
+						          " already exists!");
+				return 1;
+			}
+			
+			String patientUsername = patient.getUserName();
 			ArrayList<String> usernames = getAllUsernamesByEntity("patient");
 			if (usernames.size() != 0) {
 				for (int i = 0 ; i < usernames.size(); i++) {
-					if (patient.getUserName().equals(usernames.get(i))) {
-			            return false;
+					if (patientUsername.equals(usernames.get(i))) {
+						System.out.println("Username "+patientUsername+
+								          " already in use!");
+			            return 2;
 					}
+				}
+			}
+			
+			String guardianSIN = patient.getGuardianSIN();
+			if (!guardianSIN.isEmpty()) {
+				if (getUserInfoByGuardianSIN(guardianSIN).getAge() == null) {
+					System.out.println("Guardian with SIN: "+guardianSIN+
+							          " does not exist!");
+					return 3;
 				}
 			}
 
@@ -393,8 +412,8 @@ public class  PostgreSqlConn{
 									   + "values(?, ?, crypt(?, gen_salt('bf')), ?, "
 									   + "?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				
-	            ps.setString(1, patient.getPatientSIN());	
-	            ps.setString(2, patient.getUserName());	
+	            ps.setString(1, patientSIN);//set right below method def	
+	            ps.setString(2, patientUsername);//set when checking usernames
 	            ps.setString(3, pwd);	
 	            ps.setString(4, patient.getFirstName());	
 	            ps.setString(5, patient.getMiddleName());	
@@ -414,6 +433,79 @@ public class  PostgreSqlConn{
 	            ps.executeUpdate();
 	            
 	            System.out.println("Inserted new patient");
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 4;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//For receptionist only; inserts a new patient
+		public boolean updatePatientInfo(Patient newPatientInfo, String PatientSIN){
+			
+			//if username is not equal to previous, check list of usernames
+			//if unique, continue
+			if (!getUserInfoByPatientSIN(PatientSIN).getUserName()
+					.equals(newPatientInfo.getUserName())) {
+				ArrayList<String> usernames = getAllUsernamesByEntity("patient");
+				for (int i = 0 ; i < usernames.size(); i++) {
+					if (newPatientInfo.getUserName().equals(usernames.get(i))) {
+						System.out.println("Username "+newPatientInfo.getUserName()+" already exists!");
+			            return false;
+					}
+				}
+			}
+			
+			String guardianSIN = newPatientInfo.getGuardianSIN();
+			if (!guardianSIN.isEmpty()) {
+				if (getUserInfoByGuardianSIN(guardianSIN).getAge() == null) {
+					System.out.println("Guardian with SIN: "+guardianSIN+
+							          " does not exist.");
+					return false;
+				}
+			}
+			
+			getConn();//must be below above statement since getAllUsernamesByEntity
+	          		  //closed the connection
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.patient "
+									   + "SET username=?, firstname=?, middlename=?, lastname=?, "
+									   +     "dateofbirth=?, age=?, gender=?, patientemail=?, "
+									   +     "patientphonenumber=?, address=?, guardianSIN=? "
+						               + "WHERE patientsin=?");
+					
+	            ps.setString(1, newPatientInfo.getUserName());	
+	            ps.setString(2, newPatientInfo.getFirstName());	
+	            ps.setString(3, newPatientInfo.getMiddleName());	
+	            ps.setString(4, newPatientInfo.getLastName());
+	            
+	            String str = newPatientInfo.getDateOfBirth();  
+	            Date date = Date.valueOf(str);
+	            ps.setDate(5, date);
+	            
+	            ps.setInt(6, Integer.parseInt(newPatientInfo.getAge()));	
+	            ps.setString(7, newPatientInfo.getGender());	
+	            ps.setString(8, newPatientInfo.getPatientEmail());	
+	            ps.setString(9, newPatientInfo.getPatientPhoneNumber());	
+	            ps.setString(10, newPatientInfo.getAddress());	
+	            
+	            if (guardianSIN.isEmpty()) {
+	            	ps.setNull(11, Types.VARCHAR);
+	            } else {
+		            ps.setString(11, guardianSIN);	
+	            }
+	            
+	            ps.setString(12, PatientSIN);	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
 	            
 	            return true;
 
@@ -522,69 +614,6 @@ public class  PostgreSqlConn{
 	            ps.executeUpdate();
 	            
 	            System.out.println("Inserted new employee");
-	            
-	            return true;
-
-	        }catch(SQLException e){
-	            e.printStackTrace();
-	            return false;
-	        }finally {
-	        	closeDB();
-	        }	       
-	    }
-		
-		//For receptionist only; inserts a new patient
-		public boolean updatePatientInfo(Patient newPatientInfo, String PatientSIN){
-			
-			if (!getUserInfoByPatientSIN(PatientSIN).getUserName()
-					.equals(newPatientInfo.getUserName())) {
-				ArrayList<String> usernames = getAllUsernamesByEntity("patient");
-				for (int i = 0 ; i < usernames.size(); i++) {
-					if (newPatientInfo.getUserName().equals(usernames.get(i))) {
-						System.out.println("Username "+newPatientInfo.getUserName()+" already exists!");
-			            return false;
-					}
-				}
-			}
-			
-			getConn();//must be below above statement since getAllUsernamesByEntity
-	          		  //closed the connection
-
-	        try{
-
-				ps = db.prepareStatement("UPDATE dentalclinic.patient "
-									   + "SET username=?, firstname=?, middlename=?, lastname=?, "
-									   +     "dateofbirth=?, age=?, gender=?, patientemail=?, "
-									   +     "patientphonenumber=?, address=?, guardianSIN=? "
-						               + "WHERE patientsin=?");
-					
-	            ps.setString(1, newPatientInfo.getUserName());	
-	            ps.setString(2, newPatientInfo.getFirstName());	
-	            ps.setString(3, newPatientInfo.getMiddleName());	
-	            ps.setString(4, newPatientInfo.getLastName());
-	            
-	            String str = newPatientInfo.getDateOfBirth();  
-	            Date date = Date.valueOf(str);
-	            ps.setDate(5, date);
-	            
-	            ps.setInt(6, Integer.parseInt(newPatientInfo.getAge()));	
-	            ps.setString(7, newPatientInfo.getGender());	
-	            ps.setString(8, newPatientInfo.getPatientEmail());	
-	            ps.setString(9, newPatientInfo.getPatientPhoneNumber());	
-	            ps.setString(10, newPatientInfo.getAddress());	
-	            
-	            String guardianSIN = newPatientInfo.getGuardianSIN();
-	            if (guardianSIN.isEmpty()) {
-	            	ps.setNull(11, Types.VARCHAR);
-	            } else {
-		            ps.setString(11, guardianSIN);	
-	            }
-	            
-	            ps.setString(12, PatientSIN);	
-	            
-	            ps.executeUpdate();
-
-	            System.out.println(ps.toString());
 	            
 	            return true;
 
@@ -813,14 +842,15 @@ public class  PostgreSqlConn{
 					String invoiceID = rs.getString("invoiceID");
 					String dateOfIssue = rs.getString("dateOfIssue");
 					//col3: patientSIN already have
-					String patientCharge = rs.getString("patientCharge");
+					String guardianSIN = rs.getString("guardianSIN");
+					String userCharge = rs.getString("userCharge");
 					String insuranceCharge = rs.getString("insuranceCharge");
 					String employeeCharge = rs.getString("employeeCharge");
 					String totalFeeCharge = rs.getString("totalFeeCharge");
 					String discount = rs.getString("discount");
 					String penalty = rs.getString("penalty");
-					Invoice invoice = new Invoice(invoiceID, dateOfIssue, patientSIN,
-										          patientCharge, insuranceCharge, employeeCharge,
+					Invoice invoice = new Invoice(invoiceID, dateOfIssue, patientSIN, guardianSIN,
+										          userCharge, insuranceCharge, employeeCharge,
 										          totalFeeCharge, discount, penalty);
 					invoices.add(invoice);
 				}
@@ -855,14 +885,15 @@ public class  PostgreSqlConn{
 				while(rs.next()){
 					//col1: patientSIN already have
 					//col2: invoiceID already have
+					String guardianSIN = rs.getString("guardianSIN");
 					String employeeSIN = rs.getString("employeeSIN");
-					String patientPortion = rs.getString("patientPortion");
+					String userPortion = rs.getString("userPortion");
 					String employeePortion = rs.getString("employeePortion");
 					String insurancePortion = rs.getString("insurancePortion");
 					String totalAmount = rs.getString("totalAmount");
 					String paymentType = rs.getString("paymentType");
-					patientBilling = new PatientBilling(patientSIN, invoiceID, employeeSIN,
-													    patientPortion, employeePortion,
+					patientBilling = new PatientBilling(patientSIN, invoiceID, guardianSIN, employeeSIN,
+													    userPortion, employeePortion,
 													    insurancePortion, totalAmount, paymentType);
 				}
 			} catch (SQLException e) {
@@ -895,14 +926,15 @@ public class  PostgreSqlConn{
 					//col1: invoiceID already have
 					String dateOfIssue = rs.getString("dateOfIssue");
 					String patientSIN = rs.getString("patientSIN");
-					String patientCharge = rs.getString("patientCharge");
+					String guardianSIN = rs.getString("guardianSIN");
+					String userCharge = rs.getString("userCharge");
 					String insuranceCharge = rs.getString("insuranceCharge");
 					String employeeCharge = rs.getString("employeeCharge");
 					String totalFeeCharge = rs.getString("totalFeeCharge");
 					String discount = rs.getString("discount");
 					String penalty = rs.getString("penalty");
-					invoice = new Invoice(invoiceID, dateOfIssue, patientSIN,
-										          patientCharge, insuranceCharge, employeeCharge,
+					invoice = new Invoice(invoiceID, dateOfIssue, patientSIN, guardianSIN,
+											userCharge, insuranceCharge, employeeCharge,
 										          totalFeeCharge, discount, penalty);
 				}
 			} catch (SQLException e) {
@@ -917,7 +949,9 @@ public class  PostgreSqlConn{
 		}
 		
 		//For receptionist only; bills a patient based on an invoice
-		public boolean billPatient(PatientBilling newBill){
+		//If a guardian is found, will bill to them instead
+		public boolean billUser(PatientBilling newBill, InsuranceClaim claim){
+			
 			
 			String employeeSIN = newBill.getEmployeeSIN();
 			if (!employeeSIN.isEmpty()) {
@@ -927,15 +961,24 @@ public class  PostgreSqlConn{
 				}
 			}
 			
+			if (getPatientBillingByKey(newBill.getPatientSIN(), newBill.getInvoiceID()).getEmployeeSIN() != null) {
+				System.out.println("Already billed to this invoice!");
+				return false;
+			}
+
+			if (!claim.getInsuranceCompany().isEmpty()) {
+				insertClaim(claim);
+			}
+			
 			getConn();
 
 	        try{
 
 				ps = db.prepareStatement("UPDATE dentalclinic.invoice "
-									   + "SET patientcharge=?, insurancecharge=?, employeecharge=? "
+									   + "SET userCharge=?, insurancecharge=?, employeecharge=? "
 									   + "WHERE invoiceid=?");
 					
-	            ps.setFloat(1, Float.parseFloat(newBill.getPatientPortion()));	
+	            ps.setFloat(1, Float.parseFloat(newBill.getUserPortion()));	
 	            ps.setFloat(2, Float.parseFloat(newBill.getInsurancePortion()));	
 	            ps.setFloat(3, Float.parseFloat(newBill.getEmployeePortion()));
 	            ps.setInt(4, Integer.parseInt(newBill.getInvoiceID()));
@@ -945,16 +988,53 @@ public class  PostgreSqlConn{
 	            System.out.println(ps.toString());
 	            
 				ps = db.prepareStatement("INSERT INTO dentalclinic.patientbilling "
-									   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+									   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		
 				ps.setString(1, newBill.getPatientSIN());	
 	            ps.setInt(2, Integer.parseInt(newBill.getInvoiceID()));
-				ps.setString(3, newBill.getEmployeeSIN());	
-				ps.setFloat(4, Float.parseFloat(newBill.getPatientPortion()));
-				ps.setFloat(5, Float.parseFloat(newBill.getEmployeePortion()));
-				ps.setFloat(6, Float.parseFloat(newBill.getInsurancePortion()));
-				ps.setFloat(7, Float.parseFloat(newBill.getTotalAmount()));
-				ps.setString(8, newBill.getPaymentType());
+	            
+	            String guardian = newBill.getGuardianSIN();
+	            if (guardian.isEmpty()) {
+	            	ps.setNull(3, Types.VARCHAR);//since patient can have no guardian
+	            } else {
+					ps.setString(3, newBill.getGuardianSIN());	
+	            }
+            	
+				ps.setString(4, newBill.getEmployeeSIN());	
+				ps.setFloat(5, Float.parseFloat(newBill.getUserPortion()));
+				ps.setFloat(6, Float.parseFloat(newBill.getEmployeePortion()));
+				ps.setFloat(7, Float.parseFloat(newBill.getInsurancePortion()));
+				ps.setFloat(8, Float.parseFloat(newBill.getTotalAmount()));
+				ps.setString(9, newBill.getPaymentType());
+				 
+				ps.executeUpdate();
+				
+				System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//For receptionist only; inserts an insurance claim
+		private boolean insertClaim(InsuranceClaim claim){
+			
+			getConn();
+
+	        try{
+	            
+				ps = db.prepareStatement("INSERT INTO dentalclinic.insuranceclaim "
+									   + "VALUES (?, ?, ?, ?)");
+		
+				ps.setString(1, claim.getPatientSIN());	
+				ps.setString(2, claim.getInsuranceCompany());	
+	            ps.setInt(3, Integer.parseInt(claim.getInvoiceID()));
+				ps.setFloat(4, Float.parseFloat(claim.getInsuranceAmount()));
 				 
 				ps.executeUpdate();
 				

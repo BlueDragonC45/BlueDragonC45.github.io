@@ -27,11 +27,11 @@
 
 function validateSIN(SIN) {
 	var numbers = /^[0-9]+$/;
-	
+	console.log(SIN);
 	if(SIN.value.match(numbers) && SIN.value.length == 9) {
 	      return true;
 	} else {
-  		console.log(SIN.value.length);
+		alert("The SIN must be a 9-digit number.");
 		return false;
 	}
 }
@@ -71,51 +71,19 @@ function validateSIN(SIN) {
 			alert("You need to fill all requiered fields.");
 			return false;
 		} else if(!validateSIN(patientSIN)){
-			alert("The SIN must be a 9 digit-number.");
 			return false;
 		} else if(age.value < 15){
 			if (guardian.value.length == 0) {
 				alert("Must have a guardian if younger than 15 years of age.");
+				return false;
 			} else if (!validateSIN(guardian)) {
-				alert("Guardian's SIN must be a 9-digit number!");
+				return false;
 			}
+		} else if(age.value >= 15 && guardian.value.length != 0){
+			alert("Patient is older than 15; a guardian is not required.");
 			return false;
 		} else if(patientPwd.value != patientPwdagain.value){
-			alert("Passwords need to match!");
-			return false;
-		} else
-			return true;
-	}
-
-	function validateGuardianRegister() {
-		var guardianSIN = document.getElementById("guardianSIN");
-		var userNameG = document.getElementById("userNameG");
-
-		var firstNameG = document.getElementById("firstNameG");
-		var lastNameG = document.getElementById("lastNameG");
-
-		var dateOfBirthG = document.getElementById("dateOfBirthG");
-		var ageG = document.getElementById("ageG");
-		document.getElementById("ageG").value = calcAge(dateOfBirthG.value);
-		var genderG = document.getElementById("genderG");
-		var guardianEmail = document.getElementById("guardianEmail");
-		var guardianPhoneNumber = document.getElementById("guardianPhoneNumber");
-		var addressG = document.getElementById("addressG");
-		var guardianPwd = document.getElementById("guardianPwd");
-		var guardianPwdagain = document.getElementById("guardianPwdagain");
-
-		if (guardianSIN.value == "" || userNameG.value == ""           || firstNameG.value == "" || lastNameG.value == ""
-								    || guardianPwd.value == ""         || guardianPwdagain.value == ""
-								    || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
-								    || guardianPhoneNumber.value == "" || addressG.value == ""){
-			alert("You need to fill all requiered fields.");
-			return false;
-		} else if(!validateSIN(guardianSIN)){
-			alert("The SIN must be a 9-digit number.");
-			return false;
-		} else if(ageG.value < 18){
-			alert("Must be at least 18 years of age to be a guardian!");
-		} else if(guardianPwd.value != guardianPwdagain.value){
+			console.log(age.value+" "+guardian.value.length);
 			alert("Passwords need to match!");
 			return false;
 		} else
@@ -145,9 +113,43 @@ function validateSIN(SIN) {
 		} else if(age.value < 15){
 			if (guardian.value.length == 0) {
 				alert("Must have a guardian if younger than 15 years of age.");
-			} else if (!validateSIN(guardian)) {
-				alert("Guardian's SIN must be a 9-digit number!");
+				return false;
+			}else if (!validateSIN(guardian)) {
+				return false;
 			}
+		} else
+			return true;
+	}
+
+	function validateGuardianRegister() {
+		var guardianSIN = document.getElementById("guardianSIN");
+		var userNameG = document.getElementById("userNameG");
+
+		var firstNameG = document.getElementById("firstNameG");
+		var lastNameG = document.getElementById("lastNameG");
+
+		var dateOfBirthG = document.getElementById("dateOfBirthG");
+		var ageG = document.getElementById("ageG");
+		document.getElementById("ageG").value = calcAge(dateOfBirthG.value);
+		var genderG = document.getElementById("genderG");
+		var guardianEmail = document.getElementById("guardianEmail");
+		var guardianPhoneNumber = document.getElementById("guardianPhoneNumber");
+		var addressG = document.getElementById("addressG");
+		var guardianPwd = document.getElementById("guardianPwd");
+		var guardianPwdagain = document.getElementById("guardianPwdagain");
+
+		if (guardianSIN.value == "" || userNameG.value == ""           || firstNameG.value == "" || lastNameG.value == ""
+								    || guardianPwd.value == ""         || guardianPwdagain.value == ""
+								    || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
+								    || guardianPhoneNumber.value == "" || addressG.value == ""){
+			alert("You need to fill all requiered fields.");
+			return false;
+		} else if(!validateSIN(guardianSIN)){
+			return false;
+		} else if(ageG.value < 18){
+			alert("Must be at least 18 years of age to be a guardian!");
+		} else if(guardianPwd.value != guardianPwdagain.value){
+			alert("Passwords need to match!");
 			return false;
 		} else
 			return true;
@@ -180,13 +182,13 @@ function validateSIN(SIN) {
 	}
 
 	function calculateTotalBill() {
-		var patientAmt = parseFloat(document.getElementById("patientPortionBillForm").value);
+		var userAmt = parseFloat(document.getElementById("userPortionBillForm").value);
 		var insuranceAmt = parseFloat(document.getElementById("insurancePortionBillForm").value);
 		var employeeAmt = parseFloat(document.getElementById("employeePortionBillForm").value);
 
-		if (Number.isNaN(patientAmt)) {
-			patientAmt = 0;
-			document.getElementById("patientPortionBillForm").value = 0;
+		if (Number.isNaN(userAmt)) {
+			userAmt = 0;
+			document.getElementById("userPortionBillForm").value = 0;
 		}
 		if (Number.isNaN(insuranceAmt)) {
 			insuranceAmt = 0;
@@ -197,8 +199,8 @@ function validateSIN(SIN) {
 			document.getElementById("employeePortionBillForm").value = 0;
 		}
 		
-		if (patientAmt > 10000) {
-			patientAmt = 10000;
+		if (userAmt > 10000) {
+			userAmt = 10000;
 		}
 		if (insuranceAmt > 10000) {
 			insuranceAmt = 10000;
@@ -207,11 +209,11 @@ function validateSIN(SIN) {
 			employeeAmt = 10000;
 		}
 		
-		document.getElementById("patientPortionBillForm").value = patientAmt;
+		document.getElementById("userPortionBillForm").value = userAmt;
 		document.getElementById("insurancePortionBillForm").value = insuranceAmt;
 		document.getElementById("employeePortionBillForm").value = employeeAmt
 		
-		var total = patientAmt + insuranceAmt + employeeAmt;
+		var total = userAmt + insuranceAmt + employeeAmt;
 		total = (Math.round(total * 100) / 100).toFixed(2);
 		
 		document.getElementById("totalBillForm").value = total;
@@ -233,7 +235,8 @@ function validateSIN(SIN) {
 		var total = document.getElementById("totalBillForm");
 		
 		//To-fill values
-		var patientAmt = document.getElementById("patientPortionBillForm");
+		var userAmt = document.getElementById("userPortionBillForm");
+		var insuranceCompany = document.getElementById("insuranceCompanyBillForm");
 		var insuranceAmt = document.getElementById("insurancePortionBillForm");
 		var employeeAmt = document.getElementById("employeePortionBillForm");
 		var payMethodBillForm = document.getElementById("payMethodBillForm");
@@ -245,11 +248,27 @@ function validateSIN(SIN) {
 			} else {
 				alert("The employee SIN must be a 9-digit number.");
 			}
+			return false;
+			
+		} else if (employeeAmt.value == 0 && employeeSINBillForm.value.length != 0) {
+			
+			alert("Do not need employee SIN since employee amount is 0.");
+			return false;
+			
+		} else if (insuranceAmt.value != 0 && insuranceCompany.value.length == 0) {
+			
+			if (insuranceCompany.value.length == 0) {
+				alert("Must include insurance company.");
+			}
 			
 			return false;
-		} 
-		
-		if (parseFloat(amountDue.value) == parseFloat(total.value)){
+			
+		} else if (insuranceAmt.value == 0 && insuranceCompany.value.length != 0) {
+			
+			alert("Do not need insurance company since insurance amount is 0.");
+			return false;
+			
+		} else if (parseFloat(amountDue.value) == parseFloat(total.value)){
 			return true;
 		} else {
 			alert("Total amount must be the same as Total Due.");
@@ -332,23 +351,24 @@ function validateSIN(SIN) {
 		document.getElementById("billForm").style.display = "block";
 		
 		document.getElementById("patientSINBillForm").value = <%=invoiceSelected.getPatientSIN()%>;
+		document.getElementById("guardianSINBillForm").value = <%=invoiceSelected.getGuardianSIN()%>;
 		document.getElementById("invoiceIDBillForm").value = <%=invoiceSelected.getInvoiceID()%>;
 		
 		var totalDue = "<%=invoiceSelected.getTotalFeeCharge()%>";
-		var patientAmt = "<%=invoiceSelected.getPatientCharge()%>";
+		var userAmt = "<%=invoiceSelected.getUserCharge()%>";
 		var insuranceAmt = "<%=invoiceSelected.getInsuranceCharge()%>";
 		var employeeAmt = "<%=invoiceSelected.getEmployeeCharge()%>";
 		var penalty = "<%=invoiceSelected.getPenalty()%>";
 		var discount = "<%=invoiceSelected.getDiscount()%>";
 		
 		totalDue = parseFloat(totalDue.replace("$", ""));
-		patientAmt = parseFloat(patientAmt.replace("$", ""));
+		userAmt = parseFloat(userAmt.replace("$", ""));
 		insuranceAmt = parseFloat(insuranceAmt.replace("$", ""));
 		employeeAmt = parseFloat(employeeAmt.replace("$", ""));
 		penalty = parseFloat(penalty.replace("$", ""));
 		discount = parseFloat(discount.replace("$", ""));
 		
-		document.getElementById("amountDue").value = (totalDue+penalty)-(patientAmt+discount+insuranceAmt+employeeAmt);
+		document.getElementById("amountDue").value = (totalDue+penalty)-(userAmt+discount+insuranceAmt+employeeAmt);
 	<% }; %>
 	
 	<% String outcomeB = (String) request.getAttribute("outcomeB");
@@ -363,11 +383,11 @@ function validateSIN(SIN) {
 			var patientSIN = "<%=(String) request.getAttribute("patientSINAfterBill")%>";
 			var total = "<%=(String) request.getAttribute("billTotal")%>";
 			
-			alert("Successfully billed "+total+" CAD to the patient with SIN: "+patientSIN);
+			alert("Successfully billed "+total+" CAD, accredited to the patient with SIN: "+patientSIN);
 			<%
 		} else if (outcomeB.equals("bill failed")) {
 			%>
-			alert("Failed to bill; nonexistent SIN or bill already processed.");
+			alert("Failed to bill; nonexistent employee or bill already processed.");
 			history.back();
 			<%
 		}
@@ -386,19 +406,43 @@ function validateSIN(SIN) {
 			
 		<%} else if (outcome.equals("updateFailed")) {
 			%>
-			alert("Patient entry for "+fName+" "+lName+" could not be updated; username chosen or guardian non-existent.");
+			alert("Patient entry for "+fName+" "+lName+" could not be updated; username already chosen or guardian non-existent.");
 			<%
 		} else if (outcome.equals("registerSuccess")) {
 			%>
 			alert("Patient entry for "+fName+" "+lName+" added successfully.");
 			<%
-		} else if (outcome.equals("registerFailed")) {
+		} else if (outcome.equals("patientsin repeated")) {
 			%>
-			alert("Patient entry for "+fName+" "+lName+" could not be added; username & SIN must be unique.");
+			alert("A patient with that SIN already exists.");
+			history.back();
+		 	openTab('patientRegister');
+			
+		<% } else if (outcome.equals("username repeated")) {
+			%>
+			alert("Username already in use.");
+			history.back();
+		 	openTab('patientRegister');
+			<%
+		%>
+		<% } else if (outcome.equals("guardian does not exist")) {
+			%>
+			alert("The guardian with that SIN does not exist.");
+			history.back();
+		 	openTab('patientRegister');
+			<%
+		%>
+		<% } else if (outcome.equals("unknown error")) {
+			%>
+			alert("Patient entry for "+fName+" "+lName+" could not be added; unknown error.");
+			history.back();
+		 	openTab('patientRegister');
 			<%
 		
 		%>
-	<% }}; %>
+		<% }
+		
+	}; %>
 	
 	<% String outcomeG = (String) request.getAttribute("outcomeG");
 	if (outcomeG != null) { 
@@ -546,8 +590,8 @@ function validateSIN(SIN) {
 				
 				<div class="p-3 my-3" id="searchInvoiceBySIN">
 					<form method="post" action="patientBilling">
-						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINBill" name="patientSINBill">
-						<button type="submit" value="submit" onclick="return validateSIN('patientSINBill');">View Invoices</button>
+						Social Insurance Number:<input class="m-1 form-control" type="number" id="patientSINBill" name="patientSINBill">
+						<button type="submit" value="submit" onclick="return validateSIN(patientSINBill);">View Invoices</button>
 					</form>
 				</div>
 				
@@ -582,18 +626,21 @@ function validateSIN(SIN) {
 				
 				<div class="p-3 my-3" id="billForm">
 					<form method="post" action="patientBilling">
-						Patient SIN:<input type="text" class="m-1 form-control" id="patientSINBillForm" name="patientSINBillForm" readonly>
 						Invoice ID:<input type="text" class="m-1 form-control" id="invoiceIDBillForm" name="invoiceIDBillForm" readonly> 
+						Patient SIN:<input type="text" class="m-1 form-control" id="patientSINBillForm" name="patientSINBillForm" readonly>
+						Guardian SIN:<input type="text" class="m-1 form-control" id="guardianSINBillForm" name="guardianSINBillForm" readonly>
+						User Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="userPortionBillForm" name="userPortionBillForm"> 
+						<small>Note: Billed to the guardian if the patient has one.</small><br>
 						Employee SIN:<input type="number" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="employeeSINBillForm" name="employeeSINBillForm">
-						Patient Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="patientPortionBillForm" name="patientPortionBillForm"> 
-						Insurance Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="insurancePortionBillForm" name="insurancePortionBillForm">
 						Employee Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="employeePortionBillForm" name="employeePortionBillForm"> 
+						Insurance Company:<input type="text" class="m-1 form-control" id="insuranceCompanyBillForm" name="insuranceCompanyBillForm"> 
+						Insurance Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="insurancePortionBillForm" name="insurancePortionBillForm">
 						Payment Method:<select class="m-1 form-control" id="payMethodBillForm" name="payMethodBillForm" required>
 						<option value="cash">Cash</option>
-						<option value="credit/debit">Debit</option>
-						<option value="credit/debit">Amex</option>
-						<option value="credit/debit">Visa</option>
-						<option value="bank transfer">Mastercard</option>
+						<option value="debit">Debit</option>
+						<option value="amex">Amex</option>
+						<option value="visa">Visa</option>
+						<option value="mastercard">Mastercard</option>
 						</select> 
 						Total Due:<input type="number" class="m-1 form-control" id="amountDue" name="amountDue" readonly> 
 						Total:<input type="number" class="m-1 form-control" value=0 id="totalBillForm" name="totalBillForm" readonly> 
@@ -615,7 +662,7 @@ function validateSIN(SIN) {
 				patientRegister is the masked/shortened directory of PatientRegisterServlet.java
 				-->
 				<form method="post" action="patientRegister">
-					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required>
+					SIN:<input type="number" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="patientSIN" name="patientSIN" required>
 					Username:<input type="text" class="m-1 form-control" id="userName" name="userName" required> 
 					First Name:<input type="text" class="m-1 form-control" id="firstName" name="firstName" required> 
 					Middle Name:<input type="text" class="m-1 form-control" id="middleName" name="middleName"> 
@@ -640,8 +687,8 @@ function validateSIN(SIN) {
 				<h2>Edit Patient Information</h2>
 				<div class="p-3 my-3" id="editPatientSearch">
 					<form method="post" action="updatePatientInfo">
-						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINEP" name="patientSINEP">
-						<button type="submit" value="submit" onclick="return validateSIN('patientSINEP')">Search for Patient</button>
+						Social Insurance Number:<input class="m-1 form-control" type="number" id="patientSINEP" name="patientSINEP">
+						<button type="submit" value="submit" onclick="return validateSIN(patientSINEP)">Search for Patient</button>
 						<button type="reset" value="reset">Reset</button>
 					</form>
 				</div>
@@ -663,7 +710,7 @@ function validateSIN(SIN) {
 						Email:<input class="m-1 form-control" type="email" id="emailEP" name="emailEP" required>
 						Phone number:<input class="m-1 form-control" type="tel" id="phoneEP" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEP" required> 
 						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
-						Guardian's SIN:<input class="m-1 form-control" type="text" id="guardianEP" name="guardianEP">
+						Guardian's SIN:<input class="m-1 form-control" type="number" id="guardianEP" name="guardianEP">
 						<button type="submit" value="submit" onclick="return validatePatientEdit()">Update Patient</button>
 						<button type="reset" value="reset" onclick="resetEditPatient()">Reset</button>
 					</form>
@@ -679,7 +726,7 @@ function validateSIN(SIN) {
 				patientRegister is the masked/shortened directory of PatientRegisterServlet.java
 				-->
 				<form method="post" action="guardianRegister">										
-					SIN:<input type="text" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="guardianSIN" name="guardianSIN" required>
+					SIN:<input type="number" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="guardianSIN" name="guardianSIN" required>
 					Username:<input type="text" class="m-1 form-control" id="userNameG" name="userNameG" required> 
 					First Name:<input type="text" class="m-1 form-control" id="firstNameG" name="firstNameG" required> 
 					Middle Name:<input type="text" class="m-1 form-control" id="middleNameG" name="middleNameG"> 
@@ -703,8 +750,8 @@ function validateSIN(SIN) {
 				<h2>Edit Guardian Information</h2>
 				<div class="p-3 my-3" id="editGuardianSearch">
 					<form method="post" action="updateGuardianInfo">
-						Social Insurance Number:<input class="m-1 form-control" type="text" id="guardianSINSearch" name="guardianSINSearch">
-						<button type="submit" value="submit" onclick="return validateSIN('guardianSINSearch')">Search for Guardian</button>
+						Social Insurance Number:<input class="m-1 form-control" type="number" id="guardianSINSearch" name="guardianSINSearch">
+						<button type="submit" value="submit" onclick="return validateSIN(guardianSINSearch)">Search for Guardian</button>
 						<button type="reset" value="reset">Reset</button>
 					</form>
 				</div>
@@ -785,7 +832,6 @@ function validateSIN(SIN) {
 					
 				</div>
 			</div>
-
 		</div>
 	</div>
 </body>

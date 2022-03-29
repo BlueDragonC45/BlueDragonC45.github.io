@@ -57,28 +57,40 @@ public class PatientRegisterServlet extends HttpServlet{
 		patient.setGuardianSIN(guardian);
 		
 		PostgreSqlConn con = new PostgreSqlConn();
-		
-		boolean isInserted = con.insertNewPatient(patient, patientPwd);
-		if (isInserted) {			
-				
-				//firstName and lastName might have been used already
-				//...at receptionist_view.jsp
-				req.setAttribute("firstNameNEW", firstName);
-				req.setAttribute("lastNameNEW", lastName);
 
+		req.setAttribute("firstNameNEW", firstName);
+		req.setAttribute("lastNameNEW", lastName);
+		
+		int insertedCode = con.insertNewPatient(patient, patientPwd);
+		if (insertedCode == 0) {			
+				
 				req.setAttribute("outcome", "registerSuccess");
 
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				return;			
-		} else {
-
-			req.setAttribute("firstNameNEW", firstName);
-			req.setAttribute("lastNameNEW", lastName);
+		} else if (insertedCode == 1) {
 			
-			req.setAttribute("outcome", "registerFailed");
+			req.setAttribute("outcome", "patientsin repeated");
 
 			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 			return;
+		} else if (insertedCode == 2) {
+			
+			req.setAttribute("outcome", "username repeated");
+
+			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			return;
+		} else if (insertedCode == 3) {
+			
+			req.setAttribute("outcome", "guardian does not exist");
+
+			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			return;
+		} else {
+			
+			req.setAttribute("outcome", "unknown error");
+
+			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 		}
 		
 	}
