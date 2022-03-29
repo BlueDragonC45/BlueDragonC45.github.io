@@ -20,8 +20,14 @@ public class PatientBilling {
 	private @Getter @Setter String paymentType;
 	
 	public String toString() {
-		String str = "Bill ID {"+patientSIN+", "+invoiceID+"} | A bill accounting for "
-					 +totalAmount+" CAD towards invoice #"+invoiceID+"."
+		String str = "["+patientSIN+", "+invoiceID+"] Accounting for "
+					 +totalAmount+" CAD towards invoice ["+invoiceID+"].";
+		return str;
+	}
+	
+	public String toStringLonger() {
+		String str = "["+patientSIN+", "+invoiceID+"] Accounting for "
+					 +totalAmount+" CAD towards invoice ["+invoiceID+"]."
 				   +" The patient with SIN: "+patientSIN+" paid "+patientPortion+" CAD "
 				   + "in "+paymentType+" with "+insurancePortion+" CAD from insurance. "
 				   + "An employee covered "+employeePortion+" CAD of the bill.";

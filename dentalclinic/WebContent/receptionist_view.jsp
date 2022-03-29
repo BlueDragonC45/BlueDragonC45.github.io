@@ -3,6 +3,7 @@
 <%@page import="dentalclinic.entities.Patient"%>
 <%@page import="dentalclinic.entities.Guardian"%>
 <%@page import="dentalclinic.entities.Employee"%>
+<%@page import="dentalclinic.entities.Invoice"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -30,8 +31,7 @@ function validateSIN(SIN) {
 	if(userSIN.value.match(numbers) && userSIN.value.length == 9) {
 	      return true;
 	} else {
-  console.log(userSIN.value.length);
-		alert("SIN must be a 9-digit number!");
+  		console.log(userSIN.value.length);
 		return false
 	}
 }
@@ -70,14 +70,15 @@ function validateSIN(SIN) {
 								   || patientPhoneNumber.value == "" || address.value == ""){
 			alert("You need to fill all requiered fields");
 			return false;
-		} else if(patientSIN.value.length != 9){
+		} else if(!validateSIN(patientSIN)){
 			alert("The length of SIN needs to be 9 digits long");
 			return false;
-		} else if(age.value < 18){
-			alert("Must be at least 18 years of age");
-			return false;
-		} else if(guardian.value.length > 0 && guardian.value.length != 9){
-			alert("The length of the guardian's SIN needs to be 9 digits long");
+		} else if(age.value < 15){
+			if (guardian.value.length == 0) {
+				alert("Must have a guardian if younger than 15 years of age.");
+			} else if (!validateSIN(guardian)) {
+				alert("Guardian's SIN must be a 9-digit number!");
+			}
 			return false;
 		} else if(patientPwd.value != patientPwdagain.value){
 			alert("Passwords need to match!");
@@ -109,12 +110,11 @@ function validateSIN(SIN) {
 								    || guardianPhoneNumber.value == "" || addressG.value == ""){
 			alert("You need to fill all requiered fields");
 			return false;
-		} else if(guardianSIN.value.length != 9){
-			alert("The length of SIN needs to be 9 digits long");
+		} else if(!validateSIN(guardianSIN)){
+			alert("SIN must be a 9-digit number!");
 			return false;
 		} else if(ageG.value < 18){
-			alert("Must be at least 18 years of age");
-			return false;
+			alert("Must be at least 18 years of age to be a guardian!");
 		} else if(guardianPwd.value != guardianPwdagain.value){
 			alert("Passwords need to match!");
 			return false;
@@ -142,11 +142,12 @@ function validateSIN(SIN) {
 		 || patientPhoneNumber.value == "" || address.value == ""){
 			alert("You need to fill all requiered fields");
 			return false;
-		} else if(age.value < 18){
-			alert("Must be at least 18 years of age");
-			return false;
-		} else if(guardian.value.length > 0 && !validateSIN(guardian)){
-			alert("Guardian's SIN needs to be either 9 digits long or empty");
+		} else if(age.value < 15){
+			if (guardian.value.length == 0) {
+				alert("Must have a guardian if younger than 15 years of age.");
+			} else if (!validateSIN(guardian)) {
+				alert("Guardian's SIN must be a 9-digit number!");
+			}
 			return false;
 		} else
 			return true;
@@ -176,6 +177,77 @@ function validateSIN(SIN) {
 			return false;
 		} else
 			return true;
+	}
+
+	function calculateTotalBill() {
+		var patientAmt = parseFloat(document.getElementById("patientPortionBillForm").value);
+		var insuranceAmt = parseFloat(document.getElementById("insurancePortionBillForm").value);
+		var employeeAmt = parseFloat(document.getElementById("employeePortionBillForm").value);
+
+		if (Number.isNaN(patientAmt)) {
+			patientAmt = 0;
+		}
+		if (Number.isNaN(insuranceAmt)) {
+			insuranceAmt = 0;
+		}
+		if (Number.isNaN(employeeAmt)) {
+			employeeAmt = 0;
+		}
+		
+		var total = patientAmt + insuranceAmt + employeeAmt;
+		total = (Math.round(total * 100) / 100).toFixed(2);
+		
+		document.getElementById("totalBillForm").value = total;
+		return;
+	}
+	
+	
+	function validateBillForm() {
+		
+		//in case it above function did not respond on keyup
+		calculateTotalBill()
+		
+		//Pre-filled values
+		var invoiceIDBillForm = document.getElementById("invoiceIDBillForm");
+		var employeeSINBillForm = document.getElementById("employeeSINBillForm");
+		var amountDue = document.getElementById("amountDue");
+
+		//Calculated values
+		var totalBillForm = document.getElementById("totalBillForm");
+		
+		//To-fill values
+		var patientPortionBillForm = document.getElementById("patientPortionBillForm");
+		var insurancePortionBillForm = document.getElementById("insurancePortionBillForm");
+		var employeePortionBillForm = document.getElementById("employeePortionBillForm");
+		var payMethodBillForm = document.getElementById("payMethodBillForm");
+		
+		if (patientSIN.value == "" || userName.value == ""           || firstName.value == "" || lastName.value == ""
+								   || patientPwd.value == ""         || patientPwdagain.value == ""
+								   || dateOfBirth.value == ""        || gender.value == ""    || patientEmail.value == ""
+								   || patientPhoneNumber.value == "" || address.value == ""){
+			alert("You need to fill all requiered fields");
+			return false;
+		} else if(!validateSIN(patientSIN)){
+			alert("The length of SIN needs to be 9 digits long");
+			return false;
+		} else if(age.value < 15){
+			if (guardian.value.length == 0) {
+				alert("Must have a guardian if younger than 15 years of age.");
+			} else if (!validateSIN(guardian)) {
+				alert("Guardian's SIN must be a 9-digit number!");
+			}
+			return false;
+		} else if(patientPwd.value != patientPwdagain.value){
+			alert("Passwords need to match!");
+			return false;
+		} else
+			return false;
+	}
+
+	function resetPatientBilling() {
+		document.getElementById("searchInvoiceBySIN").style.display = "block";
+		document.getElementById("invoicesView").style.display = "none";
+		document.getElementById("branchSearchResults").style.display = "none";
 	}
 	
 	function resetEditPatient() {
@@ -327,6 +399,23 @@ function validateSIN(SIN) {
 	}
 	%>
 	
+	<% 
+	Object obj3 = request.getAttribute("invoices");
+	ArrayList<Invoice> invoiceList = null;
+	if (obj3 instanceof ArrayList) 
+		invoiceList = (ArrayList<Invoice>) obj3;
+	
+	if (invoiceList != null) {
+		if (invoiceList.size() == 0) {
+			%>alert("No invoices found for this patient.");<%
+		} else {
+			%>
+		 	openTab('patientBilling');
+			document.getElementById("searchInvoiceBySIN").style.display = "none";
+			document.getElementById("invoicesView").style.display = "block";<%
+		}
+	}
+	%>
 
 	});
 
@@ -344,8 +433,8 @@ function validateSIN(SIN) {
 			<h1>Receptionist View</h1>
 			<div class="p-1 my-1 border border-dark row justify-content-around"
 				id="receptionistNav">
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newAppointment')">Set a New Appointment</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newPatientBilling')">Bill a Patient</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('appointment')">Set a New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientBilling')">Bill a Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
@@ -355,7 +444,7 @@ function validateSIN(SIN) {
 			</div>
 
 
-			<div class="tab p-3 my-3" style="display: none;" id="newAppointment">
+			<div class="tab p-3 my-3" style="display: none;" id="appointment">
 				<h2>New Appointment</h2>
 				<form>
 					First Name:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
@@ -389,8 +478,9 @@ function validateSIN(SIN) {
 			</div>
 
 
-			<div class="tab p-3 my-3" style="display: none;" id=newPatientBilling>
+			<div class="tab p-3 my-3" style="display: none;" id=patientBilling>
 				<h2>Patient Billing</h2>
+				
 				<div class="p-3 my-3" id="searchInvoiceBySIN">
 					<form method="post" action="patientBilling">
 						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINBill" name="patientSINBill">
@@ -398,32 +488,51 @@ function validateSIN(SIN) {
 					</form>
 				</div>
 				
-				<div class="p-3 my-3" id="invoiceView">
+				<div class="p-3 my-3" id="invoicesView">
 					<form method="post" action="patientBilling">
-				<%//Branch List
-			  	  //Will show up only when branches is non-empty
-					if (branchList != null) {
-						if (branchList.size() != 0) {
-							%><h3>Branches:</h3><br>
-							<select class="m-1 form-control" type="text" id="branchIDSelected" name="branchIDSelected">
+				<%//Invoice List
+			  	  //Will show up only when invoices is non-empty
+					if (invoiceList != null) {
+						if (invoiceList.size() != 0) {
+							%><h3>Invoices Found:</h3><br>
+							<select class="m-1 form-control" type="text" id="invoiceIDSelected" name="invoiceIDSelected">
 								<%
-								for (Branch branch : branchList) {
+								for (Invoice invoice : invoiceList) {
 									%>
-									<option value=<%=branch.getBranchID()%>><%=branch.toString()%></option>
+									<option value=<%=invoice.getInvoiceID()%>><%=invoice.toString()%></option>
 									<%
 								}
 								%>
 							</select>
-							<button type="submit" value="submit" onclick="return True">Select</button>
-							<button type="reset" value="reset" onclick="resetDentistListing()">Go Back</button>
+							<button type="submit" value="submit" onclick="return True">Bill Form</button>
+							<button type="reset" value="reset" onclick="resetPatientBilling()">Go Back</button>
 						<%
 						}
 					}
 					%>
 					</form>
 				</div>
+				
+				<div class="p-3 my-3" id="billForm">
+					<form method="post" action="patientBilling">
+						Patient SIN:<input type="text" class="m-1 form-control" id="patientSINBillForm" name="patientSINBillForm" readonly>
+						Invoice ID:<input type="text" class="m-1 form-control" id="invoiceIDBillForm" name="invoiceIDBillForm" readonly> 
+						Employee SIN:<input type="number" class="m-1 form-control" pattern="[0-9]{9}" placeholder="123456789" id="employeeSINBillForm" name="employeeSINBillForm">
+						Patient Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="patientPortionBillForm" name="patientPortionBillForm"> 
+						Insurance Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="insurancePortionBillForm" name="insurancePortionBillForm">
+						Employee Portion:<input type="number" onkeyup="calculateTotalBill()" value = 0 min="0.00" max="10000.00" step="0.01" class="m-1 form-control" id="employeePortionBillForm" name="employeePortionBillForm"> 
+						Payment Method:<select class="m-1 form-control" id="payMethodBillForm" name="payMethodBillForm" required>
+						<option value="cash">Cash</option>
+						<option value="credit/debit">Credit/Debit</option>
+						<option value="bank transfer">Bank Transfer</option>
+					</select> 
+						Total Due:<input type="number" class="m-1 form-control" id="amountDue" name="amountDue" value=15 readonly> 
+						Total:<input type="number" class="m-1 form-control" id="totalBillForm" name="totalBillForm" readonly> 
+						<button type="submit" value="submit" onclick="return validateBillForm();">Bill</button>
+						<button type="reset" value="reset">Reset</button>
+					</form>
+				</div>
 			</div>
-
 
 			<div class="tab p-3 my-3" style="display: none;" id="patientRegister">
 				<h2>New Patient</h2>

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import java.sql.Date; 
 
@@ -733,16 +732,16 @@ public class  PostgreSqlConn{
 				while(rs.next()){
 					String appointmentDate = rs.getString("appointmentDate");
 					String startTime = rs.getString("appointmentstartTime");
-					String roomID = rs.getString("roomID");
-					String branchID = rs.getString("branchID");
-					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
-					String invoiceID = rs.getString("invoiceID");
 					String endTime = rs.getString("appointmentendTime");
 					String appointmentType = rs.getString("appointmentType");
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
 					String status = rs.getString("status");
-					Appointment appointment = new Appointment(appointmentDate, startTime, roomID,
-															  branchID, employeeSINList, invoiceID,
-															  endTime, appointmentType, status);
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					Appointment appointment = new Appointment(appointmentDate, startTime, endTime,
+															  appointmentType, roomID, branchID,
+															  invoiceID, status, employeeSINList);
 					appointments.add(appointment);
 				 System.out.println(Arrays.toString(appointment.getEmployeeSINList()));
 				}
@@ -789,6 +788,85 @@ public class  PostgreSqlConn{
 	        }
 						
 			return branches;
+			
+		}
+		
+		//Returns an ArrayList containing all Branches
+		public ArrayList<Invoice> getAllInvoicesByPatientSIN(String patientSIN){
+			
+			getConn();
+			
+			ArrayList<Invoice> invoices = new ArrayList<Invoice>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * FROM dentalclinic.invoice "
+									   + "WHERE patientSIN=?");
+	            ps.setString(1, patientSIN);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String invoiceID = rs.getString("invoiceID");
+					String dateOfIssue = rs.getString("dateOfIssue");
+					//col3: patientSIN already have
+					String patientCharge = rs.getString("patientCharge");
+					String insuranceCharge = rs.getString("insuranceCharge");
+					String totalFeeCharge = rs.getString("totalFeeCharge");
+					String discount = rs.getString("discount");
+					String penalty = rs.getString("penalty");
+					Invoice invoice = new Invoice(invoiceID, dateOfIssue, patientSIN,
+										          patientCharge, insuranceCharge,
+										          totalFeeCharge, discount, penalty);
+					invoices.add(invoice);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return invoices;
+			
+		}
+		
+		//Returns an ArrayList containing all Branches
+		public Invoice getInvoiceByID(String invoiceID){
+			
+			getConn();
+			
+			Invoice invoice = new Invoice();
+			
+			try {
+				ps = db.prepareStatement("SELECT * FROM dentalclinic.invoice "
+									   + "WHERE invoiceID=?");
+	            ps.setString(1, invoiceID);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					//col1: invoiceID already have
+					String dateOfIssue = rs.getString("dateOfIssue");
+					String patientSIN = rs.getString("patientSIN");
+					String patientCharge = rs.getString("patientCharge");
+					String insuranceCharge = rs.getString("insuranceCharge");
+					String totalFeeCharge = rs.getString("totalFeeCharge");
+					String discount = rs.getString("discount");
+					String penalty = rs.getString("penalty");
+					invoice = new Invoice(invoiceID, dateOfIssue, patientSIN,
+										          patientCharge, insuranceCharge,
+										          totalFeeCharge, discount, penalty);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return invoice;
 			
 		}
 

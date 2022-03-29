@@ -20,7 +20,13 @@ public class Invoice  {
 	private @Getter @Setter String penalty;  
 	
 	public String toString() {
-		String str = "Invoice #"+invoiceID+", issued "+dateOfIssue
+		String str = "["+invoiceID+"] Issued "+dateOfIssue
+				  + " for patient with SIN: "+patientSIN+". "
+				   + "Total: "+totalFeeCharge+".";
+		return str;
+	}
+	public String toStringLonger() {
+		String str = "["+invoiceID+"] Issued "+dateOfIssue
 				  + " for patient with SIN: "+patientSIN+". "
 				   + "Total: "+totalFeeCharge+" | Patient Portion: "
 				     +patientCharge+" | Insurance Portion"

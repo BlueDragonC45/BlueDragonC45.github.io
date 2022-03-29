@@ -1,7 +1,6 @@
 package dentalclinic.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,8 +10,8 @@ import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Employee;
-import dentalclinic.entities.Appointment;
 
+@SuppressWarnings("serial")
 public class EmployeeLoginServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
