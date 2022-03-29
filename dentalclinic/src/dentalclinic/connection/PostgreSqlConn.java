@@ -113,7 +113,10 @@ public class  PostgreSqlConn{
 	            ps = db.prepareStatement("SELECT * from dentalclinic.employee "
 	            		               + "WHERE username=?");
 	            
-	            ps.setString(1, userName);	               
+	            ps.setString(1, userName);	  
+	            
+	            System.out.println(ps.toString());
+	            
 	            rs = ps.executeQuery();
 	
 				while(rs.next()) {
@@ -791,7 +794,7 @@ public class  PostgreSqlConn{
 			
 		}
 		
-		//Returns an ArrayList containing all Branches
+		//Returns an ArrayList containing all invoices
 		public ArrayList<Invoice> getAllInvoicesByPatientSIN(String patientSIN){
 			
 			getConn();
@@ -812,11 +815,12 @@ public class  PostgreSqlConn{
 					//col3: patientSIN already have
 					String patientCharge = rs.getString("patientCharge");
 					String insuranceCharge = rs.getString("insuranceCharge");
+					String employeeCharge = rs.getString("employeeCharge");
 					String totalFeeCharge = rs.getString("totalFeeCharge");
 					String discount = rs.getString("discount");
 					String penalty = rs.getString("penalty");
 					Invoice invoice = new Invoice(invoiceID, dateOfIssue, patientSIN,
-										          patientCharge, insuranceCharge,
+										          patientCharge, insuranceCharge, employeeCharge,
 										          totalFeeCharge, discount, penalty);
 					invoices.add(invoice);
 				}
@@ -831,6 +835,47 @@ public class  PostgreSqlConn{
 			
 		}
 		
+		//Returns an invoice by its ID
+		public PatientBilling getPatientBillingByKey(String patientSIN, String invoiceID){
+			
+			getConn();
+			
+			PatientBilling patientBilling = new PatientBilling();
+			
+			try {
+				ps = db.prepareStatement("SELECT * FROM dentalclinic.patientBilling "
+									   + "WHERE invoiceID=? "
+									   + "AND patientSIN=?");
+	            ps.setInt(1, Integer.parseInt(invoiceID));	
+	            ps.setString(2, patientSIN);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					//col1: patientSIN already have
+					//col2: invoiceID already have
+					String employeeSIN = rs.getString("employeeSIN");
+					String patientPortion = rs.getString("patientPortion");
+					String employeePortion = rs.getString("employeePortion");
+					String insurancePortion = rs.getString("insurancePortion");
+					String totalAmount = rs.getString("totalAmount");
+					String paymentType = rs.getString("paymentType");
+					patientBilling = new PatientBilling(patientSIN, invoiceID, employeeSIN,
+													    patientPortion, employeePortion,
+													    insurancePortion, totalAmount, paymentType);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return patientBilling;
+			
+		}
+		
 		//Returns an ArrayList containing all Branches
 		public Invoice getInvoiceByID(String invoiceID){
 			
@@ -841,7 +886,7 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT * FROM dentalclinic.invoice "
 									   + "WHERE invoiceID=?");
-	            ps.setString(1, invoiceID);	
+	            ps.setInt(1, Integer.parseInt(invoiceID));	
 	            
 	            System.out.println(ps.toString());   
 	            
@@ -852,11 +897,12 @@ public class  PostgreSqlConn{
 					String patientSIN = rs.getString("patientSIN");
 					String patientCharge = rs.getString("patientCharge");
 					String insuranceCharge = rs.getString("insuranceCharge");
+					String employeeCharge = rs.getString("employeeCharge");
 					String totalFeeCharge = rs.getString("totalFeeCharge");
 					String discount = rs.getString("discount");
 					String penalty = rs.getString("penalty");
 					invoice = new Invoice(invoiceID, dateOfIssue, patientSIN,
-										          patientCharge, insuranceCharge,
+										          patientCharge, insuranceCharge, employeeCharge,
 										          totalFeeCharge, discount, penalty);
 				}
 			} catch (SQLException e) {
@@ -869,38 +915,60 @@ public class  PostgreSqlConn{
 			return invoice;
 			
 		}
+		
+		//For receptionist only; bills a patient based on an invoice
+		public boolean billPatient(PatientBilling newBill){
+			
+			String employeeSIN = newBill.getEmployeeSIN();
+			if (!employeeSIN.isEmpty()) {
+				if (getUserInfoByEmployeeSIN(employeeSIN).getUserName() == null) {
+					System.out.println("Employee not found!");
+					return false;
+				}
+			}
+			
+			getConn();
 
-		//Returns appointments that involve a certain patient using their SIN
-//		public ArrayList<Appointment> getAppointmentsByPatientSIN(String patientSIN){
-//			
-//			getConn();
-//			
-//			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
-//			
-//			try {
-//				ps = db.prepareStatement("select * from dentalclinic.appointment where '"+patientSIN+"' ??? GROUP BY appointmentdate, starttime");
-//				rs = ps.executeQuery();
-//				while(rs.next()){
-//					String appointmentDate = rs.getString("appointmentDate");
-//					String appointmentType = rs.getString("appointmentType");
-//					String startTime = rs.getString("startTime");
-//					String endTime = rs.getString("endTime");
-//					String roomID = rs.getString("roomID");
-//					String status = rs.getString("status");
-//					Appointment appointment = new Appointment(appointmentDate, appointmentType, startTime,
-//															  endTime, roomID, status);
-//					appointments.add(appointment);
-//				}
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} finally {
-//	        	closeDB();
-//	        }
-//						
-//			return appointments;
-//			
-//		}
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.invoice "
+									   + "SET patientcharge=?, insurancecharge=?, employeecharge=? "
+									   + "WHERE invoiceid=?");
+					
+	            ps.setFloat(1, Float.parseFloat(newBill.getPatientPortion()));	
+	            ps.setFloat(2, Float.parseFloat(newBill.getInsurancePortion()));	
+	            ps.setFloat(3, Float.parseFloat(newBill.getEmployeePortion()));
+	            ps.setInt(4, Integer.parseInt(newBill.getInvoiceID()));
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+				ps = db.prepareStatement("INSERT INTO dentalclinic.patientbilling "
+									   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		
+				ps.setString(1, newBill.getPatientSIN());	
+	            ps.setInt(2, Integer.parseInt(newBill.getInvoiceID()));
+				ps.setString(3, newBill.getEmployeeSIN());	
+				ps.setFloat(4, Float.parseFloat(newBill.getPatientPortion()));
+				ps.setFloat(5, Float.parseFloat(newBill.getEmployeePortion()));
+				ps.setFloat(6, Float.parseFloat(newBill.getInsurancePortion()));
+				ps.setFloat(7, Float.parseFloat(newBill.getTotalAmount()));
+				ps.setString(8, newBill.getPaymentType());
+				 
+				ps.executeUpdate();
+				
+				System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
 		
 		//Returns the branch by the location and city
 		public String getBranchByLocation(String province, String city) {

@@ -15,6 +15,7 @@ public class Invoice  {
 	private @Getter @Setter String patientSIN;  
 	private @Getter @Setter String patientCharge;  
 	private @Getter @Setter String insuranceCharge;  
+	private @Getter @Setter String employeeCharge; 
 	private @Getter @Setter String totalFeeCharge;  
 	private @Getter @Setter String discount;  
 	private @Getter @Setter String penalty;  
@@ -29,9 +30,10 @@ public class Invoice  {
 		String str = "["+invoiceID+"] Issued "+dateOfIssue
 				  + " for patient with SIN: "+patientSIN+". "
 				   + "Total: "+totalFeeCharge+" | Patient Portion: "
-				     +patientCharge+" | Insurance Portion"
-				     +insuranceCharge+" | Discount: "+discount
+				     +patientCharge+" | Insurance Portion: "
+				     +insuranceCharge+" | Employee Portion: "+employeeCharge
+				   +" | Discount: "+discount
 				  + " | Penalty: "+penalty;
 		return str;
 	}
-}  
+}
