@@ -54,6 +54,17 @@
 	 
 	 <servlet>
 		 <description></description>
+		 <display-name>Patient Billing Servlet</display-name>
+		 <servlet-name>PatientBillingServlet</servlet-name>
+		 <servlet-class>dentalclinic.servlet.PatientBillingServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		 <servlet-name>PatientBillingServlet</servlet-name>
+		 <url-pattern>/patientBilling</url-pattern>
+	 </servlet-mapping>
+	 
+	 <servlet>
+		 <description></description>
 		 <display-name>Patient Login Servlet</display-name>
 		 <servlet-name>PatientLoginServlet</servlet-name>
 		 <servlet-class>dentalclinic.servlet.PatientLoginServlet</servlet-class>

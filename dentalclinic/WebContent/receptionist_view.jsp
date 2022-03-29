@@ -24,6 +24,18 @@
 <title>Sunshine Dentist Clinic</title>
 <script>
 
+function validateSIN(SIN) {
+	var numbers = /^[0-9]+$/;
+	var userSIN = document.getElementById(SIN);
+	if(userSIN.value.match(numbers) && userSIN.value.length == 9) {
+	      return true;
+	} else {
+  console.log(userSIN.value.length);
+		alert("SIN must be a 9-digit number!");
+		return false
+	}
+}
+
 	function calcAge(dateOfBirthVal) {
 		var date = new Date(dateOfBirthVal)
 		var today = new Date();
@@ -333,6 +345,7 @@
 			<div class="p-1 my-1 border border-dark row justify-content-around"
 				id="receptionistNav">
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newAppointment')">Set a New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newPatientBilling')">Bill a Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
@@ -376,6 +389,42 @@
 			</div>
 
 
+			<div class="tab p-3 my-3" style="display: none;" id=newPatientBilling>
+				<h2>Patient Billing</h2>
+				<div class="p-3 my-3" id="searchInvoiceBySIN">
+					<form method="post" action="patientBilling">
+						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINBill" name="patientSINBill">
+						<button type="submit" value="submit" onclick="return validateSIN('patientSINBill');">View Invoices</button>
+					</form>
+				</div>
+				
+				<div class="p-3 my-3" id="invoiceView">
+					<form method="post" action="patientBilling">
+				<%//Branch List
+			  	  //Will show up only when branches is non-empty
+					if (branchList != null) {
+						if (branchList.size() != 0) {
+							%><h3>Branches:</h3><br>
+							<select class="m-1 form-control" type="text" id="branchIDSelected" name="branchIDSelected">
+								<%
+								for (Branch branch : branchList) {
+									%>
+									<option value=<%=branch.getBranchID()%>><%=branch.toString()%></option>
+									<%
+								}
+								%>
+							</select>
+							<button type="submit" value="submit" onclick="return True">Select</button>
+							<button type="reset" value="reset" onclick="resetDentistListing()">Go Back</button>
+						<%
+						}
+					}
+					%>
+					</form>
+				</div>
+			</div>
+
+
 			<div class="tab p-3 my-3" style="display: none;" id="patientRegister">
 				<h2>New Patient</h2>
 				<!--
@@ -409,7 +458,7 @@
 				<div class="p-3 my-3" id="editPatientSearch">
 					<form method="post" action="updatePatientInfo">
 						Social Insurance Number:<input class="m-1 form-control" type="text" id="patientSINEP" name="patientSINEP">
-						<button type="submit" value="submit" onclick="return validateSIN()">Search for Patient</button>
+						<button type="submit" value="submit" onclick="return validateSIN('patientSINEP')">Search for Patient</button>
 						<button type="reset" value="reset">Reset</button>
 					</form>
 				</div>
@@ -472,7 +521,7 @@
 				<div class="p-3 my-3" id="editGuardianSearch">
 					<form method="post" action="updateGuardianInfo">
 						Social Insurance Number:<input class="m-1 form-control" type="text" id="guardianSINSearch" name="guardianSINSearch">
-						<button type="submit" value="submit" onclick="return validateSIN()">Search for Guardian</button>
+						<button type="submit" value="submit" onclick="return validateSIN('guardianSINSearch')">Search for Guardian</button>
 						<button type="reset" value="reset">Reset</button>
 					</form>
 				</div>
