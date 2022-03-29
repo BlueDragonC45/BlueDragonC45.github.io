@@ -1,35 +1,20 @@
 package dentalclinic.entities;
 
+import lombok.AllArgsConstructor;  
+import lombok.Getter;  
+import lombok.NoArgsConstructor;  
+import lombok.Setter;  
+
+@NoArgsConstructor  
+@AllArgsConstructor  
+
 public class PatientRecord {
 
-	private String treatmentID;
-	private String treatmentDetails;
-	
-	public PatientRecord() {
-		
-	}
-	
-	public PatientRecord(String treatmentID, String treatmentDetails) {
-		this.treatmentID = treatmentID;
-		this.treatmentDetails = treatmentDetails;
-	}
+	private @Getter @Setter String treatmentID;
+	private @Getter @Setter String treatmentDetails;
 	
 	public String toString() {
 		String str = "A patient record for treatment #"+treatmentID+": "+treatmentDetails+".";
 		return str;
-	}
-	
-	public String getTreatmentID() {
-		return treatmentID;
-	}
-	public void setTreatmentID(String treatmentID) {
-		this.treatmentID = treatmentID;
-	}
-
-	public String getTreatmentDetails() {
-		return treatmentDetails;
-	}
-	public void setTreatmentDetails(String treatmentDetails) {
-		this.treatmentDetails = treatmentDetails;
 	}
 }

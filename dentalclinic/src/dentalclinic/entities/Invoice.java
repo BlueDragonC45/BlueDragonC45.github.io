@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;  
 import lombok.NoArgsConstructor;  
 import lombok.Setter;  
-import lombok.ToString;  
 
 @NoArgsConstructor  
 @AllArgsConstructor  
 
 public class Invoice  {  
+	
 	private @Getter @Setter String invoiceID;  
 	private @Getter @Setter String dateOfIssue;  
 	private @Getter @Setter String patientSIN;  

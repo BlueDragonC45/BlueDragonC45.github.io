@@ -34,7 +34,7 @@ public class PatientBillingServlet extends HttpServlet {
 		}
 		
 		Invoice invoice = con.getInvoiceByID(invoiceID);
-		req.setAttribute("invoice", invoice);
+		req.setAttribute("invoice", invoice.);
 		
 		req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 	}
