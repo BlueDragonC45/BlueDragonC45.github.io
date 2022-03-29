@@ -294,7 +294,7 @@ $(document).ready(function() {
         <h2> Update Employee</h2>
         <div class="p-3 my-3" id="editEmployeeSearch">
 			<form method="post" action="updateEmployeeInfo">
-				Social Insurance Number:<input class="m-1 form-control" type="text" id="employeeSIN" name="employeeSIN">
+				Social Insurance Number:<input class="m-1 form-control" type="text" id="employeeSINEE" name="employeeSINEE">
 				<button type="submit" value="submit" onclick="return validateSIN()">Search for Employee</button>
 				<button type="reset" value="reset">Reset</button>
 			</form>

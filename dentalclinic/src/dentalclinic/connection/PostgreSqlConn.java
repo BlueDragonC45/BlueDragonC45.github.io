@@ -682,8 +682,7 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For manager only; updates an employee
-		public boolean updateEmployeeInfo(Employee newEmployeeInfo, String employeeSIN){
-			
+		public boolean updateEmployeeInfo(Employee newEmployeeInfo, String employeeSIN) {
 			if (!getUserInfoByEmployeeSIN(employeeSIN).getUserName()
 					.equals(newEmployeeInfo.getUserName())) {
 				ArrayList<String> usernames = getAllUsernamesByEntity("employee");
@@ -1000,7 +999,11 @@ public class  PostgreSqlConn{
 					ps.setString(3, newBill.getGuardianSIN());	
 	            }
             	
-				ps.setString(4, newBill.getEmployeeSIN());	
+	            if (newBill.getEmployeeSIN().isEmpty()) {
+	            	ps.setNull(4, Types.VARCHAR);//since patient can have no employee portion
+	            } else {
+	            	ps.setString(4, newBill.getEmployeeSIN());	
+	            }
 				ps.setFloat(5, Float.parseFloat(newBill.getUserPortion()));
 				ps.setFloat(6, Float.parseFloat(newBill.getEmployeePortion()));
 				ps.setFloat(7, Float.parseFloat(newBill.getInsurancePortion()));

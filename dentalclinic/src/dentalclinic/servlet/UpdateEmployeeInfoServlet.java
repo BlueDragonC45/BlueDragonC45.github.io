@@ -24,7 +24,7 @@ public class UpdateEmployeeInfoServlet extends HttpServlet {
 		String employeeSINEdit = req.getParameter("sinEE");
 		if (employeeSINEdit == null) {
 			
-			String employeeSINEE = req.getParameter("employeeSIN");
+			String employeeSINEE = req.getParameter("employeeSINEE");
 			System.out.println(employeeSINEE);
 			Employee employee = con.getUserInfoByEmployeeSIN(employeeSINEE);
 			
