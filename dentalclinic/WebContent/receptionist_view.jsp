@@ -147,7 +147,8 @@ function validateSIN(SIN) {
 		} else if(!validateSIN(guardianSIN)){
 			return false;
 		} else if(ageG.value < 18){
-			alert("Must be at least 18 years of age to be a guardian!");
+			alert("Must be at least 18 years old to be a guardian!");
+			return false;
 		} else if(guardianPwd.value != guardianPwdagain.value){
 			alert("Passwords need to match!");
 			return false;
@@ -172,10 +173,10 @@ function validateSIN(SIN) {
 		if (userNameG.value == ""           || firstNameG.value == "" || lastNameG.value == ""
 		 || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
 		 || guardianPhoneNumber.value == "" || addressG.value == ""){
-			alert("You need to fill all requiered fields");
+			alert("You need to fill all requiered fields.");
 			return false;
-		} else if(ageG.value < 18){
-			alert("Must be at least 18 years of age");
+		} else if (ageG.value < 18) {
+			alert("Must be at least 18 years old to be a guardian!");
 			return false;
 		} else
 			return true;
@@ -304,6 +305,7 @@ function validateSIN(SIN) {
 	}
 
 	$(document).ready(function() {
+		
 	<% Patient patientInfo = (Patient) request.getAttribute("patient");
 	if (patientInfo != null) { %>
 	 	openTab('editPatient');
@@ -385,13 +387,25 @@ function validateSIN(SIN) {
 			
 			alert("Successfully billed "+total+" CAD, accredited to the patient with SIN: "+patientSIN);
 			<%
-		} else if (outcomeB.equals("bill failed")) {
+		} else if (outcomeB.equals("employee not found")) {
 			%>
-			alert("Failed to bill; nonexistent employee or bill already processed.");
+			alert("Failed to bill; employee with that SIN does not exist.");
 			history.back();
 			<%
-		}
+		} else if (outcomeB.equals("already paid in full")) {
 			%>
+			alert("Failed to bill; bill already processed.");
+			history.back();
+			<%
+		%>
+		<% } else {
+			%>
+			alert("Unknown Error; SQL ERROR.");
+			history.back();
+			<%
+		%>
+		<% }%>
+		
 	<% }; %>
 
 	<% String outcome = (String) request.getAttribute("outcome");
@@ -416,27 +430,23 @@ function validateSIN(SIN) {
 			%>
 			alert("A patient with that SIN already exists.");
 			history.back();
-		 	openTab('patientRegister');
 			
 		<% } else if (outcome.equals("username repeated")) {
 			%>
 			alert("Username already in use.");
 			history.back();
-		 	openTab('patientRegister');
 			<%
 		%>
 		<% } else if (outcome.equals("guardian does not exist")) {
 			%>
 			alert("The guardian with that SIN does not exist.");
 			history.back();
-		 	openTab('patientRegister');
 			<%
 		%>
 		<% } else if (outcome.equals("unknown error")) {
 			%>
-			alert("Patient entry for "+fName+" "+lName+" could not be added; unknown error.");
+			alert("Unknown Error; SQL ERROR.");
 			history.back();
-		 	openTab('patientRegister');
 			<%
 		
 		%>
@@ -645,7 +655,6 @@ function validateSIN(SIN) {
 						Total Due:<input type="number" class="m-1 form-control" id="amountDue" name="amountDue" readonly> 
 						Total:<input type="number" class="m-1 form-control" value=0 id="totalBillForm" name="totalBillForm" readonly> 
 						<button type="submit" value="submit" onclick="return validateBillForm();">Bill</button>
-						<button type="reset" value="reset">Reset</button>
 						<button type="reset" value="reset" onclick="history.back();">Go Back</button>
 					</form>
 				</div>
@@ -712,7 +721,7 @@ function validateSIN(SIN) {
 						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
 						Guardian's SIN:<input class="m-1 form-control" type="number" id="guardianEP" name="guardianEP">
 						<button type="submit" value="submit" onclick="return validatePatientEdit()">Update Patient</button>
-						<button type="reset" value="reset" onclick="resetEditPatient()">Reset</button>
+						<button type="reset" value="reset" onclick="window.location.reload()">Default</button>
 					</form>
 					<br>
 				</div>
@@ -740,7 +749,7 @@ function validateSIN(SIN) {
 					Address:<input class="m-1 form-control" type="text" id="addressG" name="addressG" required> 
 					Enter Password:<input type="password" class="m-1 form-control" id="guardianPwd" name="guardianPwd" required> 
 					Re-enter Password:<input type="password" class="m-1 form-control" id="guardianPwdagain" name="guardianPwdagain" required>
-					<button type="submit" value="submit" onclick="return validateGuardianRegister();">Create Guardian</button>
+					<button type="submit" value="submit" onclick="return validateGuardianRegister()">Create Guardian</button>
 					<button type="reset" value="reset">Reset</button>
 				</form>
 			</div>
@@ -774,7 +783,7 @@ function validateSIN(SIN) {
 						Phone number:<input class="m-1 form-control" type="tel" id="phoneEG" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEG" required> 
 						Address:<input class="m-1 form-control" type="text" id="addressEG" name="addressEG" required>
 						<button type="submit" value="submit" onclick="return validateGuardianEdit()">Update Guardian</button>
-						<button type="reset" value="reset" onclick="resetEditGuardian()">Reset</button>
+						<button type="reset" value="reset" onclick="window.location.reload()">Default</button>
 					</form>
 					<br>
 				</div>
@@ -785,7 +794,7 @@ function validateSIN(SIN) {
 				<h2>List Branch Dentists</h2>
 				<div class="p-3 my-3" id="branchSearch">
 					<form method="post" action="listBranchDentists">
-						<button type="submit" value="submit" onclick="return True">View All Branches</button>
+						<button type="submit" value="submit" onclick="return true">View All Branches</button>
 					</form>
 				</div>
 				
@@ -805,7 +814,7 @@ function validateSIN(SIN) {
 								}
 								%>
 							</select>
-							<button type="submit" value="submit" onclick="return True">Select</button>
+							<button type="submit" value="submit" onclick="return true">Select</button>
 							<button type="reset" value="reset" onclick="resetDentistListing()">Go Back</button>
 						<%
 						}
@@ -828,7 +837,7 @@ function validateSIN(SIN) {
 						}
 					}
 					%>
-					<button type="reset" value="reset" onclick="resetDentistListing()">Go Back</button>
+					<button type="reset" value="reset" onclick="history.back();">Go Back</button>
 					
 				</div>
 			</div>

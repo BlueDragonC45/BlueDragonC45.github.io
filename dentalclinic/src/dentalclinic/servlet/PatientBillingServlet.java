@@ -85,7 +85,8 @@ public class PatientBillingServlet extends HttpServlet {
 					new InsuranceClaim(patientSINBillForm, insuranceCompany,
 								       invoiceID, insurancePortion);
 			
-			if (con.billUser(newBill, insuranceClaim)) {
+			int outcomeCode = con.billUser(newBill, insuranceClaim);
+			if (outcomeCode == 0) {
 
 				req.setAttribute("patientSINAfterBill", patientSINBillForm);
 				req.setAttribute("billTotal", total);
@@ -93,9 +94,17 @@ public class PatientBillingServlet extends HttpServlet {
 				req.setAttribute("outcomeB", "bill success");
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				
-			} else {
+			} else if (outcomeCode == 1) {
 				
-				req.setAttribute("outcomeB", "bill failed");
+				req.setAttribute("outcomeB", "employee not found");
+				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			} else if (outcomeCode == 2) {
+				
+				req.setAttribute("outcomeB", "already paid in full");
+				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			} else if (outcomeCode == 3) {
+				
+				req.setAttribute("outcomeB", "unknown error");
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 			}
 			

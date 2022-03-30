@@ -949,20 +949,21 @@ public class  PostgreSqlConn{
 		
 		//For receptionist only; bills a patient based on an invoice
 		//If a guardian is found, will bill to them instead
-		public boolean billUser(PatientBilling newBill, InsuranceClaim claim){
+		public int billUser(PatientBilling newBill, InsuranceClaim claim){
 			
 			
 			String employeeSIN = newBill.getEmployeeSIN();
 			if (!employeeSIN.isEmpty()) {
-				if (getUserInfoByEmployeeSIN(employeeSIN).getUserName() == null) {
+				if (getUserInfoByEmployeeSIN(employeeSIN).getUserName().isEmpty()) {
 					System.out.println("Employee not found!");
-					return false;
+					return 1;
 				}
 			}
 			
-			if (getPatientBillingByKey(newBill.getPatientSIN(), newBill.getInvoiceID()).getEmployeeSIN() != null) {
+			PatientBilling searchedBill = getPatientBillingByKey(newBill.getPatientSIN(), newBill.getInvoiceID());
+			if (!searchedBill.getEmployeeSIN().isEmpty()) {
 				System.out.println("Already billed to this invoice!");
-				return false;
+				return 2;
 			}
 
 			if (!claim.getInsuranceCompany().isEmpty()) {
@@ -999,10 +1000,10 @@ public class  PostgreSqlConn{
 					ps.setString(3, newBill.getGuardianSIN());	
 	            }
             	
-	            if (newBill.getEmployeeSIN().isEmpty()) {
+	            if (employeeSIN.isEmpty()) {
 	            	ps.setNull(4, Types.VARCHAR);//since patient can have no employee portion
 	            } else {
-	            	ps.setString(4, newBill.getEmployeeSIN());	
+	            	ps.setString(4, employeeSIN);	
 	            }
 				ps.setFloat(5, Float.parseFloat(newBill.getUserPortion()));
 				ps.setFloat(6, Float.parseFloat(newBill.getEmployeePortion()));
@@ -1014,11 +1015,11 @@ public class  PostgreSqlConn{
 				
 				System.out.println(ps.toString());
 	            
-	            return true;
+	            return 0;
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return false;
+	            return 3;
 	        }finally {
 	        	closeDB();
 	        }	       
