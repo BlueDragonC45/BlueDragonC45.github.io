@@ -65,7 +65,8 @@ public class EmployeeLoginServlet extends HttpServlet {
 			
 			return;		
 		}
-		resp.sendRedirect("login_failure.jsp");
-		return;
+		
+		req.setAttribute("outcome", "loginFailed");
+		req.getRequestDispatcher("employee_login.jsp").forward(req, resp);
 	}
 }

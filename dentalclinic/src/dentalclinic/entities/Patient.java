@@ -20,8 +20,8 @@ public class Patient {
 	private @Getter @Setter String gender;
 	private @Getter @Setter String patientEmail;
 	private @Getter @Setter String patientPhoneNumber;
-	private @Getter @Setter String address;
 	private @Getter @Setter String guardianSIN;
+	private @Getter @Setter String address;
 	
 	public String toString() {
 		String str = firstName+" "+lastName+": a "+age+" year-old identifying as: "+gender

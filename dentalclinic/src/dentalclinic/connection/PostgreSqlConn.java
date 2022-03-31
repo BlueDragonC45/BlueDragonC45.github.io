@@ -7,7 +7,9 @@ import java.util.Arrays;
 
 import java.sql.Date; 
 
-import dentalclinic.entities.*; 
+import dentalclinic.entities.*;
+import lombok.Getter;
+import lombok.Setter; 
 
 
 public class  PostgreSqlConn{
@@ -312,26 +314,30 @@ public class  PostgreSqlConn{
 			return patient;       
 	    }
 
-		//Searches and returns a PatientRecord by their SIN
-		public PatientRecord getPatientRecordByPatientSIN(String patientSIN){
+		//Searches and returns a list of PatientRecord by patient SIN
+		public ArrayList<PatientRecord> getPatientRecordsByPatientSIN(String patientSIN){
+			
 			getConn();
 			
+			ArrayList<PatientRecord> patientRecords = new ArrayList<PatientRecord>();
 			PatientRecord patientRecord = new PatientRecord();
 			
 	        try{
 	            ps = db.prepareStatement("SELECT * from dentalclinic.patientrecord "
-	            					   + "WHERE treatmentID IN " 
-	            		               + 	"(SELECT treatmentID from dentalclinic.treatment "
-	            					   + 	"WHERE patientSIN=?)");
+	            					   + "WHERE patientSIN=?"
+	            					   + "ORDER BY appointmentID");
 	            ps.setString(1, patientSIN);	
 	                           
 	            rs = ps.executeQuery();
 	
 				while(rs.next()) {
-					String treatmentID = rs.getString("treatmentID");
+					//col1: patientSIN already have
+					String appointmentID = rs.getString("appointmentID");
+					Integer[] teethInvolved = (Integer[]) rs.getArray("teethInvolved").getArray();
 					String treatmentDetails = rs.getString("treatmentDetails");
 					
-					patientRecord = new PatientRecord(treatmentID, treatmentDetails);
+					patientRecord = new PatientRecord(patientSIN, appointmentID, teethInvolved, treatmentDetails);
+					patientRecords.add(patientRecord);
 				}
 	            
 	        }catch(SQLException e){
@@ -339,7 +345,7 @@ public class  PostgreSqlConn{
 	        }finally {
 	        	closeDB();
 	        }
-			return patientRecord;       
+			return patientRecords;       
 	    }
 		
 		//Returns all usernames stored in either Patient or Employee
@@ -745,6 +751,95 @@ public class  PostgreSqlConn{
 	    }
 		
 		//Returns appointments that involve a certain employee using their SIN
+		public ArrayList<Appointment> getAllAppointmentsByPatientSIN(String patientSIN){
+			
+			getConn();
+			
+			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE patientsin=? "
+						               + "ORDER BY appointmentdate");
+	            ps.setString(1, patientSIN);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					//col5: patientSIN already have
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+					appointments.add(appointment);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointments;
+			
+		}
+		
+		//Returns appointments that involve a certain employee using their SIN
+		public ArrayList<Appointment> getUnfinishedAppointmentsByPatientSIN(String patientSIN){
+			
+			getConn();
+			
+			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE patientsin=? "
+						               + "AND status < 'finished' "
+						               + "ORDER BY appointmentdate");
+	            ps.setString(1, patientSIN);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					//col5: patientSIN already have
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+					appointments.add(appointment);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointments;
+			
+		}
+		
+		//Returns appointments that involve a certain employee using their SIN
 		public ArrayList<Appointment> getAppointmentsByEmployeeSIN(String employeeSIN){
 			
 			getConn();
@@ -754,25 +849,27 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE ? = ANY(employeesinlist) "
-						               + "GROUP BY appointmentdate, appointmentstarttime, roomid, branchid");
+						               + "ORDER BY appointmentdate");
 	            ps.setString(1, employeeSIN);	
 	            
 	            System.out.println(ps.toString());   
 	            
 	            rs = ps.executeQuery();
 				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
 					String appointmentDate = rs.getString("appointmentDate");
 					String startTime = rs.getString("appointmentstartTime");
 					String endTime = rs.getString("appointmentendTime");
-					String appointmentType = rs.getString("appointmentType");
+					String patientSIN = rs.getString("patientSIN");
 					String roomID = rs.getString("roomID");
 					String branchID = rs.getString("branchID");
 					String invoiceID = rs.getString("invoiceID");
-					String status = rs.getString("status");
 					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
-					Appointment appointment = new Appointment(appointmentDate, startTime, endTime,
-															  appointmentType, roomID, branchID,
-															  invoiceID, status, employeeSINList);
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
 					appointments.add(appointment);
 				 System.out.println(Arrays.toString(appointment.getEmployeeSINList()));
 				}
@@ -1054,8 +1151,40 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
+		//Returns the branch by its ID
+		public Branch getBranchByBranchID(String branchID) {
+			
+			getConn();
+
+			Branch branch = new Branch();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.branches "
+						               + "WHERE branchID=?");
+				
+				ps.setString(1, branchID);
+				
+				rs = ps.executeQuery();
+				
+				while(rs.next()){
+					//col1: branchID already have
+					String city = rs.getString("guardianSIN");
+					String province = rs.getString("employeeSIN");
+					String managerID = rs.getString("userPortion");
+					branch = new Branch(branchID, city, province, managerID);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+			return branch;
+		}
+		
 		//Returns the branch by the location and city
 		public String getBranchByLocation(String province, String city) {
+			
 			getConn();
 			
 			String branchId = "";

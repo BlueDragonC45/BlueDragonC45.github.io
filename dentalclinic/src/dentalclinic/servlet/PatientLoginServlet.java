@@ -12,6 +12,9 @@ import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Patient;
+import dentalclinic.entities.Appointment;
+import dentalclinic.entities.Branch;
+import dentalclinic.entities.PatientRecord;
 
 public class PatientLoginServlet extends HttpServlet {
 
@@ -32,22 +35,34 @@ public class PatientLoginServlet extends HttpServlet {
 		
 		if (con.isCorrectPwd("patient", userName, pwd)) {	
 			
-
-			//Get all the attributes of this user, matching the username (unique; enforced)
-			//We do this to get the patient's first name, which is userData[2]
+			//To display patient info
 			Patient patient = con.getUserInfoByPatientUsername(userName);
-
-//			req.setAttribute("userSIN", patient.getPatientSIN());
-//			req.setAttribute("userName", userName);
-//			req.setAttribute("firstName", patient.getFirstName());
-//			req.setAttribute("middleName", patient.getMiddleName());
-//			req.setAttribute("lastName", patient.getLastName());
 			req.setAttribute("patient", patient);
+			
+			String patientSIN = patient.getPatientSIN();
+			
+			//To display all non completed appointments
+			ArrayList<Appointment> unfinishedAppointments = con.getUnfinishedAppointmentsByPatientSIN(patientSIN);
+			req.setAttribute("appointments", unfinishedAppointments);
+			
+			//To display all non completed appointments
+			ArrayList<Appointment> allAppointments = con.getAllAppointmentsByPatientSIN(patientSIN);
+			req.setAttribute("appointmentsAll", allAppointments);
+
+			//To display location of appointment
+			ArrayList<Branch> branches = con.getAllBranches();
+			req.setAttribute("branches", branches);
+			
+			//To display patient records 
+			ArrayList<PatientRecord> records = con.getPatientRecordsByPatientSIN(patientSIN);
+			req.setAttribute("records", records);
 
 			req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
 			return;	
 		}
-		resp.sendRedirect("login_failure.jsp");
+		
+		req.setAttribute("outcome", "loginFailed");
+		req.getRequestDispatcher("patient_login.jsp").forward(req, resp);
 		return;
 	}
 }

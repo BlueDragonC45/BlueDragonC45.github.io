@@ -303,6 +303,7 @@ function validateSIN(SIN) {
 		document.getElementById("branchList").style.display = "none";
 		document.getElementById("branchSearchResults").style.display = "none";
 	}
+	
 
 	$(document).ready(function() {
 		

@@ -1,5 +1,8 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="dentalclinic.entities.Patient"%>
+<%@page import="dentalclinic.entities.Appointment"%>
+<%@page import="dentalclinic.entities.Branch"%>
+<%@page import="dentalclinic.entities.PatientRecord"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 
@@ -12,6 +15,7 @@ String firstName = patient.getFirstName();
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="ISO-8859-1">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="ch-cn">
 <link
@@ -27,9 +31,15 @@ String firstName = patient.getFirstName();
 <script src="./scripts/main.js"></script>
 <title>Sunshine Dentist Clinic</title>
 <script>
- 	$(document).ready(function() {
-		
-	});
+	function resetAppointmentView() {
+		document.getElementById("upcomingAppt").style.display = "block";
+		document.getElementById("allAppointments").style.display = "none";
+	}
+	
+	function viewAllAppointments() {
+		document.getElementById("allAppointments").style.display = "block";
+		document.getElementById("upcomingAppt").style.display = "none";
+	}
 </script>
 </head>
 <body>
@@ -48,22 +58,122 @@ String firstName = patient.getFirstName();
 			<div class="p-1 my-1 border border-dark row justify-content-around"
 				id="patientNav">
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="openTab('upcomingAppt')">Check Upcoming
+					onclick="openTab('upcomingAppt')">View
 					Appointments</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="openTab('patientInfo')">View Patient Information</button>
+					onclick="openTab('patientRecords')">View My Records</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
+					onclick="openTab('patientInfo')">View My Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
 					onclick="location.href='index.html'">Go Back</button>
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="upcomingAppt">
-				<h2>Upcoming Appointments</h2>
-	        <div class="p-3 my-3" id="patientApptList">
-	        </div>
+				<h2>Unfinished Appointments</h2>
+	          	<%//Appointment List
+	          	  //Will show up only when appointments is non-empty
+				  //i.e. when the employee has clicked on search at least once
+				Object obj = request.getAttribute("appointments");
+				ArrayList<Appointment> appointmentList = null;
+				if (obj instanceof ArrayList) {
+					appointmentList = (ArrayList<Appointment>) obj;
+				}
+				
+				Object obj2 = request.getAttribute("branches");
+				ArrayList<Branch> branchList = null;
+				if (obj2 instanceof ArrayList) {
+					branchList = (ArrayList<Branch>) obj2;
+				}
+				
+				if (appointmentList != null && branchList != null) {
+					if (appointmentList.size() == 0 || branchList.size() == 0) {
+						%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+					} else {
+						
+						Integer branchID = 0;
+						for (Appointment appointment : appointmentList) {
+							
+							branchID = Integer.parseInt(appointment.getBranchID());
+							%>
+							<li><%=appointment.toString()+" Branch location: "+branchList.get(branchID-1)+"."%></li>
+							<%
+						}
+						%><br><%
+					}
+				} else {
+				%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+				}
+				%>
+				<button onclick="viewAllAppointments()">View All Appointments</button>
+			</div>
+
+			<div class="tab p-3 my-3" style="display: none;" id="allAppointments">
+				<h2>All Appointments</h2>
+	          	<%//Appointment List
+	          	  //Will show up only when appointments is non-empty
+				  //i.e. when the employee has clicked on search at least once
+				Object obj4 = request.getAttribute("appointmentsAll");
+				ArrayList<Appointment> allAppointmentList = null;
+				if (obj4 instanceof ArrayList) {
+					allAppointmentList = (ArrayList<Appointment>) obj4;
+				}
+				
+				if (allAppointmentList != null && branchList != null) {
+					if (allAppointmentList.size() == 0 || branchList.size() == 0) {
+						%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+					} else {
+						
+						Integer branchID = 0;
+						for (Appointment appointment : allAppointmentList) {
+							
+							branchID = Integer.parseInt(appointment.getBranchID());
+							%>
+							<li><%=appointment.toString()+" Branch location: "+branchList.get(branchID-1)+"."%></li>
+							<%
+						}
+						%><br><%
+					}
+				} else {
+				%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+				}
+				%>
+				
+				<button onclick="resetAppointmentView()">View Unfinished</button>
+			</div>
+			
+			<div class="tab p-3 my-3" style="display: none;" id="patientRecords">
+				<h2>Patient Records</h2>
+	          	<%//Appointment List
+	          	  //Will show up only when appointments is non-empty
+				  //i.e. when the employee has clicked on search at least once
+				Object obj3 = request.getAttribute("records");
+				ArrayList<PatientRecord> recordList = null;
+				if (obj3 instanceof ArrayList) {
+					recordList = (ArrayList<PatientRecord>) obj3;
+				}
+				
+				
+				if (recordList != null) {
+					if (recordList.size() == 0) {
+						%><br><h6>No records found. If you think this is an error, contact the clinic.</<h6>><%
+					} else {
+						
+						for (PatientRecord record : recordList) {
+							
+							%>
+							<li><%=record.toString()%></li>
+							<%
+						}
+						%><br><%
+					}
+				} else {
+				%><br><h6>No records found. If you think this is an error, contact the clinic.</h6><%
+				}
+				%>
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="patientInfo">
-				<h2>Patient Information</h2>
+				<h2>Personal Information</h2>
 				<div class="p-3 my-3" id="patientInfo">
 					<table class="table table-sm table-bordered">
 						<tr>
@@ -109,6 +219,18 @@ String firstName = patient.getFirstName();
 						<tr>
 							<td>Address</td>
 							<td><%=patient.getAddress()%></td>
+						</tr>
+						<tr>
+							<td>Guardian</td>
+							<%
+							String guardianSIN = patient.getGuardianSIN();
+							if (guardianSIN == null) {
+								%><td>None</td><%
+							} else {
+								%><td><%=patient.getGuardianSIN()%></td><%
+							}
+							%>
+							
 						</tr>
 					</table>
 				</div>

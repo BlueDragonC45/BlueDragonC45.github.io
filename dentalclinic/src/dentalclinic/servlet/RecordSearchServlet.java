@@ -28,10 +28,10 @@ public class RecordSearchServlet extends HttpServlet {
 		PostgreSqlConn con = new PostgreSqlConn();
 
 		String patientSIN = req.getParameter("patientSIN");
-		PatientRecord patientRecord = con.getPatientRecordByPatientSIN(patientSIN);
-		String patientRecordStr = patientRecord.toString();
+		//TODO PatientRecord patientRecord = con.getPatientRecordByPatientSIN(patientSIN);
+		//String patientRecordStr = patientRecord.toString();
 
-		req.setAttribute("patientRecordStr", patientRecordStr);
+		//req.setAttribute("patientRecordStr", patientRecordStr);
 
 		String role = req.getParameter("role");
 		req.setAttribute("role", role);
