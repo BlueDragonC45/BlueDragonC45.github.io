@@ -219,10 +219,10 @@ $(document).ready(function() {
     <div class="content p-3 my-3 h-100 border" id="dentists">
       <h1> Manager View</h1>
       <div class="p-1 my-1 border border-dark row justify-content-around" id="dentistNav">
-        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listEmployees')" >List Employees</button>
-        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newEmployee')" >Add a New Employee</button>
-        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('updateEmployee')" >Update Employee Information</button>
-        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'" >Go Back</button>
+        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('listEmployees')" >List Employees</button>
+        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('newEmployee')" >Add a New Employee</button>
+        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('updateEmployee')" >Update Employee Information</button>
+        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='/dentalclinic/'" >Go Back</button>
       </div>
 
       <div class="tab p-3 my-3" style="display: none;" id="listEmployees">

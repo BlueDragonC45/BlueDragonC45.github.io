@@ -64,26 +64,18 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 	<div class="container-fluid">
 
 		<nav class="navbar text-white px-3 pt-3 mt-3">
-			<h1 style="font-size: 400%">
 				<h1 style="font-size: 400%">Welcome to Sunshine Dentist Clinic!</h1>
-			</h1>
 		</nav>
 
 		<div class="content p-3 my-3 h-100 border" id="patients">
 			<h1>Patient View</h1>
 			<div class="p-1 my-1 border border-dark row justify-content-around"
 				id="patientNav">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="openTab('upcomingAppt')">View
-					Appointments</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="openTab('writeReview')">Submit Review</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="openTab('patientRecords')">View My Records</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="openTab('patientInfo')">View My Information</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="location.href='/dentalclinic/'">Go Back</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('upcomingAppt')">View Appointments</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('writeReview')">Submit Review</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRecords')">View My Records</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientInfo')">View My Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="upcomingAppt">
