@@ -18,9 +18,12 @@
 
     <div class="content p-3 my-3 h-100 border" id="main">
       <h1> Main Menu</h1>
-      <div class="p-1 my-1 border border-dark row justify-content-around">
-        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='employee_login.jsp'" >Employee Login</button>
-        <button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='patient_login.jsp'" >Patient Login</button>
+      <div>
+		<form method="post" action="login" class="p-1 my-1 border border-dark row justify-content-around">
+			<button class="p-1 m-1 mx-auto" style="width: 20rem;" name="employee" value="employee">Employee Login</button>
+			<button class="p-1 m-1 mx-auto" style="width: 20rem;" name="employee" value="employee">Patient Login</button>
+			<button class="p-1 m-1 mx-auto" style="width: 20rem;" name="employee" value="employee">Guardian Login</button>
+		</form>
       </div>
     </div>
   </div>
