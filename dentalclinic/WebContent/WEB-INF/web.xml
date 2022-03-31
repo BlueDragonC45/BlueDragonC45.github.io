@@ -7,6 +7,16 @@
          
 	 <display-name>jspServletLoginTest</display-name>
 	 
+	 <servlet>
+		  <description></description>
+		  <display-name>Appointment Servlet</display-name>
+		  <servlet-name>AppointmentServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.AppointmentServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>AppointmentServlet</servlet-name>
+		  <url-pattern>/appointment</url-pattern>
+	 </servlet-mapping>
 	 
 	 <servlet>
 		  <description></description>

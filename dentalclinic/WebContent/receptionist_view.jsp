@@ -46,6 +46,18 @@
 		return Math.floor(age);
 	}
 
+	function validateNotWeekend(appointmentDateQuery) {
+		var date = new Date(appointmentDateQuery)
+		var day = date.getDay();
+		
+		if (day == 0 || day = 6) {
+			alert("Please choose a weekday (Mon-Fri).");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	function validatePatientRegister() {
 		var patientSIN = document.getElementById("patientSIN");
 		var userName = document.getElementById("userName");
@@ -551,6 +563,7 @@
 			<h1>Receptionist View</h1>
 			<div class="p-1 my-1 border border-dark"
 				id="receptionistNav">
+<<<<<<< Updated upstream
 				<div class="row justify-content-around">
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointment')">Set a New Appointment</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill a Patient</button>
@@ -564,8 +577,25 @@
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
 				</div>
+=======
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('appointmentDateSearch')">Set a New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientBilling')">Bill a Patient</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
+>>>>>>> Stashed changes
 			</div>
 
+			<div class="p-3 my-3" id="appointmentDateSearch">
+				<h2>Choose Appointment Date</h2>
+				<form method="post" action="appointment">
+					Date:<input class="m-1 form-control" type="date" id="appointmentDateQuery" name="appointmentDateQuery">
+					<button type="submit" value="submit" onclick="return validateNotWeekend(appointmentDateQuery);">Choose</button>
+				</form>
+			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="appointment">
 				<h2>New Appointment</h2>

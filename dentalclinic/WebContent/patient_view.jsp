@@ -10,7 +10,10 @@
 Patient patient = (Patient) request.getAttribute("patient");
 String firstName = patient.getFirstName();
 
-String appointmentIDFetched = (String) request.getAttribute("appointmentID");
+String appointmentIDFetched = (String) request.getAttribute("appointmentIDFetched");
+
+
+
 %>
 <!DOCTYPE html>
 <html>
@@ -28,18 +31,34 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
 	integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
 	crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="./scripts/main.js"></script>
+<script>
+$(document).ready(function() {
+	
+	<%
+	String appointmentToReview = (String) request.getAttribute("appointmentToReview");
+	Appointment appointmentInfo = (Appointment) request.getAttribute("appointmentInfo");
+	if (appointmentToReview != null) { 
+		%>
+		document.getElementById("appointmentIDFetched").value = "<%=appointmentToReview%>";
+		document.getElementById("appointmentFetchedDate").value = "<%=appointmentInfo.getAppointmentDate()%>";
+		console.log("<%=appointmentToReview%>");
+		viewReviewForm();<%
+		}; %>
+});
+</script>
 <title>Sunshine Dentist Clinic</title>
 <script>
 	function validateReview() {
 		var review = document.getElementById("review");
 		
-		console.log(review.value);
-		if (review.value.length < 20){
+		console.log(review.value + " " + review.value.length);
+		if (review.value.length >= 20){
+			return true;
+		} else
 			alert("Type at least 20 characters.");
 			return false;
-		} else
-			return true;
 	}
 
 	function resetAppointmentView() {
@@ -53,9 +72,35 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 	}
 	
 	function viewReviewableAppointments() {
-		document.getElementById("reviewForm").style.display = "block";
-		document.getElementById("patientRecordsWrite").style.display = "none";
+		document.getElementById("reviewableAppointments").style.display = "block";
+		document.getElementById("writeReview").style.display = "none";
 	}
+	function viewReviewForm() {
+		document.getElementById("reviewForm").style.display = "block";
+		document.getElementById("writeReview").style.display = "none";
+	}
+	
+	<%String outcome = (String) request.getAttribute("outcome");
+	if (outcome != null) { 
+		
+		if (outcome.equals("reviewSubmitted")) {%>
+
+			alert("The review was successfully submitted.");
+			
+		<%} else if (outcome.equals("reviewExists")) {%>
+			
+			alert("Could not submit the review; you have already submitted one previously!");
+			history.back();
+			<%
+		}  else {
+			%>
+			alert("Unknown Error; SQL ERROR.");
+			history.back();
+			<%
+		%>
+		<% }%>
+		
+	<% }; %>
 </script>
 </head>
 <body>
@@ -151,11 +196,12 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 				<button onclick="resetAppointmentView()">View Unfinished</button>
 			</div>
 			
-      <div class="tab p-3 my-3" style="display: none;" id="patientRecordsWrite">
+      <div class="tab p-3 my-3" style="display: none;" id="writeReview">
         <h2> Submit a Review</h2>
         <div class="p-3 my-3" id="patientRecordSearchWrite">
-			Search Completed Appointments:
-			<button onclick="viewReviewableAppointments()">View Unfinished</button>
+			Search Completed Appointments By My SIN:
+			<input class="m-1 form-control" type="number" id="patientSIN" name="patientSIN" value = "<%=patient.getPatientSIN()%>" readonly> 
+			<button onclick="viewReviewableAppointments()">Search</button>
         </div>
       </div>
       
@@ -185,37 +231,38 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 							%>
 						</select>
 						<input class="m-1 form-control" type="hidden" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
-						<button type="submit" value="submit" onclick="return true">Select</button>
+						<button type="submit" value="submit" onclick="return true;">Select</button>
 						<button type="reset" value="reset" onclick="history.back();">Go Back</button>
 				</form>
 	  </div>
 
 		<div class="tab p-3 my-3" style="display: none;" id="reviewForm">
 			<form method="post" action="patientLogin">
-				<input class="m-1 form-control" type="text" id="patientSIN" name="patientSIN" value = "<%=patient.getPatientSIN()%>" readonly> 
-				<input class="m-1 form-control" type="text" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
-				<input class="m-1 form-control" type="text" id="appointmentIDFetched" name="appointmentIDFetched" value="<%=appointmentIDFetched%>" readonly>
-				Employee Professionalism:<select class="m-1 form-control" id="roomNum" name="employeeProf">
-						<option value="1">1/5</option>
-						<option value="2">2/5</option>
-						<option value="3">3/5</option>
+				Appointment ID:<input class="m-1 form-control" type="text" id="appointmentIDFetched" name="appointmentIDFetched" readonly>
+				Appointment Date:<input class="m-1 form-control" type="text" id="appointmentFetchedDate" name="appointmentFetchedDate" readonly>
+				Employee Professionalism:<select class="m-1 form-control" id="employeeProf" name="employeeProf">
+						<option value="5">5/5</option>
 						<option value="4">4/5</option>
-						<option value="4">5/5</option>
+						<option value="3">3/5</option>
+						<option value="2">2/5</option>
+						<option value="1">1/5</option>
 					</select> 
 				Communication:<select class="m-1 form-control" id="communication" name="communication">
-						<option value="1">1/5</option>
-						<option value="2">2/5</option>
-						<option value="3">3/5</option>
+						<option value="5">5/5</option>
 						<option value="4">4/5</option>
-						<option value="4">5/5</option>
+						<option value="3">3/5</option>
+						<option value="2">2/5</option>
+						<option value="1">1/5</option>
 					</select> 
 				Cleanliness:<select class="m-1 form-control" id="cleanliness" name="cleanliness">
-						<option value="1">1/5</option>
-						<option value="2">2/5</option>
-						<option value="3">3/5</option>
+						<option value="5">5/5</option>
 						<option value="4">4/5</option>
-						<option value="4">5/5</option>
+						<option value="3">3/5</option>
+						<option value="2">2/5</option>
+						<option value="1">1/5</option>
 					</select> 
+				<input class="m-1 form-control" type="hidden" id="patientSIN" name="patientSIN" value = "<%=patient.getPatientSIN()%>" readonly> 
+				<input class="m-1 form-control" type="hidden" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
 				Comments: <textarea class="m-1 form-control" cols="15" rows="10" id="review" name="review"></textarea>
 				<!-- <input type="text" style="height:200px;font-size:14pt;" class="m-1 form-control" id="treatmentDetails" name="treatmentDetails">
 				 --> 
@@ -239,7 +286,7 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 				
 				if (recordList != null) {
 					if (recordList.size() == 0) {
-						%><br><h6>No records found. If you think this is an error, contact the clinic.</h6><%
+						%><br><h6>You have not completed any treatments yet. If you think this is an error, contact the clinic.</h6><%
 					} else {
 						
 						for (PatientRecord record : recordList) {
@@ -251,7 +298,7 @@ String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 						%><br><%
 					}
 				} else {
-				%><br><h6>No records found. If you think this is an error, contact the clinic.</h6><%
+				%><br><h6>You have not completed any treatments yet. If you think this is an error, contact the clinic.</h6><%
 				}
 				%>
 			</div>

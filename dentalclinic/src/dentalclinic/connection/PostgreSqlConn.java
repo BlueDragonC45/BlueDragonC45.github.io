@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.sql.Date; 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import dentalclinic.entities.*;
 import lombok.Getter;
 import lombok.Setter; 
 
-import java.time.LocalDateTime;  
-import java.time.format.DateTimeFormatter; 
+import java.time.*; 
 
 
 public class  PostgreSqlConn{
@@ -1223,32 +1224,37 @@ public class  PostgreSqlConn{
 			return review;
 			
 		}
-		/*
+		
+		//From https://stackoverflow.com/questions/17102988/java-sql-date-formatting
+	    private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
+	        java.sql.Date sDate = new java.sql.Date(uDate.getTime());
+	        return sDate;
+	    }
+		
 		//For patient view; inserts a review
-		private int insertReview(Review review){
+		public boolean insertReview(Review review){
+
+			Review findReview = getReviewByKey(review.getPatientSIN(), review.getAppointmentID());
+			if (findReview.getPatientSIN() != null) {
+				System.out.println("already reviewed");
+				return false;//already exists
+			}
 			
 			getConn();
 
 	        try{
 	            
 				ps = db.prepareStatement("INSERT INTO dentalclinic.review "
-									   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+									   + "VALUES (?, CURRENT_DATE, LOCALTIME, ?, ?, ?, ?, ?)");
 		
 				ps.setString(1, review.getPatientSIN());	
-				
-			    long millis=System.currentTimeMillis();  
-			    java.sql.Date date = new java.sql.Date(millis);
-			    ps.setDate(2, date);
-			    
-				ps.setString(2, claim.getInsuranceCompany());	
-				ps.setFloat(4, Float.parseFloat(claim.getInsuranceAmount()));
-	            ps.setInt(3, Integer.parseInt(review.getEmployeeProfessionalism()));
+				//set date in sql
+				//set time in sql
+	            ps.setInt(2, Integer.parseInt(review.getEmployeeProfessionalism()));
 	            ps.setInt(3, Integer.parseInt(review.getCommunication()));
-	            ps.setInt(3, Integer.parseInt(review.getCleanliness()));
-				ps.setString(1, review.getAppointmentID());	
-				ps.setString(1, review.getComments());		
-				 
-				ps.setTime(0, millis);
+	            ps.setInt(4, Integer.parseInt(review.getCleanliness()));
+	            ps.setInt(5, Integer.parseInt(review.getAppointmentID()));
+				ps.setString(6, review.getComments());
 				
 				ps.executeUpdate();
 				
@@ -1258,11 +1264,11 @@ public class  PostgreSqlConn{
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return false;
+	            return false;//SQL error
 	        }finally {
 	        	closeDB();
 	        }	       
-	    }*/
+	    }
 		
 		//Returns an ArrayList containing all Branches
 		public ArrayList<Branch> getAllBranches(){

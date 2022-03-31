@@ -16,6 +16,8 @@ import dentalclinic.entities.Appointment;
 import dentalclinic.entities.Branch;
 import dentalclinic.entities.PatientRecord;
 import dentalclinic.entities.Review;
+import lombok.Getter;
+import lombok.Setter;
 
 public class PatientLoginServlet extends HttpServlet {
 
@@ -84,6 +86,9 @@ public class PatientLoginServlet extends HttpServlet {
 				
 				if (con.getReviewByKey(patientSIN, appointmentToReview).getAppointmentID() != null) {
 					req.setAttribute("outcome", "reviewExists");
+				} else {
+					Appointment appointmentInfo = con.getAppointmentByAppointmentID(appointmentToReview);
+					req.setAttribute("appointmentInfo", appointmentInfo);
 				}
 
 				//To display all completed appointments (for review submission)
@@ -110,16 +115,32 @@ public class PatientLoginServlet extends HttpServlet {
 				return;	
 			}
 		} else {
-
+			
 			//appointmentIDFetched appointmentID of review form
 			String patientSIN = req.getParameter("patientSIN");
-			String patientUsername = req.getParameter("patientUsername");
-			Review review = con.getReviewByKey(patientSIN, appointmentIDFetched);
-			if (review.getAppointmentID() != null) {
+			Review findReview = con.getReviewByKey(patientSIN, appointmentIDFetched);
+			if (findReview.getAppointmentID() != null) {
+				
 				req.setAttribute("outcome", "reviewExists");
+				
 			} else {
-				//TODO int insertResult = con.insertReview(review);
+
+				String employeeProf = req.getParameter("employeeProf");
+				String communication = req.getParameter("communication");
+				String cleanliness = req.getParameter("cleanliness");
+				String reviewText = req.getParameter("review");
+				Review review = new Review(patientSIN, appointmentIDFetched, null, null,
+						                   employeeProf, communication, cleanliness, reviewText);
+				
+				boolean resultInserted = con.insertReview(review);
+				if (resultInserted) {
+					req.setAttribute("outcome", "reviewSubmitted");
+				} else {
+					req.setAttribute("outcome", "reviewFailed");//sql error
+				}
 			}
+
+			String patientUsername = req.getParameter("patientUsername");
 			
 			Patient patient = con.getUserInfoByPatientUsername(patientUsername);
 			req.setAttribute("patient", patient);
