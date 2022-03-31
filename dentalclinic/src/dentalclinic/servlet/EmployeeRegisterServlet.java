@@ -63,25 +63,48 @@ public class EmployeeRegisterServlet extends HttpServlet{
 		
 		
 		PostgreSqlConn con = new PostgreSqlConn();
-		
-		boolean isInserted = con.insertNewEmployee(employee, employeeSIN);
-		if (isInserted) {			
-				
-				//firstName and lastName might have been used already
-				//...at receptionist_view.jsp
-				req.setAttribute("firstNameNEW", firstName);
-				req.setAttribute("lastNameNEW", lastName);
 
+		req.setAttribute("firstNameNEW", firstName);
+		req.setAttribute("lastNameNEW", lastName);
+		
+		int isInserted = con.insertNewEmployee(employee, employeeSIN);
+		if (isInserted == 0) {			
+				
 				req.setAttribute("outcome", "registerSuccess");
 
 				req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 				return;			
-		} else {
+		} else if (isInserted == 1) {
 
-			req.setAttribute("firstNameNEW", firstName);
-			req.setAttribute("lastNameNEW", lastName);
+			req.setAttribute("outcome", "duplicateSIN");
+
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
+			return;
+		} else if (isInserted == 2) {
+
 			
-			req.setAttribute("outcome", "registerFailed");
+			req.setAttribute("outcome", "duplicateUsername");
+
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
+			return;
+		} else if (isInserted == 3) {
+
+			
+			req.setAttribute("outcome", "noBranchesInDB");
+
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
+			return;
+		} else if (isInserted == 4) {
+
+			
+			req.setAttribute("outcome", "branchNotFound");
+
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
+			return;
+		} else {
+;
+			
+			req.setAttribute("outcome", "unknown error");
 
 			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 			return;

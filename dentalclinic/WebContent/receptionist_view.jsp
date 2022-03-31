@@ -25,16 +25,16 @@
 <title>Sunshine Dentist Clinic</title>
 <script>
 
-function validateSIN(SIN) {
-	var numbers = /^[0-9]+$/;
-	console.log(SIN);
-	if(SIN.value.match(numbers) && SIN.value.length == 9) {
-	      return true;
-	} else {
-		alert("The SIN must be a 9-digit number.");
-		return false;
+	function validateSIN(SIN) {
+		var numbers = /^[0-9]+$/;
+		console.log(SIN);
+		if(SIN.value.match(numbers) && SIN.value.length == 9) {
+		      return true;
+		} else {
+			alert("The SIN must be a 9-digit number.");
+			return false;
+		}
 	}
-}
 
 	function calcAge(dateOfBirthVal) {
 		var date = new Date(dateOfBirthVal)
@@ -558,7 +558,7 @@ function validateSIN(SIN) {
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='index.html'">Go Back</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
 			</div>
 
 

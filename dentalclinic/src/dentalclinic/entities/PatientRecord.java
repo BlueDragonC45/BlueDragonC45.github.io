@@ -14,12 +14,14 @@ public class PatientRecord {
 
 	private @Getter @Setter String patientSIN;
 	private @Getter @Setter String appointmentID;
-	private @Getter @Setter Integer[] teethInvolved;
+	private @Getter @Setter String[] teethInvolved;
 	private @Getter @Setter String treatmentDetails;
 	
 	public String toString() {
-		String str = "A treatment involving the teeth: "
-			         +Arrays.toString(teethInvolved)+" (FDI Notation). Details: "+treatmentDetails;
+		String str = "A treatment for the patient with SIN: "
+				     +patientSIN+" involving the teeth: "
+			         +Arrays.toString(teethInvolved).replaceAll("\\]","").replaceAll("\\[","")
+			       +" (FDI Notation). Details: "+treatmentDetails;
 		return str;
 	}
 }

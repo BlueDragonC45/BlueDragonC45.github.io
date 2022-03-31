@@ -164,6 +164,28 @@
 	 
 	<servlet>
 		  <description></description>
+		  <display-name>Write Patient Record Servlet</display-name>
+		  <servlet-name>WritePatientRecordServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.WritePatientRecordServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>WritePatientRecordServlet</servlet-name>
+		  <url-pattern>/writeRecord</url-pattern>
+	 </servlet-mapping>
+	 
+	<servlet>
+		  <description></description>
+		  <display-name>Guardian Login</display-name>
+		  <servlet-name>GuardianLoginServlet</servlet-name>
+		  <servlet-class>dentalclinic.servlet.GuardianLoginServlet</servlet-class>
+	 </servlet>
+	 <servlet-mapping>
+		  <servlet-name>GuardianLoginServlet</servlet-name>
+		  <url-pattern>/guardianLogin</url-pattern>
+	 </servlet-mapping>
+	 
+	<servlet>
+		  <description></description>
 		  <display-name>Login</display-name>
 		  <servlet-name>LoginServlet</servlet-name>
 		  <servlet-class>dentalclinic.servlet.LoginServlet</servlet-class>

@@ -19,12 +19,19 @@ public class Treatment {
 	private @Getter @Setter String[] medication;
 	private @Getter @Setter String[] symptoms;
 	private @Getter @Setter String comments;
+	private @Getter @Setter String treatmentDate;
 	
 	public String toString() {
-		String str = "A treatment where "+treatmentType+" was performed"
-				   +" on tooth "+toothInvolved+" making use of: "+Arrays.toString(medication)
-		          +". Where originally, the patient showed symptoms for: "
-				   +Arrays.toString(symptoms)+".";
+		String str = "A treatment from "+treatmentDate+" where "+treatmentType+
+				    " was performed"+" on tooth "+toothInvolved+".";
+		return str;
+	}
+	
+	public String toStringLonger() {
+		String str = "A treatment from "+treatmentDate+" where "+treatmentType+
+				    " was performed"+" on tooth "+toothInvolved+" making use of: "+
+				      Arrays.toString(medication)+". Where originally, the patient "
+				   + "showed symptoms for: "+Arrays.toString(symptoms)+".";
 		return str;
 	}
 }

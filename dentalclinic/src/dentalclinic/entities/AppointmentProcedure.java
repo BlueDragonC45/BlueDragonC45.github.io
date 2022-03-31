@@ -18,11 +18,13 @@ public class AppointmentProcedure {
 	private @Getter @Setter String procedureType;
 	private @Getter @Setter String[] materialsAndAmountUsed;
 	private @Getter @Setter String description;
+	private @Getter @Setter String procedureDate;
 	
 	public String toString() {
 		String str = "["+appointmentID+", "+toothInvolved+ ", "+procedureCode+"] "
-				   + "A procedure where "+procedureType+" was performed on tooth "
-				   + toothInvolved+". Used: "+Arrays.toString(materialsAndAmountUsed)+".";
+				   + "A procedure from "+procedureDate+" where "+procedureType+
+				   " was performed on tooth "+toothInvolved+". Used: "+
+				   Arrays.toString(materialsAndAmountUsed).replaceAll("\\]","").replaceAll("\\[","")+".";
 		return str;
 	}
 }

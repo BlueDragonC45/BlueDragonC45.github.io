@@ -39,7 +39,7 @@ $(document).ready(function() {
 				Username:<input type="text" id="userName" class="m-1 form-control" name="userName"><br>
 				Password:<input type="password" id="pwd" class="m-1 form-control" name="pwd"><br>
 				<button type="submit" value="submit" onclick="return validateLogin('userName', 'pwd');">Login</button>
-				<button type="reset" value="reset" onclick="location.href='index.html'">Back</button>
+				<button type="reset" value="reset" onclick="location.href='/dentalclinic/'">Back</button>
 			</form>
 		</div>
 	</div>

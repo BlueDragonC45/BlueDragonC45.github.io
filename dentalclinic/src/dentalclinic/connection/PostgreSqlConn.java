@@ -11,6 +11,9 @@ import dentalclinic.entities.*;
 import lombok.Getter;
 import lombok.Setter; 
 
+import java.time.LocalDateTime;  
+import java.time.format.DateTimeFormatter; 
+
 
 public class  PostgreSqlConn{
 	
@@ -314,6 +317,78 @@ public class  PostgreSqlConn{
 			return patient;       
 	    }
 
+		//Searches an patient by their username (unique)
+		public Guardian getUserInfoByGuardianUsername(String userName){
+			getConn();
+			
+			Guardian guardian = new Guardian();
+			
+	        try{
+	            ps = db.prepareStatement("SELECT * from dentalclinic.guardian "
+	            		               + "WHERE username=?");
+	            
+	            ps.setString(1, userName);	               
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					String guardianSIN = rs.getString("guardianSIN");
+					//userName already have
+					String firstName = rs.getString("firstName");
+					String middleName = rs.getString("middleName");
+					String lastName = rs.getString("lastName");
+					String dateofBirth = rs.getString("dateofBirth");
+					String age = rs.getString("age");
+					String gender = rs.getString("gender");
+					String patientEmail = rs.getString("patientEmail");
+					String patientPhoneNumber = rs.getString("patientPhoneNumber");
+					String address = rs.getString("address");
+					
+					guardian = new Guardian(guardianSIN, userName, firstName, middleName,
+							 		      lastName, dateofBirth, age, gender,
+										  patientEmail, patientPhoneNumber, address);
+				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return guardian;       
+	    }
+
+		//Searches and returns a list of PatientRecord by patient SIN
+		public PatientRecord getPatientRecordByKey(String patientSIN, String appointmentID){
+			
+			getConn();
+			
+			PatientRecord patientRecord = new PatientRecord();
+			
+	        try{
+	            ps = db.prepareStatement("SELECT * from dentalclinic.patientrecord "
+	            					   + "WHERE patientSIN=?"
+	            					   + "AND appointmentID=?");
+	            ps.setString(1, patientSIN);	
+	            ps.setInt(2, Integer.parseInt(appointmentID));	
+	                           
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					//col1: patientSIN already have
+					//col2: appointmentID already have
+					String[] teethInvolved = (String[]) rs.getArray("teethInvolved").getArray();
+					String treatmentDetails = rs.getString("treatmentDetails");
+					
+					patientRecord = new PatientRecord(patientSIN, appointmentID, teethInvolved, treatmentDetails);
+				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return patientRecord;       
+	    }
+
 		//Searches and returns a list of PatientRecord by patient SIN
 		public ArrayList<PatientRecord> getPatientRecordsByPatientSIN(String patientSIN){
 			
@@ -333,7 +408,7 @@ public class  PostgreSqlConn{
 				while(rs.next()) {
 					//col1: patientSIN already have
 					String appointmentID = rs.getString("appointmentID");
-					Integer[] teethInvolved = (Integer[]) rs.getArray("teethInvolved").getArray();
+					String[] teethInvolved = (String[]) rs.getArray("teethInvolved").getArray();
 					String treatmentDetails = rs.getString("treatmentDetails");
 					
 					patientRecord = new PatientRecord(patientSIN, appointmentID, teethInvolved, treatmentDetails);
@@ -575,15 +650,39 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
-		public boolean insertNewEmployee(Employee employee, String pwd){
+		public int insertNewEmployee(Employee employee, String pwd){
 
+
+			String employeeSIN = employee.getEmployeeSIN();
+			if (getUserInfoByEmployeeSIN(employeeSIN).getAge() != null) {
+				System.out.println("Employee with SIN: "+employeeSIN+
+						          " already exists!");
+				return 1;
+			}
+			
 			ArrayList<String> usernames = getAllUsernamesByEntity("employee");
 			if (usernames.size() != 0) {
 				for (int i = 0 ; i < usernames.size(); i++) {
 					if (employee.getUserName().equals(usernames.get(i))) {
-			            return false;
+			            return 2;
 					}
 				}
+			}
+			
+			boolean branchExists = false;
+			ArrayList<Branch> branches = getAllBranches();
+			if (branches.size() != 0) {
+				for (int i = 0 ; i < branches.size(); i++) {
+					if (branches.get(i).getBranchID().equals(employee.getBranchID())) {
+						branchExists = true;
+					}
+				}
+			} else {
+				return 3;
+			}
+			
+			if (!branchExists) {
+				return 4;
 			}
 
 			getConn();//must be below above statement since getAllUsernamesByEntity
@@ -621,11 +720,45 @@ public class  PostgreSqlConn{
 	            
 	            System.out.println("Inserted new employee");
 	            
-	            return true;
+	            return 0;
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return false;
+	            return 5;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public Integer insertPatientRecord(PatientRecord patientRecord){
+
+			PatientRecord foundRecord = getPatientRecordByKey(patientRecord.getPatientSIN(), patientRecord.getAppointmentID());
+			if (foundRecord.getPatientSIN() != null) {
+				return 1;//already written one
+			}
+
+			getConn();//must be below above statement since getPatientRecordByKey
+			          //closed the connection
+
+	        try{
+
+				ps = db.prepareStatement("INSERT into dentalclinic.patientrecord "
+									   + "values(?, ?, ?, ?)");
+				
+	            ps.setString(1, patientRecord.getPatientSIN());	
+	            ps.setInt(2, Integer.parseInt(patientRecord.getAppointmentID()));	
+	            ps.setObject(3, patientRecord.getTeethInvolved(), Types.ARRAY);
+	            ps.setString(4, patientRecord.getTreatmentDetails());	
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new employee");
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 2;
 	        }finally {
 	        	closeDB();
 	        }	       
@@ -750,6 +883,50 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
+		//Returns an appointment based on the ID
+		public Appointment getAppointmentByAppointmentID(String appointmentID){
+			
+			getConn();
+			
+			Appointment appointment = new Appointment();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE appointmentID=? "
+						               + "ORDER BY appointmentdate");
+	            ps.setInt(1, Integer.parseInt(appointmentID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					//col1: appointmentID already have
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					String patientSIN = rs.getString("patientSIN");
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+
+				 System.out.println(Arrays.toString(appointment.getEmployeeSINList()));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointment;
+		}
+		
 		//Returns appointments that involve a certain employee using their SIN
 		public ArrayList<Appointment> getAllAppointmentsByPatientSIN(String patientSIN){
 			
@@ -840,6 +1017,51 @@ public class  PostgreSqlConn{
 		}
 		
 		//Returns appointments that involve a certain employee using their SIN
+		public ArrayList<Appointment> getFinishedAppointmentsByPatientSIN(String patientSIN){
+			
+			getConn();
+			
+			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE patientsin=? "
+						               + "AND status = 'finished' "
+						               + "ORDER BY appointmentdate");
+	            ps.setString(1, patientSIN);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					//col5: patientSIN already have
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+					appointments.add(appointment);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointments;
+			
+		}
+		
+		//Returns appointments that involve a certain employee using their SIN
 		public ArrayList<Appointment> getAppointmentsByEmployeeSIN(String employeeSIN){
 			
 			getConn();
@@ -881,8 +1103,166 @@ public class  PostgreSqlConn{
 	        }
 						
 			return appointments;
+		}
+		
+		//Returns appointments that involve a certain employee using their SIN
+		public Integer getTreatmentCountByAppointmentID(String appointmentID){
+			
+			getConn();
+			
+			Integer treatmentCount = 0;
+			
+			try {
+				ps = db.prepareStatement("SELECT COUNT(*) "
+						               + "FROM dentalclinic.treatment "
+						               + "WHERE appointmentid=?");
+				ps.setInt(1, Integer.parseInt(appointmentID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					treatmentCount = rs.getInt("count");
+				 System.out.println(treatmentCount);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return treatmentCount;
 			
 		}
+		
+		//Returns appointments that involve a certain employee using their SIN
+		public ArrayList<Treatment> getTreatmentsByAppointmentID(String appointmentID){
+			
+			getConn();
+			
+			ArrayList<Treatment> treatments = new ArrayList<Treatment>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * "
+						               + "FROM dentalclinic.treatment "
+						               + "WHERE appointmentid=?");
+				ps.setInt(1, Integer.parseInt(appointmentID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					//col1 appointmentID already have
+					String toothInvolved = rs.getString("toothInvolved");
+					String treatmentCode = rs.getString("treatmentCode");
+					String treatmentType = rs.getString("treatmentType");
+					String[] medication = (String[]) rs.getArray("medication").getArray();
+					String[] symptoms = (String[]) rs.getArray("symptoms").getArray();
+					String comments = rs.getString("comments");
+					String treatmentDate = rs.getString("treatmentDate");
+					
+					Treatment treatment = new Treatment(appointmentID, toothInvolved, treatmentCode,
+													    treatmentType, medication, symptoms,
+													    comments, treatmentDate);
+
+					System.out.println(treatment.getTreatmentDate());
+					
+					treatments.add(treatment);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return treatments;
+			
+		}
+		
+		//Returns appointments that involve a certain employee using their SIN
+		public Review getReviewByKey(String patientSIN, String appointmentID){
+			
+			getConn();
+			
+			Review review = new Review();
+			
+			try {
+				ps = db.prepareStatement("SELECT * "
+						               + "FROM dentalclinic.review "
+						               + "WHERE patientSIN=? "
+						               + "AND appointmentID=?");
+				ps.setString(1, patientSIN);	
+				ps.setInt(2, Integer.parseInt(appointmentID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String reviewDate = rs.getString("reviewDate");
+					String reviewTime = rs.getString("reviewTime");
+					String professionalism = rs.getString("employeeprofessionalism");
+					String communication = rs.getString("communication");
+					String cleanliness = rs.getString("cleanliness");
+					String comments = rs.getString("comments");
+					
+					review = new Review(patientSIN, appointmentID, reviewDate,
+							reviewTime, professionalism, communication,
+							            cleanliness, comments);
+					
+				 System.out.println(patientSIN+", "+appointmentID);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return review;
+			
+		}
+		/*
+		//For patient view; inserts a review
+		private int insertReview(Review review){
+			
+			getConn();
+
+	        try{
+	            
+				ps = db.prepareStatement("INSERT INTO dentalclinic.review "
+									   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		
+				ps.setString(1, review.getPatientSIN());	
+				
+			    long millis=System.currentTimeMillis();  
+			    java.sql.Date date = new java.sql.Date(millis);
+			    ps.setDate(2, date);
+			    
+				ps.setString(2, claim.getInsuranceCompany());	
+				ps.setFloat(4, Float.parseFloat(claim.getInsuranceAmount()));
+	            ps.setInt(3, Integer.parseInt(review.getEmployeeProfessionalism()));
+	            ps.setInt(3, Integer.parseInt(review.getCommunication()));
+	            ps.setInt(3, Integer.parseInt(review.getCleanliness()));
+				ps.setString(1, review.getAppointmentID());	
+				ps.setString(1, review.getComments());		
+				 
+				ps.setTime(0, millis);
+				
+				ps.executeUpdate();
+				
+				System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }*/
 		
 		//Returns an ArrayList containing all Branches
 		public ArrayList<Branch> getAllBranches(){

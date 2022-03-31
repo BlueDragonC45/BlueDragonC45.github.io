@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Employee Login</title>
+<title>Patient Login</title>
 <meta charset="ISO-8859-1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 <link href="./styles/styles.css" rel="stylesheet" type="text/css">
@@ -34,8 +34,8 @@ $(document).ready(function() {
 	    </nav>
 	    
 	    <div class="content p-3 my-3 h-100 border" id="main">
-	      <h1> Employee Login</h1>
-			<form method="post" action="employeeLogin">
+	      <h1> Guardian Login</h1>
+			<form method="post" action="guardianLogin">
 				Username:<input type="text" id="userName" class="m-1 form-control" name="userName"><br>
 				Password:<input type="password" id="pwd" class="m-1 form-control" name="pwd"><br>
 				<button type="submit" value="submit" onclick="return validateLogin('userName', 'pwd');">Login</button>

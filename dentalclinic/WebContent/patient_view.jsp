@@ -9,8 +9,8 @@
 <%
 Patient patient = (Patient) request.getAttribute("patient");
 String firstName = patient.getFirstName();
-//String middleName = (String) request.getAttribute("middleName");
-//String lastName = (String) request.getAttribute("lastName");
+
+String appointmentIDFetched = (String) request.getAttribute("appointmentID");
 %>
 <!DOCTYPE html>
 <html>
@@ -31,6 +31,17 @@ String firstName = patient.getFirstName();
 <script src="./scripts/main.js"></script>
 <title>Sunshine Dentist Clinic</title>
 <script>
+	function validateReview() {
+		var review = document.getElementById("review");
+		
+		console.log(review.value);
+		if (review.value.length < 20){
+			alert("Type at least 20 characters.");
+			return false;
+		} else
+			return true;
+	}
+
 	function resetAppointmentView() {
 		document.getElementById("upcomingAppt").style.display = "block";
 		document.getElementById("allAppointments").style.display = "none";
@@ -39,6 +50,11 @@ String firstName = patient.getFirstName();
 	function viewAllAppointments() {
 		document.getElementById("allAppointments").style.display = "block";
 		document.getElementById("upcomingAppt").style.display = "none";
+	}
+	
+	function viewReviewableAppointments() {
+		document.getElementById("reviewForm").style.display = "block";
+		document.getElementById("patientRecordsWrite").style.display = "none";
 	}
 </script>
 </head>
@@ -61,11 +77,13 @@ String firstName = patient.getFirstName();
 					onclick="openTab('upcomingAppt')">View
 					Appointments</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
+					onclick="openTab('writeReview')">Submit Review</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
 					onclick="openTab('patientRecords')">View My Records</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
 					onclick="openTab('patientInfo')">View My Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;"
-					onclick="location.href='index.html'">Go Back</button>
+					onclick="location.href='/dentalclinic/'">Go Back</button>
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="upcomingAppt">
@@ -141,6 +159,80 @@ String firstName = patient.getFirstName();
 				<button onclick="resetAppointmentView()">View Unfinished</button>
 			</div>
 			
+      <div class="tab p-3 my-3" style="display: none;" id="patientRecordsWrite">
+        <h2> Submit a Review</h2>
+        <div class="p-3 my-3" id="patientRecordSearchWrite">
+			Search Completed Appointments:
+			<button onclick="viewReviewableAppointments()">View Unfinished</button>
+        </div>
+      </div>
+      
+      <div class="tab p-3 my-3" style="display: none;" id="reviewableAppointments">
+						<h3>Completed Appointments:</h3><br>
+				<form method="post" action="patientLogin">
+						<select class="m-1 form-control" type="text" id="appointmentToReview" name="appointmentToReview">
+							<%
+							Object obj5 = request.getAttribute("finishedAppointments");
+							ArrayList<Appointment> finishedList = null;
+							if (obj5 instanceof ArrayList) {
+								finishedList = (ArrayList<Appointment>) obj5;
+							}
+							if (finishedList != null && branchList != null) {
+								//appointmentTypeTreatmentList treatmentCountList
+								Integer branchID = 0;
+								String appointmentID = "";
+								for (int i = 0 ; i < finishedList.size() ; i++) {
+
+									branchID = Integer.parseInt(finishedList.get(i).getBranchID());
+									appointmentID = finishedList.get(i).getAppointmentID();
+									%>
+									<option value=<%=appointmentID%>><%=finishedList.get(i).toString()+" Branch location: "+branchList.get(branchID-1)+"."%></option>
+									<%
+								}
+							}
+							%>
+						</select>
+						<input class="m-1 form-control" type="hidden" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
+						<button type="submit" value="submit" onclick="return true">Select</button>
+						<button type="reset" value="reset" onclick="history.back();">Go Back</button>
+				</form>
+	  </div>
+
+		<div class="tab p-3 my-3" style="display: none;" id="reviewForm">
+			<form method="post" action="patientLogin">
+				<input class="m-1 form-control" type="text" id="patientSIN" name="patientSIN" value = "<%=patient.getPatientSIN()%>" readonly> 
+				<input class="m-1 form-control" type="text" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
+				<input class="m-1 form-control" type="text" id="appointmentIDFetched" name="appointmentIDFetched" value="<%=appointmentIDFetched%>" readonly>
+				Employee Professionalism:<select class="m-1 form-control" id="roomNum" name="employeeProf">
+						<option value="1">1/5</option>
+						<option value="2">2/5</option>
+						<option value="3">3/5</option>
+						<option value="4">4/5</option>
+						<option value="4">5/5</option>
+					</select> 
+				Communication:<select class="m-1 form-control" id="communication" name="communication">
+						<option value="1">1/5</option>
+						<option value="2">2/5</option>
+						<option value="3">3/5</option>
+						<option value="4">4/5</option>
+						<option value="4">5/5</option>
+					</select> 
+				Cleanliness:<select class="m-1 form-control" id="cleanliness" name="cleanliness">
+						<option value="1">1/5</option>
+						<option value="2">2/5</option>
+						<option value="3">3/5</option>
+						<option value="4">4/5</option>
+						<option value="4">5/5</option>
+					</select> 
+				Comments: <textarea class="m-1 form-control" cols="15" rows="10" id="review" name="review"></textarea>
+				<!-- <input type="text" style="height:200px;font-size:14pt;" class="m-1 form-control" id="treatmentDetails" name="treatmentDetails">
+				 --> 
+				<small>Note: Leave an honest review.</small><br>
+				<button type="submit" value="submit" onclick="return validateReview();">Submit</button>
+				<button type="reset" value="reset" onclick="history.back();">Go Back</button>
+			</form>
+		</div>
+			
 			<div class="tab p-3 my-3" style="display: none;" id="patientRecords">
 				<h2>Patient Records</h2>
 	          	<%//Appointment List
@@ -155,7 +247,7 @@ String firstName = patient.getFirstName();
 				
 				if (recordList != null) {
 					if (recordList.size() == 0) {
-						%><br><h6>No records found. If you think this is an error, contact the clinic.</<h6>><%
+						%><br><h6>No records found. If you think this is an error, contact the clinic.</h6><%
 					} else {
 						
 						for (PatientRecord record : recordList) {
@@ -235,6 +327,7 @@ String firstName = patient.getFirstName();
 					</table>
 				</div>
 			</div>
+		
 
 		</div>
 	</div>

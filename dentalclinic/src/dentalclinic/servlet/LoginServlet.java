@@ -22,22 +22,23 @@ public class LoginServlet extends HttpServlet {
 		HttpSession session = req.getSession();
 		
 		//Get type to redirect to correct login page
-		String employee = req.getParameter("employee");
+		/*String employee = req.getParameter("employee");
 		String patient = req.getParameter("patient");
-		String guardian = req.getParameter("guardian");
+		String guardian = req.getParameter("guardian");*/
+		String user = req.getParameter("user");
 
 		
-		if (employee != null) {
+		if (user.equals("employee")) {
 			
 			req.getRequestDispatcher("employee_login.jsp").forward(req, resp);
 			return;		
 			
-		} else if (patient != null) {
+		} else if (user.equals("patient")) {
 			
 			req.getRequestDispatcher("patient_login.jsp").forward(req, resp);
 			return;		
 			
-		} else if (guardian != null) {
+		} else if (user.equals("guardian")) {
 			
 			req.getRequestDispatcher("guardian_login.jsp").forward(req, resp);
 			return;		

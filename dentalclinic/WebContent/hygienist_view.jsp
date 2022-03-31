@@ -31,7 +31,7 @@
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listAppointments')" >List Appointments</button>
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('searchPatient')" >Search Patient</button>
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('searchPatientRecord')" >Search Patient Record</button>
-        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='index.html'" >Go Back</button>
+        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'" >Go Back</button>
       </div>
 
       <div class="tab p-3 my-3" style="display: none;" id="listAppointments">

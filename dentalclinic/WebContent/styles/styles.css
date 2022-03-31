@@ -30,3 +30,9 @@ button {
 .content {
   background-color: rgb(208, 248, 251);
 }
+
+textarea {
+  resize: none;
+  width: 100px;
+  height: 60px;
+}

@@ -146,11 +146,26 @@ $(document).ready(function() {
 		<% if (outcome.equals("updateSuccess")) { %>
 			alert("Employee entry for "+fName+" "+lName+" successfully updated.");
 		<% } else if (outcome.equals("updateFailed")) { %>
-			alert("Employee entry for "+fName+" "+lName+" could not be updated; username chosen cannot be used.");
+			alert("Employee entry for "+fName+" "+lName+" could not be updated; username already taken.");
+			history.back();
 		<% } else if (outcome.equals("registerSuccess")) { %>
-			alert("Employee entry for "+fName+" "+lName+" added successfully.");
-		<% } else if (outcome.equals("registerFailed")) { %>
-			alert("Employee entry for "+fName+" "+lName+" could not be added; username & SIN must be unique.");
+			alert("Employee entry for "+fName+" "+lName+" successfully added.");
+			history.back();
+		<% } else if (outcome.equals("duplicateSIN")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be added; duplicate SIN.");
+			history.back();
+		<% } else if (outcome.equals("duplicateUsername")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be added; duplicate username.");
+			history.back();
+		<% } else if (outcome.equals("noBranchesInDB")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be added; no branches available at the moment.");
+			history.back();
+		<% } else if (outcome.equals("branchNotFound")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be added; branch with that ID does not exist.");
+			history.back();
+		<% } else { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be added; unknown SQL Error.");
+			history.back();
 	<% }}; %>
 	
 	<% 
@@ -207,7 +222,7 @@ $(document).ready(function() {
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listEmployees')" >List Employees</button>
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('newEmployee')" >Add a New Employee</button>
         <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('updateEmployee')" >Update Employee Information</button>
-        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='index.html'" >Go Back</button>
+        <button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'" >Go Back</button>
       </div>
 
       <div class="tab p-3 my-3" style="display: none;" id="listEmployees">
@@ -259,7 +274,7 @@ $(document).ready(function() {
       <div class="tab p-3 my-3" style="display: none;" id="newEmployee">
 		  <h2> New Employee</h2>
 		  <form method="post" action="employeeRegister">
-		    Social Insurance Number:<input class="m-1 form-control" type="text" id="employeeSIN" name="employeeSIN" required>
+		    Social Insurance Number:<input class="m-1 form-control" type="number" id="employeeSIN" name="employeeSIN" required>
 		    Username:<input class="m-1 form-control" type="text" id="username" name="username" required>
 		    BranchID:<input class="m-1 form-control" type="text" id="branchID" name="branchID" required>
 		    First Name:<input class="m-1 form-control" type="text" id="fName" name="fName" required>
@@ -269,7 +284,8 @@ $(document).ready(function() {
 		  	<input class="m-1 form-control" type="hidden" id="age" name="age">
 		    Gender:<input type="test" class="m-1 form-control" name="gender" id="gender" name="gender" required>
 		    Email:<input class="m-1 form-control" type="email" id="email" name="email" required>
-		    Phone number:<input class="m-1 form-control" type="tel" id="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phone" required>
+		    Phone number:<input class="m-1 form-control" type="tel" id="phone" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phone" required>
+			<small>Format: 123-456-7890</small><br>
 		    Address:<input class="m-1 form-control" type="text" id="address" name="address" required>
 		    Employee Role:<select class="m-1 form-control" id="role" name="role" required>
 			   		<option value="dentist">Dentist</option>

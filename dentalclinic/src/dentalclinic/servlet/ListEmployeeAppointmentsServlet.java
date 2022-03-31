@@ -10,6 +10,8 @@ import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Appointment;
+import dentalclinic.entities.Branch;
+
 import java.util.ArrayList;
 
 public class ListEmployeeAppointmentsServlet extends HttpServlet {
@@ -28,8 +30,11 @@ public class ListEmployeeAppointmentsServlet extends HttpServlet {
 		PostgreSqlConn con = new PostgreSqlConn();
 		ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(employeeSIN);
 		req.setAttribute("appointments", appointments);
+		
+		ArrayList<Branch> branches = con.getAllBranches();
+		req.setAttribute("branches", branches);
 
-		req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+		req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
 		return;	
 		
 	}

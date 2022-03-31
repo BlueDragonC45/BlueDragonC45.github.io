@@ -1,7 +1,6 @@
 package dentalclinic.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Patient;
+import dentalclinic.entities.Employee;
 
 public class PatientSearchServlet extends HttpServlet {
 
@@ -34,13 +34,13 @@ public class PatientSearchServlet extends HttpServlet {
 
 		req.setAttribute("patientStr", patientStr);
 
-		String role = req.getParameter("role");
-		req.setAttribute("role", role);
-		if (role.equals("dentist")) {
+		Employee employee = con.getUserInfoByEmployeeSIN(employeeSIN);
+		
+		if (employee.getRole().equals("dentist")) {
 
 			req.getRequestDispatcher("dentist_view.jsp").forward(req, resp);
 			
-		} else if (role.equals("hygienist")) {
+		} else if (employee.getRole().equals("hygienist")) {
 
 			req.getRequestDispatcher("hygienist_view.jsp").forward(req, resp);
 			
