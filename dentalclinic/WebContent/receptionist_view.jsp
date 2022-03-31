@@ -563,9 +563,8 @@
 			<h1>Receptionist View</h1>
 			<div class="p-1 my-1 border border-dark"
 				id="receptionistNav">
-<<<<<<< Updated upstream
 				<div class="row justify-content-around">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointment')">Set a New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentDateSearch')">Set a New Appointment</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill a Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
@@ -577,16 +576,6 @@
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
 				</div>
-=======
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('appointmentDateSearch')">Set a New Appointment</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientBilling')">Bill a Patient</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
->>>>>>> Stashed changes
 			</div>
 
 			<div class="p-3 my-3" id="appointmentDateSearch">
