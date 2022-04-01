@@ -1106,6 +1106,53 @@ public class  PostgreSqlConn{
 			return appointments;
 		}
 		
+		//Returns appointments that match this date
+		public ArrayList<Appointment> getAppointmentsByDate(String date){
+			
+			getConn();
+			
+			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+			
+			try {
+				//Will have to make an exception to this since cannot
+				//figure out setDate
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE appointmentdate=timestamp '"+date+"' "
+						               + "ORDER BY appointmentdate");
+	            //ps.setString(1, date);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String patientSIN = rs.getString("patientSIN");
+					String appointmentID = rs.getString("appointmentID");
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					//col5: patientSIN already have
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+					appointments.add(appointment);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointments;
+			
+		}
+		
 		//Returns appointments that involve a certain employee using their SIN
 		public Integer getTreatmentCountByAppointmentID(String appointmentID){
 			

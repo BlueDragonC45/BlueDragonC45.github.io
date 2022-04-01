@@ -47,14 +47,22 @@
 	}
 
 	function validateNotWeekend(appointmentDateQuery) {
-		var date = new Date(appointmentDateQuery)
+		var date = new Date(appointmentDateQuery.value)
 		var day = date.getDay();
 		
-		if (day == 0 || day = 6) {
-			alert("Please choose a weekday (Mon-Fri).");
-			return false;
-		} else {
+		var dayName = date.toLocaleString("en-US", {
+		    timeZone: "America/New_York",
+		    weekday: 'long'
+		})
+		
+		console.log(dayName);
+
+		//for some reason, it is shifted by one
+		if (dayName != 'Friday' && dayName != 'Saturday') { // or some other day
 			return true;
+		} else {
+			alert("Closed on weekends.");
+		    return false;
 		}
 	}
 
@@ -493,6 +501,27 @@
 		%>
 	<% }}; %>
 	
+	<% String availability = (String) request.getAttribute("availability");
+	if (outcomeG != null) { 
+
+		if (availability.equals("full")) {%>
+
+			alert("No availability for that day.");
+			history.back();
+			
+		<%} else if (availability.equals("available")) {
+			
+			%>
+			alert("Guardian entry for "+fNameG+" "+lNameG+" could not be updated; username chosen or guardian non-existent.");
+			<%
+		} else {
+			%>
+			alert("Unknown Error; SQL ERROR.");
+			history.back();
+			<%
+		}
+	 }; %>
+	
 	<% 
 	Object obj = request.getAttribute("branches");
 	ArrayList<Branch> branchList = null;
@@ -545,6 +574,16 @@
 			document.getElementById("invoicesView").style.display = "block";<%
 		}
 	}
+	
+	Object obj4 = request.getAttribute("resultHours");
+	ArrayList<String> resultHours = null;
+	if (obj4 instanceof ArrayList) {
+		resultHours = (ArrayList<String>) obj4;
+		%>
+		document.getElementById("appointmentForm").style.display = "block";
+		document.getElementById("appointmentDateSearch").style.display = "none";
+		<%
+	}
 	%>
 
 	});
@@ -564,14 +603,14 @@
 			<div class="p-1 my-1 border border-dark"
 				id="receptionistNav">
 				<div class="row justify-content-around">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentDateSearch')">Set a New Appointment</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill a Patient</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientRegister')">Add a New Patient</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentDateSearch')">New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill Patient</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientRegister')">Register New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
 				</div>
 				
 				<div class="row justify-content-around">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('guardianRegister')">Add a New Guardian</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('guardianRegister')">Register New Guardian</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
@@ -581,15 +620,17 @@
 			<div class="p-3 my-3" id="appointmentDateSearch">
 				<h2>Choose Appointment Date</h2>
 				<form method="post" action="appointment">
-					Date:<input class="m-1 form-control" type="date" id="appointmentDateQuery" name="appointmentDateQuery">
+					<br>
+					<input class="m-1 form-control" type="date" id="appointmentDateQuery" name="appointmentDateQuery">
 					<button type="submit" value="submit" onclick="return validateNotWeekend(appointmentDateQuery);">Choose</button>
 				</form>
 			</div>
 
-			<div class="tab p-3 my-3" style="display: none;" id="appointment">
+			<div class="tab p-3 my-3" style="display: none;" id="appointmentForm">
 				<h2>New Appointment</h2>
 				<form>
-					First Name:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
+					Appointment ID:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
+					Appointment ID:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
 					Middle Name:<input type="text" class="m-1 form-control" id="middleNameNA" name="middleName"> 
 					Last Name:<input type="text" class="m-1 form-control" id="lastNameNA" name="lastName" required>
 					Date:<input class="m-1 form-control" type="date" id="date">
@@ -606,13 +647,19 @@
 						<option value="cavity">Cavity</option>
 						<option value="pull">Tooth Pulled</option>
 					</select>
-					<!-- Only makes sense for editing an appointment
-			Status:<select class="m-1 form-control" id="aStatus">
-			    <option value="upcoming">Upcoming</option>
-			    <option value="cancelled">Cancelled</option>
-			    <option value="completed">Completed</option>
-			    <option value="noshow">No-Show</option>
-			  </select> -->
+					<!-- 
+	private @Getter @Setter String appointmentID;
+	private @Getter @Setter String appointmentDate;
+	private @Getter @Setter String appointmentStartTime;
+	private @Getter @Setter String appointmentEndTime;
+	private @Getter @Setter String patientSIN;
+	private @Getter @Setter String roomID;
+	private @Getter @Setter String branchID;
+	private @Getter @Setter String invoiceID;
+	private @Getter @Setter String[] employeeSINList;
+	private @Getter @Setter String appointmentType;
+	private @Getter @Setter String status;
+ -->
 					<button type="submit" value="submit" onclick="??">Create Appointment</button>
 					<button type="reset" value="reset">Reset</button>
 				</form>
