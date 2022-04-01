@@ -67,7 +67,7 @@ public class EmployeeRegisterServlet extends HttpServlet{
 		req.setAttribute("firstNameNEW", firstName);
 		req.setAttribute("lastNameNEW", lastName);
 		
-		int isInserted = con.insertNewEmployee(employee, employeeSIN);
+		int isInserted = con.insertEmployee(employee, employeeSIN);
 		if (isInserted == 0) {			
 				
 				req.setAttribute("outcome", "registerSuccess");

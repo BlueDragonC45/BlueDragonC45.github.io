@@ -14,6 +14,7 @@ import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Appointment;
 import dentalclinic.entities.AppointmentProcedure;
 import dentalclinic.entities.Treatment;
+import dentalclinic.entities.Invoice;
 import dentalclinic.entities.Branch;
 import dentalclinic.entities.Room;
 import dentalclinic.entities.Employee;
@@ -189,7 +190,7 @@ public class AppointmentServlet extends HttpServlet {
 			    //invoice insert => appointment insert => procedure and feecharge insertion
 		
 			//Fetch all appointment information from user input
-			Integer newAppointmentID = con.getMostRecentAppointmentID();
+			Integer newAppointmentID = con.getMostRecentAppointmentID()+1;
 			String pFormDate = req.getParameter("pFormDate");
 			String pFormTime = req.getParameter("pFormTime");
 			//time contains start and end
@@ -201,11 +202,15 @@ public class AppointmentServlet extends HttpServlet {
 			String pFormAType = req.getParameter("pFormAType");
 			//status set in func
 			
-			Integer newInvoiceID = con.getMostRecentInvoiceID();
+			//Get next invoiceID and create invoice for appointment
+			Integer newInvoiceID = con.getMostRecentInvoiceID()+1;
+			Integer result = con.insertInvoice(
+					new Invoice(newInvoiceID.toString(), null,
+							pFormSIN, null, "0", "0", "0", "0", "0", "0"));
 			
 			//insert this appointment (function fills in missing values
 			//like determining what the next ID to use is)
-			con.insertNewAppointment(
+			con.insertAppointment(
 					new Appointment(newAppointmentID.toString(), pFormDate,
 							pFormTime.split("-")[0],
 					        pFormTime.split("-")[1], pFormSIN, pFormRoomID, 
@@ -229,18 +234,22 @@ public class AppointmentServlet extends HttpServlet {
 			String[] codeTypesAndFees = pFormTypeList.split("|");
 			String[] amountAndMats = pFormAmtAndMatList.split("|");
 			String[] descriptions = pFormDescriptionList.split("|");
+			Integer newFeeID = con.getMostRecentFeeID()+1;
 			
  			for (int i = 0 ; i < allTeeth.length ; i++) {
- 				String code = codeTypesAndFees[i].split(" ")[0];
+ 				String procedureCode = codeTypesAndFees[i].split(" ")[0];
  				String type = codeTypesAndFees[i].split(" ")[1];
  				String fee = codeTypesAndFees[i].split(" ")[2];
+ 				String feeID = codeTypesAndFees[i].split(" ")[3];
  				
- 				con.insertNewAppointmentProcedure(
+ 				con.insertAppointmentProcedure(
  						new AppointmentProcedure(newAppointmentID.toString(), allTeeth[i],
- 											     code, type, amountAndMats[i].split(", "), 
+ 												 procedureCode, type, amountAndMats[i].split(", "), 
  												 descriptions[i], pFormDate));
  				con.insertFeeCharge(
- 						new FeeCharge(null, ));
+ 						new FeeCharge(newFeeID.toString(), newInvoiceID.toString(),
+ 									  feeID, fee));
+ 				newFeeID++;
 			}
 
 			

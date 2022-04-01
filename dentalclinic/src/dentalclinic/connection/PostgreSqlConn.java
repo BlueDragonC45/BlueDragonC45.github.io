@@ -455,7 +455,7 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For receptionist only; inserts a new patient
-		public int insertNewPatient(Patient patient, String pwd){
+		public int insertPatient(Patient patient, String pwd){
 
 			String patientSIN = patient.getPatientSIN();
 			if (getUserInfoByPatientSIN(patientSIN).getAge() != null) {
@@ -600,7 +600,7 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For receptionist only; inserts a new patient
-		public boolean insertNewGuardian(Guardian guardian, String pwd){
+		public boolean insertGuardian(Guardian guardian, String pwd){
 
 			ArrayList<String> usernames = getAllUsernamesByEntity("guardian");
 			if (usernames.size() != 0) {
@@ -651,7 +651,7 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
-		public int insertNewEmployee(Employee employee, String pwd){
+		public int insertEmployee(Employee employee, String pwd){
 
 
 			String employeeSIN = employee.getEmployeeSIN();
@@ -754,6 +754,153 @@ public class  PostgreSqlConn{
 	            ps.executeUpdate();
 	            
 	            System.out.println("Inserted new employee");
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 2;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public Integer insertInvoice(Invoice invoice){
+
+			Invoice foundInvoice = getInvoiceByID(invoice.getInvoiceID());
+			if (foundInvoice.getPatientSIN() != null) {
+				return 1;//already exists
+			}
+
+			getConn();
+
+	        try{
+
+				ps = db.prepareStatement("INSERT into dentalclinic.Invoice "
+									   + "values(?, CURRENT_DATE, ?, null,"
+									   + "0, 0, 0, 0, 0, 0)");
+				
+	            ps.setInt(1, Integer.parseInt(invoice.getInvoiceID()));	
+	            ps.setString(2, invoice.getPatientSIN());
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new invoice with ID: "+invoice.getInvoiceID());
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 2;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public Integer insertAppointment(Appointment appointment){
+
+			Appointment foundAppointment = getAppointmentByAppointmentID(appointment.getAppointmentID());
+			if (foundAppointment.getPatientSIN() != null) {
+				return 1;//already inserted
+			}
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("INSERT into dentalclinic.appointment "
+									   + "values(?, '"+appointment.getAppointmentDate()+"', "
+									   + "'"+appointment.getAppointmentStartTime()+"', "
+									   + "'"+appointment.getAppointmentEndTime()+"', ?, ?, ?, ?, ?, ?, ?)");
+
+	            ps.setInt(1, Integer.parseInt(appointment.getAppointmentID()));	
+	            ps.setString(2, appointment.getPatientSIN());	
+	            ps.setInt(3, Integer.parseInt(appointment.getRoomID()));	
+	            ps.setInt(4, Integer.parseInt(appointment.getBranchID()));	
+	            ps.setInt(5, Integer.parseInt(appointment.getInvoiceID()));	
+	            ps.setObject(6, appointment.getEmployeeSINList(), Types.ARRAY);
+	            ps.setString(7, appointment.getAppointmentType());	
+	            ps.setString(8, appointment.getStatus());	
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new appointment with ID: "+appointment.getAppointmentID());
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 2;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public Integer insertAppointmentProcedure(AppointmentProcedure appointmentP){
+
+			AppointmentProcedure foundAppointmentP = getAppointmentProcedureByKey(
+														appointmentP.getAppointmentID(), 
+														appointmentP.getToothInvolved(), 
+														appointmentP.getProcedureCode());
+			if (foundAppointmentP.getProcedureType() != null) {
+				return 1;//already inserted
+			}
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("INSERT into dentalclinic.appointmentprocedure "
+									   + "values(?, ?, ?, ?, ?, ?, '"+appointmentP.getProcedureDate()+"')");
+
+	            ps.setInt(1, Integer.parseInt(appointmentP.getAppointmentID()));	
+	            ps.setString(2, appointmentP.getToothInvolved());	
+	            ps.setString(3, appointmentP.getProcedureCode());	
+	            ps.setString(4, appointmentP.getProcedureType());	
+	            ps.setObject(5, appointmentP.getMaterialsAndAmountUsed(), Types.ARRAY);
+	            ps.setString(6, appointmentP.getDescription());
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new appointment with ID: "+appointmentP.getAppointmentID());
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 2;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public Integer insertFeeCharge(FeeCharge feeCharge){
+
+			FeeCharge foundFeeCharge = getFeeCharge(feeCharge.getFeeID());
+			if (foundFeeCharge.getInvoiceID() != null) {
+				return 1;//already inserted
+			}
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("INSERT into dentalclinic.feecharge "
+									   + "values(?, ?, ?, ?)");
+	            ps.setInt(1, Integer.parseInt(feeCharge.getFeeID()));
+	            ps.setInt(2, Integer.parseInt(feeCharge.getInvoiceID()));
+	            ps.setInt(3, Integer.parseInt(feeCharge.getFeeCode()));
+				ps.setBigDecimal(4, new BigDecimal(feeCharge.getCharge()));
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new FeeCharge with Code: "+feeCharge.getFeeCode());
 	            
 	            return 0;
 
@@ -926,6 +1073,82 @@ public class  PostgreSqlConn{
 	        }
 						
 			return appointment;
+		}
+		
+		//Returns an appointmentprocedure based on its key
+		public AppointmentProcedure getAppointmentProcedureByKey(String appointmentID, String tooth, String pCode){
+			
+			getConn();
+			
+			AppointmentProcedure appointmentP = new AppointmentProcedure();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointmentprocedure "
+						               + "WHERE appointmentID=? "
+						               + "AND toothinvolved=? "
+						               + "AND procedurecode=?");
+	            ps.setString(1, appointmentID);	
+	            ps.setString(2, tooth);	
+	            ps.setString(3, pCode);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String procedureType = rs.getString("procedureType");
+					String[] materialsAndAmountUsed = (String[]) rs.getArray("materialsAndAmountUsed").getArray();
+					String description = rs.getString("description");
+					String procedureDate = rs.getString("procedureDate");
+					
+					appointmentP = new AppointmentProcedure(appointmentID, tooth, pCode,
+															procedureType, materialsAndAmountUsed,
+															description, procedureDate);
+
+				 System.out.println("Fetched procedure with code: "+appointmentP.getProcedureCode());
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointmentP;
+		}
+		
+		//Returns a feecharge based on its id
+		public FeeCharge getFeeCharge(String feeID){
+			
+			getConn();
+			
+			FeeCharge appointmentP = new FeeCharge();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.feecharge "
+						               + "WHERE appointmentID=? "
+						               + "AND feeID=? ");
+	            ps.setString(1, feeID);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					//col1: feeID already have
+					String invoiceID = rs.getString("invoiceID");
+					String feeCode = rs.getString("feeCode");
+					String charge = rs.getString("charge");
+					
+					appointmentP = new FeeCharge(feeID, invoiceID, feeCode, charge);
+				 System.out.println("Fetched FeeCharge with fee code: "+feeCode);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointmentP;
 		}
 		
 		//Returns appointments that involve a certain employee using their SIN
@@ -1511,12 +1734,12 @@ public class  PostgreSqlConn{
 			
 		}
 		
-		//Returns an ArrayList containing all Branches
+		//Returns most recent id
 		public Integer getMostRecentAppointmentID(){
 			
 			getConn();
 			
-			Integer recentID = -1;
+			Integer recentID = 0;
 			
 			try {
 				ps = db.prepareStatement("SELECT appointmentID "
@@ -1540,13 +1763,13 @@ public class  PostgreSqlConn{
 			return recentID;
 			
 		}
-		
-		//Returns an ArrayList containing all Branches
+
+		//Returns most recent id
 		public Integer getMostRecentInvoiceID(){
 			
 			getConn();
 			
-			Integer recentID = -1;
+			Integer recentID = 0;
 			
 			try {
 				ps = db.prepareStatement("SELECT invoiceID "
@@ -1559,6 +1782,36 @@ public class  PostgreSqlConn{
 	            rs = ps.executeQuery();
 				while(rs.next()){
 					recentID = rs.getInt("invoiceID");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return recentID;
+			
+		}
+
+		//Returns most recent id
+		public Integer getMostRecentFeeID(){
+			
+			getConn();
+			
+			Integer recentID = 0;
+			
+			try {
+				ps = db.prepareStatement("SELECT feeID "
+					            	   + "FROM dentalclinic.feecharge "
+									   + "ORDER BY feeID DESC "
+									   + "LIMIT 1");
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					recentID = rs.getInt("feeID");
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -1598,52 +1851,66 @@ public class  PostgreSqlConn{
 
 	        try{
 
+	            String guardian = newBill.getGuardianSIN();
+	        	
 				ps = db.prepareStatement("UPDATE dentalclinic.invoice "
-									   + "SET userCharge=?, insurancecharge=?, employeecharge=? "
+									   + "SET userCharge=?, insurancecharge=?, employeecharge=? guardiansin=? "
 									   + "WHERE invoiceid=?");
 					
 	            ps.setFloat(1, Float.parseFloat(newBill.getUserPortion()));	
 	            ps.setFloat(2, Float.parseFloat(newBill.getInsurancePortion()));	
 	            ps.setFloat(3, Float.parseFloat(newBill.getEmployeePortion()));
 	            ps.setInt(4, Integer.parseInt(newBill.getInvoiceID()));
+
+	            
+	            if (guardian.isEmpty()) {
+	            	ps.setNull(5, Types.VARCHAR);//since patient can have no guardian
+	            } else {
+					ps.setString(5, newBill.getGuardianSIN());	
+	            }
 	            
 	            ps.executeUpdate();
 
 	            System.out.println(ps.toString());
 	            
-				ps = db.prepareStatement("INSERT INTO dentalclinic.patientbilling "
-									   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		
-				ps.setString(1, newBill.getPatientSIN());	
-	            ps.setInt(2, Integer.parseInt(newBill.getInvoiceID()));
-	            
-	            String guardian = newBill.getGuardianSIN();
-	            if (guardian.isEmpty()) {
-	            	ps.setNull(3, Types.VARCHAR);//since patient can have no guardian
-	            } else {
-					ps.setString(3, newBill.getGuardianSIN());	
-	            }
-            	
-	            if (employeeSIN.isEmpty()) {
-	            	ps.setNull(4, Types.VARCHAR);//since patient can have no employee portion
-	            } else {
-	            	ps.setString(4, employeeSIN);	
-	            }
-				ps.setFloat(5, Float.parseFloat(newBill.getUserPortion()));
-				ps.setFloat(6, Float.parseFloat(newBill.getEmployeePortion()));
-				ps.setFloat(7, Float.parseFloat(newBill.getInsurancePortion()));
-				ps.setFloat(8, Float.parseFloat(newBill.getTotalAmount()));
-				ps.setString(9, newBill.getPaymentType());
-				 
-				ps.executeUpdate();
-				
-				System.out.println(ps.toString());
-	            
-	            return 0;
+	            try {
+					ps = db.prepareStatement("INSERT INTO dentalclinic.patientbilling "
+							   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+					ps.setString(1, newBill.getPatientSIN());	
+				    ps.setInt(2, Integer.parseInt(newBill.getInvoiceID()));
+				     
+				    if (guardian.isEmpty()) {
+				     	ps.setNull(3, Types.VARCHAR);//since patient can have no guardian
+				    } else {
+							ps.setString(3, newBill.getGuardianSIN());	
+				    }
+				 	
+				    if (employeeSIN.isEmpty()) {
+				     	ps.setNull(4, Types.VARCHAR);//since patient can have no employee portion
+				    } else {
+				     	ps.setString(4, employeeSIN);	
+				    }
+						ps.setFloat(5, Float.parseFloat(newBill.getUserPortion()));
+						ps.setFloat(6, Float.parseFloat(newBill.getEmployeePortion()));
+						ps.setFloat(7, Float.parseFloat(newBill.getInsurancePortion()));
+						ps.setFloat(8, Float.parseFloat(newBill.getTotalAmount()));
+						ps.setString(9, newBill.getPaymentType());
+						 
+						ps.executeUpdate();
+						
+						System.out.println(ps.toString());
+			     
+						return 0;
+	            } catch (SQLException e){
+		            e.printStackTrace();
+		            return 3;
+		        }
+
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return 3;
+	            return 4;
 	        }finally {
 	        	closeDB();
 	        }	       

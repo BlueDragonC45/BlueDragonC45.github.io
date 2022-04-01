@@ -936,12 +936,12 @@
 					<input type="hidden" id="pFormTypeList" name="pFormTypeList"> 
 					Procedure Type:<select class="m-1 form-control" id="pFormType">
 							<option value="">Choose type...</option>
-						<option value="D21.50 evaluation 50">Evaluation</option>
-						<option value="D21.77 resin 30">Resin</option>
-						<option value="D22.33 sealant 25">Sealant</option>
-						<option value="D20.56 fluoride 25">Fluoride</option>
-						<option value="D20.56 prophylaxis 50">Prophylaxis</option>
-						<option value="D20.56 varnish 25">Varnish</option>
+						<option value="D21.50 evaluation 50 21500">Evaluation</option>
+						<option value="D21.77 resin 30 21770">Resin</option>
+						<option value="D22.33 sealant 25 22330">Sealant</option>
+						<option value="D22.15 fluoride 25 22150">Fluoride</option>
+						<option value="D25.22 prophylaxis 50 25220">Prophylaxis</option>
+						<option value="D27.75 varnish 25 27750">Varnish</option>
 					</select>	
 					
 					<input type="hidden" id="pFormToothList" name="pFormToothList"> 

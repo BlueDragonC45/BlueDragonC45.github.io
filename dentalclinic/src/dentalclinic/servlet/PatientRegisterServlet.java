@@ -61,7 +61,7 @@ public class PatientRegisterServlet extends HttpServlet{
 		req.setAttribute("firstNameNEW", firstName);
 		req.setAttribute("lastNameNEW", lastName);
 		
-		int insertedCode = con.insertNewPatient(patient, patientPwd);
+		int insertedCode = con.insertPatient(patient, patientPwd);
 		if (insertedCode == 0) {			
 				
 				req.setAttribute("outcome", "registerSuccess");

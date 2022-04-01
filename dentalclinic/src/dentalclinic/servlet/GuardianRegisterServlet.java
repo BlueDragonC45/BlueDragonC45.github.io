@@ -56,7 +56,7 @@ public class GuardianRegisterServlet extends HttpServlet{
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 		
-		boolean isInserted = con.insertNewGuardian(guardian, guardianPwd);
+		boolean isInserted = con.insertGuardian(guardian, guardianPwd);
 		if (isInserted) {			
 				
 				//firstName and lastName might have been used already
