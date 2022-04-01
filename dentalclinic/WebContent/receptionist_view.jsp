@@ -109,6 +109,43 @@
 	}
 	
 
+	function addProcedure() {
+		
+		if (!validateProcedureForm()) {
+			alert("Must fill in the current procedure before adding another.");
+			return false;
+		}
+		
+		var pFormType = document.getElementById("pFormType").value;
+		var pFormTooth = document.getElementById("pFormTooth").value;
+		var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
+		var pFormDescription = document.getElementById("pFormDescription").value;
+		
+		var pFormTypeList = document.getElementById("pFormTypeList").value;
+		var pFormToothList = document.getElementById("pFormToothList").value;
+		var pFormAmtAndMatList = document.getElementById("pFormAmtAndMatList").value;
+		var pFormDescriptionList = document.getElementById("pFormDescriptionList").value;
+		
+		if (pFormTypeList == "") {//implies the rest are empty
+			document.getElementById("pFormTypeList").value = pFormType;
+			document.getElementById("pFormToothList").value = pFormTooth;
+			document.getElementById("pFormAmtAndMatList").value = pFormAmtAndMat;
+			document.getElementById("pFormDescriptionList").value = pFormDescription;
+		} else {
+			document.getElementById("pFormTypeList").value = pFormTypeList+"|"+pFormType;
+			document.getElementById("pFormToothList").value = pFormToothList+"|"+pFormTooth;
+			document.getElementById("pFormAmtAndMatList").value = pFormAmtAndMatList+"|"+pFormAmtAndMat;
+			document.getElementById("pFormDescriptionList").value = pFormDescriptionList+"|"+pFormDescription;
+		}
+
+		alert("Previous procedure stashed; to submit whole appointment, you must complete the current procedure as well.");
+		
+		document.getElementById("pFormType").value = "";
+		document.getElementById("pFormTooth").value = "";
+		document.getElementById("pFormAmtAndMat").value = "";
+		document.getElementById("pFormDescription").value = "";
+	}
+	
 	function validateProcedureForm() {
 		var pFormBranchID = document.getElementById("pFormBranchID").value;
 		var pFormSIN = document.getElementById("pFormSIN").value;
@@ -118,12 +155,14 @@
 		var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
 		var pFormDescription = document.getElementById("pFormDescription").value;
 		
+		console.log(pFormDescription);
+		
 		if (pFormBranchID == "" || pFormSIN == ""
 			     || pFormDate.value == "" || pFormType == "" || pFormTooth == ""
 				 || pFormAmtAndMat == ""  || pFormDescription == "") {
 			alert("You need to fill all requiered fields.");
 			return false;
-		} else if (Boolean(pFormSIN.value.length != 9)) {
+		} else if (Boolean(pFormSIN.length != 9)) {
 			alert("The SIN must be a 9-digit number.");
 			return false;
 		} else if (Boolean(!validateAppointmentDate(pFormDate))) {
@@ -412,7 +451,7 @@
 		var amount = document.getElementById("pFormAmt").value;
 		var material = document.getElementById("pFormMat").value;
 		var list = document.getElementById("pFormAmtAndMat").value;
-
+		
 		if (amount != "" && material != "") {
 			if (list == "") {
 				document.getElementById("pFormAmtAndMat").value = amount+" "+material;
@@ -420,11 +459,6 @@
 				document.getElementById("pFormAmtAndMat").value = list+", "+amount+" "+material;
 			}
 		}
-		
-		var difference = Math.abs(today.getTime() - date.getTime());
-		var age = Math.ceil(difference / (1000 * 3600 * 24)) / 365;
-		
-		return Math.floor(age);
 	}
 	
 
@@ -623,9 +657,13 @@
 			<%
 		} else if (outcomeA.equals("procedure")) {
 			%>
-			document.getElementById("pFormBranchID").value = "<%=newAppointmentProcedure.getAppointmentID()%>";
-			document.getElementById("pFormSIN").value = "<%=newAppointmentProcedure.getPatientSIN()%>";
 			document.getElementById("pFormDate").value = "<%=newAppointmentProcedure.getAppointmentDate()%>";
+			document.getElementById("pFormTime").value = "<%=(String) request.getAttribute("pFormTime")%>";
+			document.getElementById("pFormAType").value = "<%=newAppointmentProcedure.getAppointmentType()%>";
+			document.getElementById("pFormEmployees").value = "<%=(String) request.getAttribute("pFormEmployees")%>";
+			document.getElementById("pFormRoomID").value = "<%=newAppointmentProcedure.getRoomID()%>";
+			document.getElementById("pFormBranchID").value = "<%=newAppointmentProcedure.getBranchID()%>";
+			document.getElementById("pFormSIN").value = "<%=newAppointmentProcedure.getPatientSIN()%>";
 			document.getElementById("pFormBranchLocation").value = "<%=branchLocationProcedure%>";
 			openTab('procedureForm')
 			<%
@@ -813,7 +851,7 @@
 			
 			<div class="tab p-3 my-3" style="display: none;" id="appointmentForm">
 				<h2>New Appointment</h2><br>
-				<form>
+				<form method="post" action="appointment">
 					<input type="hidden" class="m-1 form-control" id="aFormBranchID" name="aFormBranchID" required readonly> 
 					Branch Location:<input type="text" class="m-1 form-control" id="aFormBranchLocation" name="aFormBranchLocation" required readonly> 
 					Patient SIN:<input type="number" class="m-1 form-control" id="aFormSIN" name="aFormSIN" pattern="[0-9]{9}" placeholder="123456789" required > 
@@ -879,12 +917,23 @@
 			</div>
 			
 			<div class="tab p-3 my-3" style="display: none;" id="procedureForm">
-				<h2>New Procedure</h2><br>
-				<form>
+				<h2>Add Procedure To Appointment</h2><br>
+				<form method="post" action="appointment">
+				
+					<input type="hidden" id="pFormDate" name="pFormDate"> 
+					<input type="hidden" id="pFormTime" name="pFormTime"> 
+					<input type="hidden" id="pFormAType" name="pFormAType"> 
+					<input type="hidden" id="pFormEmployees" name="pFormEmployees"> 
+					<input type="hidden" id="pFormSIN" name="pFormSIN"> 
+					<input type="hidden" id="pFormRoomID" name="pFormRoomID"> 
+					<input type="hidden" id="pFormBranchID" name="pFormBranchID"> 
+				
 					<input type="hidden" class="m-1 form-control" id="pFormBranchID" name="pFormBranchID" required readonly> 
 					Patient SIN:<input type="text" class="m-1 form-control" id="pFormSIN" name="pFormSIN" pattern="[0-9]{9}" placeholder="123456789" required readonly> 
 					Procedure Date:<input type="text" class="m-1 form-control" id="pFormDate" name="pFormDate" required readonly> 
 					Branch Location:<input type="text" class="m-1 form-control" id="pFormBranchLocation" name="pFormBranchLocation" required readonly> 
+					
+					<input type="hidden" id="pFormTypeList" name="pFormTypeList"> 
 					Procedure Type:<select class="m-1 form-control" id="pFormType">
 							<option value="">Choose type...</option>
 						<option value="D21.50 evaluation 50">Evaluation</option>
@@ -895,6 +944,7 @@
 						<option value="D20.56 varnish 25">Varnish</option>
 					</select>	
 					
+					<input type="hidden" id="pFormToothList" name="pFormToothList"> 
 					Tooth Involved (FDI No.)<select class="m-1 form-control" type="text" id="pFormTooth" name="pFormTooth">
 						<option value="">Choose tooth...</option>
 					<%
@@ -963,10 +1013,15 @@
 						<input type="button" value="Add to List" onclick="addAmountAndMaterial()">
 					</div>
 
+					<input type="hidden" id="pFormAmtAndMatList" name="pFormAmtAndMatList"> 
 					<input type="text" class="m-1 form-control" id="pFormAmtAndMat" name="pFormAmtAndMat" required readonly> 
+					
+					<input type="hidden" id="pFormDescriptionList" name="pFormDescriptionList"> 
 					Description: <textarea class="m-1 form-control" cols="20" rows="20" id="pFormDescription" name="pFormDescription" required></textarea>
-					<button type="submit" value="submit" onclick="return validateProcedureForm();">Submit</button>
+					
+					<button type="submit" value="submit" onclick="return validateProcedureForm();">Submit Appointment</button>
 					<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
+					<input type="button" value="Add Another Procedure" onclick="addProcedure()">
 				</form>
 				<br>
 			</div>

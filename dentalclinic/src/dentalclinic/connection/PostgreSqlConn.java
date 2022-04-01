@@ -400,7 +400,7 @@ public class  PostgreSqlConn{
 			
 	        try{
 	            ps = db.prepareStatement("SELECT * from dentalclinic.patientrecord "
-	            					   + "WHERE patientSIN=?"
+	            					   + "WHERE patientSIN=? "
 	            					   + "ORDER BY appointmentID");
 	            ps.setString(1, patientSIN);	
 	                           
@@ -1118,7 +1118,7 @@ public class  PostgreSqlConn{
 				//figure out setDate
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE appointmentdate=timestamp '"+date+"' "
-						               + "AND branchID=? AND roomID=?"
+						               + "AND branchID=? AND roomID=? "
 						               + "ORDER BY appointmentdate");
 	            ps.setInt(1, Integer.parseInt(branchID));	
 	            ps.setInt(2, Integer.parseInt(roomID));	
@@ -1512,11 +1512,41 @@ public class  PostgreSqlConn{
 		}
 		
 		//Returns an ArrayList containing all Branches
-		public String getMostRecentInvoiceID(){
+		public Integer getMostRecentAppointmentID(){
 			
 			getConn();
 			
-			String recentID = "";
+			Integer recentID = -1;
+			
+			try {
+				ps = db.prepareStatement("SELECT appointmentID "
+					            	   + "FROM dentalclinic.appointment "
+									   + "ORDER BY appointmentdate DESC "
+									   + "LIMIT 1");
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					recentID = rs.getInt("appointmentID");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return recentID;
+			
+		}
+		
+		//Returns an ArrayList containing all Branches
+		public Integer getMostRecentInvoiceID(){
+			
+			getConn();
+			
+			Integer recentID = -1;
 			
 			try {
 				ps = db.prepareStatement("SELECT invoiceID "
@@ -1528,7 +1558,7 @@ public class  PostgreSqlConn{
 	            
 	            rs = ps.executeQuery();
 				while(rs.next()){
-					recentID = rs.getString("invoiceID");
+					recentID = rs.getInt("invoiceID");
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
