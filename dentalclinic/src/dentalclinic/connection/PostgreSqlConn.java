@@ -307,7 +307,7 @@ public class  PostgreSqlConn{
 					patient = new Patient(patientSIN, userName, firstName, middleName,
 							 					  lastName, dateofBirth, age, gender,
 												  patientEmail, patientPhoneNumber,
-												  address, guardianSIN);
+												  guardianSIN, address);
 				}
 	            
 	        }catch(SQLException e){
@@ -1106,8 +1106,8 @@ public class  PostgreSqlConn{
 			return appointments;
 		}
 		
-		//Returns appointments that match this date
-		public ArrayList<Appointment> getAppointmentsByDate(String date){
+		//Returns appointments that match this date; including branchID and roomID
+		public ArrayList<Appointment> getAppointmentsByDateAndLocation(String date, String branchID, String roomID){
 			
 			getConn();
 			
@@ -1118,8 +1118,10 @@ public class  PostgreSqlConn{
 				//figure out setDate
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE appointmentdate=timestamp '"+date+"' "
+						               + "AND branchID=? AND roomID=?"
 						               + "ORDER BY appointmentdate");
-	            //ps.setString(1, date);	
+	            ps.setInt(1, Integer.parseInt(branchID));	
+	            ps.setInt(2, Integer.parseInt(roomID));	
 	            
 	            System.out.println(ps.toString());   
 	            
@@ -1128,11 +1130,10 @@ public class  PostgreSqlConn{
 					String patientSIN = rs.getString("patientSIN");
 					String appointmentID = rs.getString("appointmentID");
 					String appointmentDate = rs.getString("appointmentDate");
-					String startTime = rs.getString("appointmentstartTime");
+					String startTime = rs.getString("appointmentStartTime");
 					String endTime = rs.getString("appointmentendTime");
-					//col5: patientSIN already have
-					String roomID = rs.getString("roomID");
-					String branchID = rs.getString("branchID");
+					//col6: roomID already have
+					//col7: branchID already have
 					String invoiceID = rs.getString("invoiceID");
 					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
 					String appointmentType = rs.getString("appointmentType");
@@ -1352,6 +1353,39 @@ public class  PostgreSqlConn{
 			
 		}
 		
+		//Returns an ArrayList containing all rooms from this branch
+		public ArrayList<Room> getAllRoomsByBranchID(String branchID){
+			
+			getConn();
+			
+			ArrayList<Room> rooms = new ArrayList<Room>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * "
+									   + "FROM dentalclinic.room "
+									   + "WHERE branchID=?");
+				ps.setInt(1, Integer.parseInt(branchID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String roomID = rs.getString("roomID");
+					Room room = new Room(roomID, branchID);
+					
+					rooms.add(room);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return rooms;
+			
+		}
+		
 		//Returns an ArrayList containing all invoices
 		public ArrayList<Invoice> getAllInvoicesByPatientSIN(String patientSIN){
 			
@@ -1477,6 +1511,36 @@ public class  PostgreSqlConn{
 			
 		}
 		
+		//Returns an ArrayList containing all Branches
+		public String getMostRecentInvoiceID(){
+			
+			getConn();
+			
+			String recentID = "";
+			
+			try {
+				ps = db.prepareStatement("SELECT invoiceID "
+					            	   + "FROM dentalclinic.invoice "
+									   + "ORDER BY dateofissue DESC "
+									   + "LIMIT 1");
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					recentID = rs.getString("invoiceID");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return recentID;
+			
+		}
+		
 		//For receptionist only; bills a patient based on an invoice
 		//If a guardian is found, will bill to them instead
 		public int billUser(PatientBilling newBill, InsuranceClaim claim){
@@ -1592,18 +1656,18 @@ public class  PostgreSqlConn{
 			Branch branch = new Branch();
 			
 			try {
-				ps = db.prepareStatement("SELECT * from dentalclinic.branches "
+				ps = db.prepareStatement("SELECT * from dentalclinic.branch "
 						               + "WHERE branchID=?");
 				
-				ps.setString(1, branchID);
+				ps.setInt(1, Integer.parseInt(branchID));
 				
 				rs = ps.executeQuery();
 				
 				while(rs.next()){
 					//col1: branchID already have
-					String city = rs.getString("guardianSIN");
-					String province = rs.getString("employeeSIN");
-					String managerID = rs.getString("userPortion");
+					String city = rs.getString("city");
+					String province = rs.getString("province");
+					String managerID = rs.getString("managerID");
 					branch = new Branch(branchID, city, province, managerID);
 				}
 			} catch (SQLException e) {

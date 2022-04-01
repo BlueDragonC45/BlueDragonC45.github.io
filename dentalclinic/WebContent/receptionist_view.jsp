@@ -4,6 +4,8 @@
 <%@page import="dentalclinic.entities.Guardian"%>
 <%@page import="dentalclinic.entities.Employee"%>
 <%@page import="dentalclinic.entities.Invoice"%>
+<%@page import="dentalclinic.entities.Room"%>
+<%@page import="dentalclinic.entities.Appointment"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -24,6 +26,7 @@
 <script src="./scripts/main.js"></script>
 <title>Sunshine Dentist Clinic</title>
 <script>
+<%ArrayList<String> employees = new ArrayList<String>();%>
 
 	function validateSIN(SIN) {
 		var numbers = /^[0-9]+$/;
@@ -46,23 +49,90 @@
 		return Math.floor(age);
 	}
 
-	function validateNotWeekend(appointmentDateQuery) {
+	function validateAppointmentDate(appointmentDateQuery) {
+		if (appointmentDateQuery.value == "") {
+			return false;
+		}
 		var date = new Date(appointmentDateQuery.value)
 		var day = date.getDay();
+		
+		var today = new Date();
+		
+		date.setDate(date.getDate()+1);
+		date.setHours(today.getHours());
+		date.setMinutes(today.getMinutes());
+		date.setSeconds(today.getSeconds());
+		date.setMilliseconds(today.getMilliseconds());
 		
 		var dayName = date.toLocaleString("en-US", {
 		    timeZone: "America/New_York",
 		    weekday: 'long'
 		})
-		
-		console.log(dayName);
 
 		//for some reason, it is shifted by one
-		if (dayName != 'Friday' && dayName != 'Saturday') { // or some other day
-			return true;
+		if (dayName != 'Saturday' && dayName != 'Sunday') { // or some other day
+
+			if (date > today) {
+				console.log(date +" > "+today);
+				return true;
+			} else if (date <= today) {
+				alert("Date cannot be today or earlier!");
+				console.log(date +" <= "+today);
+				return false;
+			}
 		} else {
-			alert("Closed on weekends.");
-		    return false;
+			alert("Closed on weekends; choose another date.");
+			return false;
+		}
+	}
+	
+	function validateAppointmentForm() {
+		var patientSIN = document.getElementById("aFormSIN");
+		var aFormDate = document.getElementById("aFormDate");
+		var aFormTime = document.getElementById("aFormTime");
+		var aFormRoomID = document.getElementById("aFormRoomID");
+		var aFormType = document.getElementById("aFormType");
+		var aFormEmployees = document.getElementById("aFormEmployees");
+		
+		if (aFormTime.value == "" || aFormRoomID.value == ""
+					   || aFormType.value == "" || aFormEmployees.value.length == 0) {
+			alert("You need to fill all requiered fields.");
+			return false;
+		} else if (Boolean(patientSIN.value.length != 9)) {
+			alert("The SIN must be a 9-digit number.");
+			return false;
+		} else if (Boolean(!validateAppointmentDate(document.getElementById("aFormDate")))) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+
+	function validateProcedureForm() {
+		var pFormBranchID = document.getElementById("pFormBranchID").value;
+		var pFormSIN = document.getElementById("pFormSIN").value;
+		var pFormDate = document.getElementById("pFormDate");
+		var pFormType = document.getElementById("pFormType").value;
+		var pFormTooth = document.getElementById("pFormTooth").value;
+		var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
+		var pFormDescription = document.getElementById("pFormDescription").value;
+		
+		if (pFormBranchID == "" || pFormSIN == ""
+			     || pFormDate.value == "" || pFormType == "" || pFormTooth == ""
+				 || pFormAmtAndMat == ""  || pFormDescription == "") {
+			alert("You need to fill all requiered fields.");
+			return false;
+		} else if (Boolean(pFormSIN.value.length != 9)) {
+			alert("The SIN must be a 9-digit number.");
+			return false;
+		} else if (Boolean(!validateAppointmentDate(pFormDate))) {
+			return false;
+		} else if (pFormDescription.length <= 21) {
+			alert("Type at least 20 characters in the description.");
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -323,6 +393,39 @@
 		document.getElementById("branchList").style.display = "none";
 		document.getElementById("branchSearchResults").style.display = "none";
 	}
+
+	function addEmployeeToAppointment() {
+		var employeeToAdd = document.getElementById("aFormEmployeeChoose").value;
+		var prevValue = document.getElementById("aFormEmployees").value;
+		
+		if (prevValue.search(employeeToAdd) == -1 && employeeToAdd != "") {
+			if (prevValue == "") {
+				document.getElementById("aFormEmployees").value = employeeToAdd;
+			} else {
+				document.getElementById("aFormEmployees").value = prevValue+", "+employeeToAdd;
+			}
+		}
+	}
+
+	function addAmountAndMaterial() {
+		
+		var amount = document.getElementById("pFormAmt").value;
+		var material = document.getElementById("pFormMat").value;
+		var list = document.getElementById("pFormAmtAndMat").value;
+
+		if (amount != "" && material != "") {
+			if (list == "") {
+				document.getElementById("pFormAmtAndMat").value = amount+" "+material;
+			} else {
+				document.getElementById("pFormAmtAndMat").value = list+", "+amount+" "+material;
+			}
+		}
+		
+		var difference = Math.abs(today.getTime() - date.getTime());
+		var age = Math.ceil(difference / (1000 * 3600 * 24)) / 365;
+		
+		return Math.floor(age);
+	}
 	
 
 	$(document).ready(function() {
@@ -501,20 +604,36 @@
 		%>
 	<% }}; %>
 	
-	<% String availability = (String) request.getAttribute("availability");
-	if (outcomeG != null) { 
+	
+	<% 
+	Appointment newAppointmentProcedure = (Appointment) request.getAttribute("newAppointment");
+	String branchLocationProcedure = (String) request.getAttribute("pFormBranchLocation");
+	String outcomeA = (String) request.getAttribute("outcomeA");
+	if (outcomeA != null) { 
 
-		if (availability.equals("full")) {%>
+		if (outcomeA.equals("patientNotFound")) {%>
 
-			alert("No availability for that day.");
+			alert("The patient with that SIN does not exist!");
 			history.back();
 			
-		<%} else if (availability.equals("available")) {
-			
+		<%} else if (outcomeA.equals("unavailable")) {
 			%>
-			alert("Guardian entry for "+fNameG+" "+lNameG+" could not be updated; username chosen or guardian non-existent.");
+			alert("That day is full.");
+			history.back();
 			<%
-		} else {
+		} else if (outcomeA.equals("procedure")) {
+			%>
+			document.getElementById("pFormBranchID").value = "<%=newAppointmentProcedure.getAppointmentID()%>";
+			document.getElementById("pFormSIN").value = "<%=newAppointmentProcedure.getPatientSIN()%>";
+			document.getElementById("pFormDate").value = "<%=newAppointmentProcedure.getAppointmentDate()%>";
+			document.getElementById("pFormBranchLocation").value = "<%=branchLocationProcedure%>";
+			openTab('procedureForm')
+			<%
+		} else if (outcomeA.equals("treatment")) {
+			%>
+			openTab('treatmentForm')
+			<%
+		}  else {
 			%>
 			alert("Unknown Error; SQL ERROR.");
 			history.back();
@@ -573,20 +692,62 @@
 			document.getElementById("searchInvoiceBySIN").style.display = "none";
 			document.getElementById("invoicesView").style.display = "block";<%
 		}
-	}
-	
-	Object obj4 = request.getAttribute("resultHours");
-	ArrayList<String> resultHours = null;
+	}%>
+
+<%
+	Object obj4 = request.getAttribute("branchesAppointment");
+	ArrayList<Branch> branchList2 = null;
 	if (obj4 instanceof ArrayList) {
-		resultHours = (ArrayList<String>) obj4;
+		branchList2 = (ArrayList<Branch>) obj4;
+	}
+	if (branchList2 != null) {
 		%>
-		document.getElementById("appointmentForm").style.display = "block";
-		document.getElementById("appointmentDateSearch").style.display = "none";
+	 	openTab('appointmentQueryLocation');
+		document.getElementById("appointmentLocationBranch").style.display = "block";
+		document.getElementById("appointmentQueryLocation").style.display = "none";
 		<%
 	}
 	%>
+	
+	<%
+	Branch branchChosen = (Branch) request.getAttribute("branch");
+	Object obj5 = request.getAttribute("rooms");
+	ArrayList<Room> roomList = null;
+	if (obj5 instanceof ArrayList) {
+		roomList = (ArrayList<Room>) obj5;
+	}
+	Object obj6 = request.getAttribute("employees");
+	ArrayList<Employee> employeeList = null;
+	if (obj6 instanceof ArrayList) {
+		employeeList = (ArrayList<Employee>) obj6;
+	}
+	if (roomList != null && employeeList != null) {
+		%>
+		
+	 	openTab('appointmentForm');
+		document.getElementById("aFormBranchID").value = "<%=branchChosen.getBranchID()%>";
+		document.getElementById("aFormBranchLocation").value = "<%=branchChosen.toString()%>";
+	 	
+		<%
+	}
+	%>
+	
+	<%
+	Object obj7 = request.getAttribute("resultHours");
+	ArrayList<String> resultHours = null;
+	if (obj7 instanceof ArrayList) {
+		resultHours = (ArrayList<String>) obj7;
 
+	}
+	if (resultHours != null) {
+		%>
+	 	openTab('procedureForm');
+		<%
+	}
+	%>
+	
 	});
+	
 
 </script>
 </head>
@@ -603,7 +764,7 @@
 			<div class="p-1 my-1 border border-dark"
 				id="receptionistNav">
 				<div class="row justify-content-around">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentDateSearch')">New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentQueryLocation')">New Appointment</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientRegister')">Register New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
@@ -617,55 +778,198 @@
 				</div>
 			</div>
 
-			<div class="p-3 my-3" id="appointmentDateSearch">
-				<h2>Choose Appointment Date</h2>
+			<div class="tab p-3 my-3" style="display: none;" id="appointmentQueryLocation">
+				<h2>Query for Available Branches</h2><br>
 				<form method="post" action="appointment">
-					<br>
-					<input class="m-1 form-control" type="date" id="appointmentDateQuery" name="appointmentDateQuery">
-					<button type="submit" value="submit" onclick="return validateNotWeekend(appointmentDateQuery);">Choose</button>
+					<button type="submit" value="submit" onclick="return true">View All Branches</button>
 				</form>
 			</div>
 
+			<div class="tab p-3 my-3" style="display: none;" id="appointmentLocationBranch">
+				<h2>Available Branches</h2><br>
+					<form method="post" action="appointment">
+					<%//Branch List
+			  	  	//Will show up only when branches is non-empty
+					if (branchList2 != null) {
+						if (branchList2.size() != 0) {
+							%>
+							<select class="m-1 form-control" type="text" id="appointmentBranchID" name="appointmentBranchID">
+								<%
+								for (Branch branch : branchList2) {
+									%>
+									<option value=<%=branch.getBranchID()%>><%=branch.toString()%></option>
+									<%
+								}
+								%>
+							</select>
+							<button type="submit" value="submit" onclick="return true">Select</button>
+							<button type="reset" value="reset" onclick="openTab('appointmentQueryLocation')">Go Back</button>
+						<%
+						}
+					}
+					%>
+					</form>
+			</div>
+			
 			<div class="tab p-3 my-3" style="display: none;" id="appointmentForm">
-				<h2>New Appointment</h2>
+				<h2>New Appointment</h2><br>
 				<form>
-					Appointment ID:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
-					Appointment ID:<input type="text" class="m-1 form-control" id="firstNameNA" name="firstName" required> 
-					Middle Name:<input type="text" class="m-1 form-control" id="middleNameNA" name="middleName"> 
-					Last Name:<input type="text" class="m-1 form-control" id="lastNameNA" name="lastName" required>
-					Date:<input class="m-1 form-control" type="date" id="date">
-					Start Time:<input class="m-1 form-control" type="time" id="sTime" step="600" min="07:00" max="23:00">
-					End Time:<input class="m-1 form-control" type="time" id="eTime" step="600" min="07:00" max="23:00">
-					Room Assigned:<select class="m-1 form-control" id="roomNum">
-						<option value="1">Room 1</option>
-						<option value="2">Room 2</option>
-						<option value="3">Room 3</option>
-						<option value="4">Room 4</option>
-					</select> 
-					Appointment Type:<select class="m-1 form-control" id="aType">
-						<option value="cleaning">Cleaning</option>
-						<option value="cavity">Cavity</option>
-						<option value="pull">Tooth Pulled</option>
-					</select>
-					<!-- 
-	private @Getter @Setter String appointmentID;
-	private @Getter @Setter String appointmentDate;
-	private @Getter @Setter String appointmentStartTime;
-	private @Getter @Setter String appointmentEndTime;
-	private @Getter @Setter String patientSIN;
-	private @Getter @Setter String roomID;
-	private @Getter @Setter String branchID;
-	private @Getter @Setter String invoiceID;
-	private @Getter @Setter String[] employeeSINList;
-	private @Getter @Setter String appointmentType;
-	private @Getter @Setter String status;
- -->
-					<button type="submit" value="submit" onclick="??">Create Appointment</button>
-					<button type="reset" value="reset">Reset</button>
+					<input type="hidden" class="m-1 form-control" id="aFormBranchID" name="aFormBranchID" required readonly> 
+					Branch Location:<input type="text" class="m-1 form-control" id="aFormBranchLocation" name="aFormBranchLocation" required readonly> 
+					Patient SIN:<input type="number" class="m-1 form-control" id="aFormSIN" name="aFormSIN" pattern="[0-9]{9}" placeholder="123456789" required > 
+					Appointment Date:<input class="m-1 form-control" type="date" id="aFormDate" name="aFormDate" required>
+					Appointment Time Slot:<select class="m-1 form-control" id="aFormTime" name="aFormTime" required>
+								<option value="">Choose a time slot...</option>
+						<option value="08:00:00-09:00:00">08:00:00-09:00:00</option>
+						<option value="09:00:00-10:00:00">09:00:00-10:00:00</option>
+						<option value="10:00:00-11:00:00">10:00:00-11:00:00</option>
+						<option value="11:00:00-12:00:00">11:00:00-12:00:00</option>
+						<option value="12:00:00-13:00:00">12:00:00-13:00:00</option>
+						<option value="13:00:00-14:00:00">13:00:00-14:00:00</option>
+						<option value="14:00:00-15:00:00">14:00:00-15:00:00</option>
+						<option value="15:00:00-16:00:00">15:00:00-16:00:00</option>
+						<option value="16:00:00-17:00:00">16:00:00-17:00:00</option>
+					</select>	
+					Room:					
+					<%//Room List
+			  	  	//Will show up only when roomList is non-empty
+					if (roomList != null) {
+						if (roomList.size() != 0) {
+							%>
+							<select class="m-1 form-control" type="text" id="aFormRoomID" name="aFormRoomID" required>
+								<option value="">Choose room...</option>
+							<%
+							for (Room room : roomList) {
+								%>
+								<option value=<%=room.getRoomID()%>><%=room.toString()%></option>
+								<%
+							}
+						}
+					}
+					%>
+						</select>
+					Appointment Type:<select class="m-1 form-control" id="aFormType" name="aFormType" required>
+							<option value="">Choose type...</option>
+						<option value="procedure">Procedure</option>
+						<option value="treatment">Treatment</option>
+					</select>	
+					Select Employees to Add:
+					<%
+					if (employeeList != null) {
+						if (employeeList.size() != 0) {
+							%>
+							<select onclick="addEmployeeToAppointment()" class="m-1 form-control" type="text" id="aFormEmployeeChoose" name="aFormEmployeeChoose" required>
+								<option value="">Add employee...</option>
+							<%
+							
+							for (Employee employee : employeeList) {
+								%>
+								<option value=<%=employee.getEmployeeSIN()%>><%=employee.toString()%></option>
+								<%
+							}
+						}
+					}
+					%>
+						</select>
+					<input type="text" class="m-1 form-control" id="aFormEmployees" name="aFormEmployees" required readonly> 
+					<button type="submit" value="submit" onclick="return validateAppointmentForm();">Next</button>
+					<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
 				</form>
 				<br>
 			</div>
+			
+			<div class="tab p-3 my-3" style="display: none;" id="procedureForm">
+				<h2>New Procedure</h2><br>
+				<form>
+					<input type="hidden" class="m-1 form-control" id="pFormBranchID" name="pFormBranchID" required readonly> 
+					Patient SIN:<input type="text" class="m-1 form-control" id="pFormSIN" name="pFormSIN" pattern="[0-9]{9}" placeholder="123456789" required readonly> 
+					Procedure Date:<input type="text" class="m-1 form-control" id="pFormDate" name="pFormDate" required readonly> 
+					Branch Location:<input type="text" class="m-1 form-control" id="pFormBranchLocation" name="pFormBranchLocation" required readonly> 
+					Procedure Type:<select class="m-1 form-control" id="pFormType">
+							<option value="">Choose type...</option>
+						<option value="D21.50 evaluation 50">Evaluation</option>
+						<option value="D21.77 resin 30">Resin</option>
+						<option value="D22.33 sealant 25">Sealant</option>
+						<option value="D20.56 fluoride 25">Fluoride</option>
+						<option value="D20.56 prophylaxis 50">Prophylaxis</option>
+						<option value="D20.56 varnish 25">Varnish</option>
+					</select>	
+					
+					Tooth Involved (FDI No.)<select class="m-1 form-control" type="text" id="pFormTooth" name="pFormTooth">
+						<option value="">Choose tooth...</option>
+					<%
+					//adult teeth
+					for (int i = 11 ; i <= 18 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 21 ; i <= 28 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 31 ; i <= 48 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					
+					//baby teeth
+					for (int i = 51 ; i <= 55 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 61 ; i <= 65 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 71 ; i <= 75 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 81 ; i <= 85 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+						
+					
+					%>
+						</select>
+					Materials Used:
+					<div class="input-group">
+						<select class="form-control input-sm" id="pFormAmt" name="pFormAmt">
+							<option value="">Choose amount...</option>
+							<option value="2g">2 grams of...</option>
+							<option value="4g">4 grams of...</option>
+							<option value="6g">6 grams of...</option>
+							<option value="8g">8 grams of...</option>
+							<option value="16g">16 grams of...</option>
+							<option value="20g">20 grams of...</option>
+						</select>
+						<select class="form-control input-sm" id="pFormMat" name="pFormMat">
+							<option value="">Choose material...</option>
+							<option value="fluoride">Fluoride</option>
+							<option value="putty">Putty</option>
+							<option value="resin">Resin</option>
+							<option value="antiseptic">Antiseptic</option>
+							<option value="wax">Wax</option>
+							<option value="gum">Gum</option>
+						</select>	
+						<input type="button" value="Add to List" onclick="addAmountAndMaterial()">
+					</div>
 
+					<input type="text" class="m-1 form-control" id="pFormAmtAndMat" name="pFormAmtAndMat" required readonly> 
+					Description: <textarea class="m-1 form-control" cols="20" rows="20" id="pFormDescription" name="pFormDescription" required></textarea>
+					<button type="submit" value="submit" onclick="return validateProcedureForm();">Submit</button>
+					<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
+				</form>
+				<br>
+			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id=patientBilling>
 				<h2>Patient Billing</h2>
@@ -793,7 +1097,7 @@
 						Address:<input class="m-1 form-control" type="text" id="addressEP" name="addressEP" required>
 						Guardian's SIN:<input class="m-1 form-control" type="number" id="guardianEP" name="guardianEP">
 						<button type="submit" value="submit" onclick="return validatePatientEdit()">Update Patient</button>
-						<button type="reset" value="reset" onclick="window.location.reload()">Default</button>
+						<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
 					</form>
 					<br>
 				</div>
@@ -855,7 +1159,7 @@
 						Phone number:<input class="m-1 form-control" type="tel" id="phoneEG" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phoneEG" required> 
 						Address:<input class="m-1 form-control" type="text" id="addressEG" name="addressEG" required>
 						<button type="submit" value="submit" onclick="return validateGuardianEdit()">Update Guardian</button>
-						<button type="reset" value="reset" onclick="window.location.reload()">Default</button>
+						<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
 					</form>
 					<br>
 				</div>

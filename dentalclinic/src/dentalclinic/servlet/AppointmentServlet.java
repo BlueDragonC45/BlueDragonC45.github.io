@@ -12,10 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Appointment;
+import dentalclinic.entities.Branch;
+import dentalclinic.entities.Room;
+import dentalclinic.entities.Employee;
+import dentalclinic.entities.Patient;
 
 @SuppressWarnings("serial")
 public class AppointmentServlet extends HttpServlet {
-
+	
 	//Restriction: appointments last an hour, thus 16:00:00 is the last
 	//             since we have 16:00:00-17:00:00 and we close at 5pm
 	private ArrayList<String> availableStartHours =
@@ -64,80 +68,118 @@ public class AppointmentServlet extends HttpServlet {
 		PostgreSqlConn con = new PostgreSqlConn();
 		
 		//selected day
-		String appointmentDateQuery = req.getParameter("appointmentDateQuery");
-		req.setAttribute("appointmentDateQueryForward", appointmentDateQuery);
-		
-		ArrayList<Appointment> appointmentsDay = con.getAppointmentsByDate(appointmentDateQuery);
-		ArrayList<String> occupiedHours = new ArrayList<String>();
-		for (int i = 0 ; i < appointmentsDay.size(); i++) {
-			occupiedHours.add(appointmentsDay.get(i).getAppointmentStartTime());
-		}
-		
-		if (occupiedHours.size() == 9) {
+		String aFormSIN = req.getParameter("aFormSIN");
+		if (aFormSIN != null) {//check patient exists and time availability
 			
-			req.setAttribute("availability", "full");
-			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-			
-		} else if (occupiedHours.size() == 0) {
 
-			req.setAttribute("resultHours", availableTimeslots);
-			req.setAttribute("availability", "available");
+			String aFormBranchID = req.getParameter("aFormBranchID");
+			String aFormBranchLocation = req.getParameter("aFormBranchLocation");
+			String aFormDate = req.getParameter("aFormDate");
+			String aFormTime = req.getParameter("aFormTime");
+			String aFormRoomID = req.getParameter("aFormRoomID");
+			String aFormType = req.getParameter("aFormType");
+			String aFormEmployees = req.getParameter("aFormEmployees");
+			
+			Integer recentInvoiceID = Integer.parseInt(con.getMostRecentInvoiceID());
+			Integer nextInvoiceID = recentInvoiceID+1;
+			
+			System.out.println(aFormBranchID+" "+ aFormBranchLocation+" "+aFormDate+" "+ aFormTime+" "+aFormRoomID+" "+
+			aFormType+" "+aFormEmployees+" "+nextInvoiceID);;
+			
+			Appointment appointment =
+					new Appointment(aFormBranchID, 
+							aFormDate, 
+							aFormTime.split("-")[0],
+									aFormTime.split("-")[1], aFormSIN, aFormRoomID,
+									aFormBranchID, nextInvoiceID.toString(), aFormEmployees.split(", "),
+									aFormType, "pending");
+
+			req.setAttribute("pFormBranchLocation", aFormBranchLocation);
+			req.setAttribute("newAppointment", appointment);
+			
+			//patient exists?
+			Patient findPatient = con.getUserInfoByPatientSIN(aFormSIN);
+			System.out.println(findPatient.getAddress());
+			if (findPatient.getAddress() == null) {
+				req.setAttribute("outcomeA", "patientNotFound");
+			} else {
+				ArrayList<Appointment> appointmentsDay = con.getAppointmentsByDateAndLocation(aFormDate, aFormBranchID, aFormRoomID);
+				ArrayList<String> occupiedHours = new ArrayList<String>();
+				for (int i = 0 ; i < appointmentsDay.size(); i++) {
+					occupiedHours.add(appointmentsDay.get(i).getAppointmentStartTime());
+				}
+				
+				if (occupiedHours.size() == 9) {
+
+						
+					req.setAttribute("outcomeA", "unavailable");
+					
+				} else {
+					
+					req.setAttribute("outcomeA", aFormType);
+				}
+			}
 			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+			
+
+			
+			/* else if (occupiedHours.size() == 0) {
+
+				req.setAttribute("resultHours", availableTimeslots);
+				req.setAttribute("outcomeA", "availableAll");
+				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+				
+			} else {
+				
+				for (String occupiedHour : occupiedHours) {
+					if (availableStartHours.contains(occupiedHour)) {
+						int index = availableStartHours.indexOf(occupiedHour);
+						availableTimeslots[index] = null;
+					}
+				}
+				
+				System.out.println(availableStartHours.size()+" "+availableTimeslots.length);
+				
+				ArrayList<String> resultHours = new ArrayList<String>();
+				for (int i = 0 ; i < availableTimeslots.length ; i++) {
+					if (availableTimeslots[i] != null) {
+						resultHours.add(availableTimeslots[i]);
+					}
+				}
+				
+				System.out.println(resultHours.toString());
+				
+				
+				req.setAttribute("resultHours", resultHours);
+				req.setAttribute("outcomeA", "availablePartial");
+				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+				
+			}*/
 			
 		} else {
 			
-			for (String occupiedHour : occupiedHours) {
-				if (availableStartHours.contains(occupiedHour)) {
-					int index = availableStartHours.indexOf(occupiedHour);
-					availableTimeslots[index] = null;
-				}
-			}
-			
-			System.out.println(availableStartHours.size()+" "+availableTimeslots.length);
-			
-			ArrayList<String> resultHours = new ArrayList<String>();
-			for (int i = 0 ; i < availableTimeslots.length ; i++) {
-				if (availableTimeslots[i] != null) {
-					resultHours.add(availableTimeslots[i]);
-				}
-			}
-			
-			System.out.println(resultHours.toString());
-			
-			
-			req.setAttribute("resultHours", resultHours);
-			req.setAttribute("availability", "available");
-			req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-		}
-		
-		
-		/*System.out.println(occupiedHours.get(0)+"  "+ availableStartHours[5] + " "+
-				occupiedHours.get(0).equals(availableStartHours[5]));*/
-			//s
-			/*
-			int outcomeCode = con.billUser(newBill, insuranceClaim);
-			if (outcomeCode == 0) {
 
-				req.setAttribute("patientSINAfterBill", patientSINBillForm);
-				req.setAttribute("billTotal", total);
+			String appointmentBranchID = req.getParameter("appointmentBranchID");
+			if (appointmentBranchID == null) {
 				
-				req.setAttribute("outcomeB", "bill success");
+				ArrayList<Branch> branches = con.getAllBranches();
+				req.setAttribute("branchesAppointment", branches);
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 				
-			} else if (outcomeCode == 1) {
+			} else {//redirect user to form
+
+				Branch branch = con.getBranchByBranchID(appointmentBranchID);
+				ArrayList<Room> rooms = con.getAllRoomsByBranchID(appointmentBranchID);
 				
-				req.setAttribute("outcomeB", "employee not found");
-				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-			} else if (outcomeCode == 2) {
+				ArrayList<Employee> employees = con.getEmployeesByBranchID(appointmentBranchID);
 				
-				req.setAttribute("outcomeB", "already paid in full");
+
+				req.setAttribute("branch", branch);
+				req.setAttribute("rooms", rooms);
+				req.setAttribute("employees", employees);
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-			} else if (outcomeCode == 3) {
 				
-				req.setAttribute("outcomeB", "unknown error");
-				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-			}*/
-			
-		
+			}
+		}
 	}
 }
