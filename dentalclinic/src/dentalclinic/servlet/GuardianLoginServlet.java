@@ -39,7 +39,7 @@ public class GuardianLoginServlet extends HttpServlet {
 		}
 		
 		req.setAttribute("outcome", "loginFailed");
-		req.getRequestDispatcher("patient_login.jsp").forward(req, resp);
+		req.getRequestDispatcher("guardian_login.jsp").forward(req, resp);
 		return;
 	}
 }

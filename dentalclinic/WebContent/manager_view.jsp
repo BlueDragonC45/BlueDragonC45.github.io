@@ -51,7 +51,7 @@ function validateEmployeeRegister() {
 							    || dateOfBirth.value == ""        || gender.value == ""    || email.value == ""
 							    || phoneNumber.value == "" 		  || address.value == ""   || role.value == "" 
 							    || employeeType.value == ""       || salary.value == ""	   || branchID.value == ""){
-		alert("You need to fill all requiered fields");
+		alert("You need to fill all required fields");
 		return false;
 	} else if(patientSIN.value.length != 9){
 		alert("The length of SIN needs to be 9 digits long");
@@ -89,7 +89,7 @@ function validateEmployeeEdit() {
 							    || dateOfBirth.value == ""        || gender.value == ""    || email.value == ""
 							    || phoneNumber.value == "" 		  || address.value == ""   || role.value == "" 
 							    || employeeType.value == ""       || salary.value == ""	   || branchID.value == ""){
-		alert("You need to fill all requiered fields");
+		alert("You need to fill all required fields");
 		return false;
 	} else if(patientSIN.value.length != 9){
 		alert("The length of SIN needs to be 9 digits long");

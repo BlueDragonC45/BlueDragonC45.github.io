@@ -13,6 +13,7 @@ import dentalclinic.entities.Invoice;
 import dentalclinic.entities.Patient;
 import dentalclinic.entities.PatientBilling;
 import dentalclinic.entities.InsuranceClaim;
+import dentalclinic.entities.FeeCharge;
 
 @SuppressWarnings("serial")
 public class PatientBillingServlet extends HttpServlet {
@@ -43,6 +44,8 @@ public class PatientBillingServlet extends HttpServlet {
 				return;	
 			} else {
 				
+				con.updateInvoiceTotal(invoiceIDSelected);
+
 				Invoice invoice = con.getInvoiceByID(invoiceIDSelected);
 				
 				PatientBilling bill = con.getPatientBillingByKey(invoice.getPatientSIN(), invoice.getInvoiceID());
@@ -63,7 +66,7 @@ public class PatientBillingServlet extends HttpServlet {
 				}
 			}
 		} else {
-
+			
 			//patientSINBillForm defined before first if statement
 			String invoiceID = req.getParameter("invoiceIDBillForm");
 			String guardianSIN = req.getParameter("guardianSINBillForm");
@@ -76,38 +79,46 @@ public class PatientBillingServlet extends HttpServlet {
 
 			String insuranceCompany = req.getParameter("insuranceCompanyBillForm");
 			
-			PatientBilling newBill =
-					new PatientBilling(patientSINBillForm, invoiceID,
-									   guardianSIN, employeeSIN, userPortion,
-									   employeePortion, insurancePortion, total, payMethod);
-			
-			InsuranceClaim insuranceClaim = 
-					new InsuranceClaim(patientSINBillForm, insuranceCompany,
-								       invoiceID, insurancePortion);
-			
-			int outcomeCode = con.billUser(newBill, insuranceClaim);
-			if (outcomeCode == 0) {
 
-				req.setAttribute("patientSINAfterBill", patientSINBillForm);
-				req.setAttribute("billTotal", total);
+			boolean isAfterAppointment = con.dateIsAfterAppointment(invoiceID);
+			if (isAfterAppointment) {
+				PatientBilling newBill =
+						new PatientBilling(patientSINBillForm, invoiceID,
+										   guardianSIN, employeeSIN, userPortion,
+										   employeePortion, insurancePortion, total, payMethod);
 				
-				req.setAttribute("outcomeB", "bill success");
-				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+				InsuranceClaim insuranceClaim = 
+						new InsuranceClaim(patientSINBillForm, insuranceCompany,
+									       invoiceID, insurancePortion);
 				
-			} else if (outcomeCode == 1) {
-				
-				req.setAttribute("outcomeB", "employee not found");
-				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-			} else if (outcomeCode == 2) {
-				
-				req.setAttribute("outcomeB", "already paid in full");
-				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-			} else if (outcomeCode == 3) {
-				
-				req.setAttribute("outcomeB", "unknown error");
+				int outcomeCode = con.billUser(newBill, insuranceClaim);
+				if (outcomeCode == 0) {
+
+					con.updateAppointmentStatus(invoiceID, "finished");
+					
+					req.setAttribute("patientSINAfterBill", patientSINBillForm);
+					req.setAttribute("billTotal", total);
+					
+					req.setAttribute("outcomeB", "bill success");
+					req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+					
+				} else if (outcomeCode == 1) {
+					
+					req.setAttribute("outcomeB", "employee not found");
+					req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+				} else if (outcomeCode == 2) {
+					
+					req.setAttribute("outcomeB", "already paid in full");
+					req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+				} else {
+					
+					req.setAttribute("outcomeB", "unknown error");
+					req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+				}
+			} else {
+				req.setAttribute("outcomeB", "early");
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 			}
-			
 		}
 	}
 }

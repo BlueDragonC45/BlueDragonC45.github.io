@@ -54,15 +54,18 @@
 			return false;
 		}
 		var date = new Date(appointmentDateQuery.value)
-		var day = date.getDay();
 		
+		//Use UTC to avoid getting date-1
+		date = new Date(
+			    date.getUTCFullYear(),
+			    date.getUTCMonth(),
+			    date.getUTCDate(),
+			    date.getUTCHours(),
+			    date.getUTCMinutes(),
+			    date.getUTCSeconds(),
+			    date.getUTCMilliseconds());
+
 		var today = new Date();
-		
-		date.setDate(date.getDate()+1);
-		date.setHours(today.getHours());
-		date.setMinutes(today.getMinutes());
-		date.setSeconds(today.getSeconds());
-		date.setMilliseconds(today.getMilliseconds());
 		
 		var dayName = date.toLocaleString("en-US", {
 		    timeZone: "America/New_York",
@@ -96,7 +99,7 @@
 		
 		if (aFormTime.value == "" || aFormRoomID.value == ""
 					   || aFormType.value == "" || aFormEmployees.value.length == 0) {
-			alert("You need to fill all requiered fields.");
+			alert("You need to fill all required fields.");
 			return false;
 		} else if (Boolean(patientSIN.value.length != 9)) {
 			alert("The SIN must be a 9-digit number.");
@@ -108,23 +111,34 @@
 		}
 	}
 	
-
 	function addProcedure() {
-		
-		if (!validateProcedureForm()) {
-			alert("Must fill in the current procedure before adding another.");
-			return false;
-		}
 		
 		var pFormType = document.getElementById("pFormType").value;
 		var pFormTooth = document.getElementById("pFormTooth").value;
 		var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
 		var pFormDescription = document.getElementById("pFormDescription").value;
 		
+		console.log(pFormDescription);
+		
+		if (pFormType == ""       || pFormTooth == ""
+		 || pFormAmtAndMat == ""  || pFormDescription == "") {
+			alert("You need to fill all required fields.");
+			return false;
+		} else if (pFormDescription.length <= 21) {
+			alert("Type at least 20 characters in the description.");
+			return false;
+		} else {
+			alert("Previous procedure stashed; to submit whole appointment, "+
+					"you must complete the following procedure as well. "+
+					"Beware: 'Reset Default' will rid of all procedures filled thus far.");
+		}
+		
 		var pFormTypeList = document.getElementById("pFormTypeList").value;
 		var pFormToothList = document.getElementById("pFormToothList").value;
 		var pFormAmtAndMatList = document.getElementById("pFormAmtAndMatList").value;
 		var pFormDescriptionList = document.getElementById("pFormDescriptionList").value;
+		
+		console.log(pFormTypeList);
 		
 		if (pFormTypeList == "") {//implies the rest are empty
 			document.getElementById("pFormTypeList").value = pFormType;
@@ -137,19 +151,17 @@
 			document.getElementById("pFormAmtAndMatList").value = pFormAmtAndMatList+"|"+pFormAmtAndMat;
 			document.getElementById("pFormDescriptionList").value = pFormDescriptionList+"|"+pFormDescription;
 		}
-
-		alert("Previous procedure stashed; to submit whole appointment, you must complete the current procedure as well.");
 		
 		document.getElementById("pFormType").value = "";
 		document.getElementById("pFormTooth").value = "";
 		document.getElementById("pFormAmtAndMat").value = "";
+		document.getElementById("pFormAmt").value = "";
+		document.getElementById("pFormMat").value = "";
 		document.getElementById("pFormDescription").value = "";
+
 	}
 	
 	function validateProcedureForm() {
-		var pFormBranchID = document.getElementById("pFormBranchID").value;
-		var pFormSIN = document.getElementById("pFormSIN").value;
-		var pFormDate = document.getElementById("pFormDate");
 		var pFormType = document.getElementById("pFormType").value;
 		var pFormTooth = document.getElementById("pFormTooth").value;
 		var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
@@ -157,20 +169,38 @@
 		
 		console.log(pFormDescription);
 		
-		if (pFormBranchID == "" || pFormSIN == ""
-			     || pFormDate.value == "" || pFormType == "" || pFormTooth == ""
-				 || pFormAmtAndMat == ""  || pFormDescription == "") {
-			alert("You need to fill all requiered fields.");
-			return false;
-		} else if (Boolean(pFormSIN.length != 9)) {
-			alert("The SIN must be a 9-digit number.");
-			return false;
-		} else if (Boolean(!validateAppointmentDate(pFormDate))) {
+		if (pFormType == ""       || pFormTooth == ""
+		 || pFormAmtAndMat == ""  || pFormDescription == "") {
+			alert("You need to fill all required fields.");
 			return false;
 		} else if (pFormDescription.length <= 21) {
 			alert("Type at least 20 characters in the description.");
 			return false;
 		} else {
+
+			var pFormType = document.getElementById("pFormType").value;
+			var pFormTooth = document.getElementById("pFormTooth").value;
+			var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
+			var pFormDescription = document.getElementById("pFormDescription").value;
+			
+			var pFormTypeList = document.getElementById("pFormTypeList").value;
+			var pFormToothList = document.getElementById("pFormToothList").value;
+			var pFormAmtAndMatList = document.getElementById("pFormAmtAndMatList").value;
+			var pFormDescriptionList = document.getElementById("pFormDescriptionList").value;
+			
+			console.log(pFormTypeList);
+			
+			if (pFormTypeList == "") {//implies the rest are empty
+				document.getElementById("pFormTypeList").value = pFormType;
+				document.getElementById("pFormToothList").value = pFormTooth;
+				document.getElementById("pFormAmtAndMatList").value = pFormAmtAndMat;
+				document.getElementById("pFormDescriptionList").value = pFormDescription;
+			} else {
+				document.getElementById("pFormTypeList").value = pFormTypeList+"|"+pFormType;
+				document.getElementById("pFormToothList").value = pFormToothList+"|"+pFormTooth;
+				document.getElementById("pFormAmtAndMatList").value = pFormAmtAndMatList+"|"+pFormAmtAndMat;
+				document.getElementById("pFormDescriptionList").value = pFormDescriptionList+"|"+pFormDescription;
+			}
 			return true;
 		}
 	}
@@ -197,7 +227,7 @@
 								   || patientPwd.value == ""         || patientPwdagain.value == ""
 								   || dateOfBirth.value == ""        || gender.value == ""    || patientEmail.value == ""
 								   || patientPhoneNumber.value == "" || address.value == ""){
-			alert("You need to fill all requiered fields.");
+			alert("You need to fill all required fields.");
 			return false;
 		} else if(!validateSIN(patientSIN)){
 			return false;
@@ -237,7 +267,7 @@
 		if (userName.value == ""           || firstName.value == "" || lastName.value == ""
 		 || dateOfBirth.value == ""        || gender.value == ""    || patientEmail.value == ""
 		 || patientPhoneNumber.value == "" || address.value == ""){
-			alert("You need to fill all requiered fields");
+			alert("You need to fill all required fields");
 			return false;
 		} else if(age.value < 15){
 			if (guardian.value.length == 0) {
@@ -271,7 +301,7 @@
 								    || guardianPwd.value == ""         || guardianPwdagain.value == ""
 								    || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
 								    || guardianPhoneNumber.value == "" || addressG.value == ""){
-			alert("You need to fill all requiered fields.");
+			alert("You need to fill all required fields.");
 			return false;
 		} else if(!validateSIN(guardianSIN)){
 			return false;
@@ -302,7 +332,7 @@
 		if (userNameG.value == ""           || firstNameG.value == "" || lastNameG.value == ""
 		 || dateOfBirthG.value == ""        || genderG.value == ""    || guardianEmail.value == ""
 		 || guardianPhoneNumber.value == "" || addressG.value == ""){
-			alert("You need to fill all requiered fields.");
+			alert("You need to fill all required fields.");
 			return false;
 		} else if (ageG.value < 18) {
 			alert("Must be at least 18 years old to be a guardian!");
@@ -458,9 +488,15 @@
 			} else {
 				document.getElementById("pFormAmtAndMat").value = list+", "+amount+" "+material;
 			}
+		} else {
+			alert("Must specify the amount AND material in order to add.");
 		}
 	}
 	
+	function clearMaterialsList() {
+		
+		document.getElementById("pFormAmtAndMat").value = "";
+	}
 
 	$(document).ready(function() {
 		
@@ -528,7 +564,7 @@
 		penalty = parseFloat(penalty.replace("$", ""));
 		discount = parseFloat(discount.replace("$", ""));
 		
-		document.getElementById("amountDue").value = (totalDue+penalty)-(userAmt+discount+insuranceAmt+employeeAmt);
+		document.getElementById("amountDue").value = totalDue;
 	<% }; %>
 	
 	<% String outcomeB = (String) request.getAttribute("outcomeB");
@@ -550,6 +586,11 @@
 			alert("Failed to bill; employee with that SIN does not exist.");
 			history.back();
 			<%
+		} else if (outcomeB.equals("early")) {
+			%>
+			alert("Failed to bill; the patient has not received the service.");
+			history.back();
+			<%
 		} else if (outcomeB.equals("already paid in full")) {
 			%>
 			alert("Failed to bill; bill already processed.");
@@ -558,7 +599,7 @@
 		%>
 		<% } else {
 			%>
-			alert("Unknown Error; SQL ERROR.");
+			alert("Failed to bill; bill already processed.");
 			history.back();
 			<%
 		%>
@@ -579,6 +620,7 @@
 		<%} else if (outcome.equals("updateFailed")) {
 			%>
 			alert("Patient entry for "+fName+" "+lName+" could not be updated; username already chosen or guardian non-existent.");
+			history.back();
 			<%
 		} else if (outcome.equals("registerSuccess")) {
 			%>
@@ -603,7 +645,7 @@
 		%>
 		<% } else if (outcome.equals("unknown error")) {
 			%>
-			alert("Unknown Error; SQL ERROR.");
+			alert("Unknown Error; make sure the SIN or username is unique.");
 			history.back();
 			<%
 		
@@ -639,9 +681,17 @@
 	<% }}; %>
 	
 	
-	<% 
+	
+	<%
+	Object obj7 = request.getAttribute("resultHours");
+	ArrayList<String> resultHours = null;
+	if (obj7 instanceof ArrayList) {
+		resultHours = (ArrayList<String>) obj7;
+
+	}
 	Appointment newAppointmentProcedure = (Appointment) request.getAttribute("newAppointment");
 	String branchLocationProcedure = (String) request.getAttribute("pFormBranchLocation");
+	String pFormTime = (String) request.getAttribute("pFormTime");
 	String outcomeA = (String) request.getAttribute("outcomeA");
 	if (outcomeA != null) { 
 
@@ -652,13 +702,14 @@
 			
 		<%} else if (outcomeA.equals("unavailable")) {
 			%>
-			alert("That day is full.");
+			alert("That day is fully booked.");
 			history.back();
 			<%
 		} else if (outcomeA.equals("procedure")) {
+			String appointmentTime = newAppointmentProcedure.getAppointmentDate();
 			%>
 			document.getElementById("pFormDate").value = "<%=newAppointmentProcedure.getAppointmentDate()%>";
-			document.getElementById("pFormTime").value = "<%=(String) request.getAttribute("pFormTime")%>";
+			document.getElementById("pFormTime").value = "<%=pFormTime%>";
 			document.getElementById("pFormAType").value = "<%=newAppointmentProcedure.getAppointmentType()%>";
 			document.getElementById("pFormEmployees").value = "<%=(String) request.getAttribute("pFormEmployees")%>";
 			document.getElementById("pFormRoomID").value = "<%=newAppointmentProcedure.getRoomID()%>";
@@ -671,9 +722,14 @@
 			%>
 			openTab('treatmentForm')
 			<%
+		} else if (outcomeA.equals("not free")) {
+			
+			%>
+			alert("That time is booked already; available times: "+<%=resultHours.toString()%>);
+			<%
 		}  else {
 			%>
-			alert("Unknown Error; SQL ERROR.");
+			alert("Unknown Error; please try again from login page.");
 			history.back();
 			<%
 		}
@@ -769,20 +825,7 @@
 		<%
 	}
 	%>
-	
-	<%
-	Object obj7 = request.getAttribute("resultHours");
-	ArrayList<String> resultHours = null;
-	if (obj7 instanceof ArrayList) {
-		resultHours = (ArrayList<String>) obj7;
 
-	}
-	if (resultHours != null) {
-		%>
-	 	openTab('procedureForm');
-		<%
-	}
-	%>
 	
 	});
 	
@@ -920,15 +963,12 @@
 				<h2>Add Procedure To Appointment</h2><br>
 				<form method="post" action="appointment">
 				
-					<input type="hidden" id="pFormDate" name="pFormDate"> 
 					<input type="hidden" id="pFormTime" name="pFormTime"> 
 					<input type="hidden" id="pFormAType" name="pFormAType"> 
 					<input type="hidden" id="pFormEmployees" name="pFormEmployees"> 
-					<input type="hidden" id="pFormSIN" name="pFormSIN"> 
 					<input type="hidden" id="pFormRoomID" name="pFormRoomID"> 
 					<input type="hidden" id="pFormBranchID" name="pFormBranchID"> 
 				
-					<input type="hidden" class="m-1 form-control" id="pFormBranchID" name="pFormBranchID" required readonly> 
 					Patient SIN:<input type="text" class="m-1 form-control" id="pFormSIN" name="pFormSIN" pattern="[0-9]{9}" placeholder="123456789" required readonly> 
 					Procedure Date:<input type="text" class="m-1 form-control" id="pFormDate" name="pFormDate" required readonly> 
 					Branch Location:<input type="text" class="m-1 form-control" id="pFormBranchLocation" name="pFormBranchLocation" required readonly> 
@@ -938,8 +978,8 @@
 							<option value="">Choose type...</option>
 						<option value="D21.50 evaluation 50 21500">Evaluation</option>
 						<option value="D21.77 resin 30 21770">Resin</option>
-						<option value="D22.33 sealant 25 22330">Sealant</option>
-						<option value="D22.15 fluoride 25 22150">Fluoride</option>
+						<option value="D22.15 sealant 25 22150">Sealant</option>
+						<option value="D22.33 fluoride 25 22330">Fluoride</option>
 						<option value="D25.22 prophylaxis 50 25220">Prophylaxis</option>
 						<option value="D27.75 varnish 25 27750">Varnish</option>
 					</select>	
@@ -1014,7 +1054,10 @@
 					</div>
 
 					<input type="hidden" id="pFormAmtAndMatList" name="pFormAmtAndMatList"> 
-					<input type="text" class="m-1 form-control" id="pFormAmtAndMat" name="pFormAmtAndMat" required readonly> 
+					<div class="input-group">
+						<input class="form-control input-sm" type="text" id="pFormAmtAndMat" name="pFormAmtAndMat" placeholder="Material list currently empty, try adding something..." required readonly> 
+						<input type="button" value=" Empty List" onclick="clearMaterialsList()">
+					</div>
 					
 					<input type="hidden" id="pFormDescriptionList" name="pFormDescriptionList"> 
 					Description: <textarea class="m-1 form-control" cols="20" rows="20" id="pFormDescription" name="pFormDescription" required></textarea>

@@ -124,8 +124,8 @@ public class AppointmentServlet extends HttpServlet {
 								aFormType, null);
 
 				req.setAttribute("newAppointment", appointment);
-				req.setAttribute("pFormTime", aFormBranchLocation);
-				req.setAttribute("pFormEmployees", aFormBranchLocation);
+				req.setAttribute("pFormTime", aFormTime);
+				req.setAttribute("pFormEmployees", aFormEmployees);
 				
 				//patient exists?
 				Patient findPatient = con.getUserInfoByPatientSIN(aFormSIN);
@@ -141,47 +141,42 @@ public class AppointmentServlet extends HttpServlet {
 					
 					if (occupiedHours.size() == 9) {
 
-							
 						req.setAttribute("outcomeA", "unavailable");
 						
+					} else if (occupiedHours.size() == 0) {
+
+						req.setAttribute("outcomeA", aFormType);
+						req.setAttribute("resultHours", availableTimeslots);
+						req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
+					
 					} else {
 						
-						req.setAttribute("outcomeA", aFormType);
-					}
-					/* else if (occupiedHours.size() == 0) {
-
-					req.setAttribute("resultHours", availableTimeslots);
-					req.setAttribute("outcomeA", "availableAll");
-					req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-					
-				} else {
-					
-					for (String occupiedHour : occupiedHours) {
-						if (availableStartHours.contains(occupiedHour)) {
-							int index = availableStartHours.indexOf(occupiedHour);
-							availableTimeslots[index] = null;
+						for (String occupiedHour : occupiedHours) {
+							if (availableStartHours.contains(occupiedHour)) {
+								int index = availableStartHours.indexOf(occupiedHour);
+								availableTimeslots[index] = null;
+							}
+						}
+						
+						System.out.println(availableStartHours.size()+" "+availableTimeslots.length);
+						
+						ArrayList<String> resultHours = new ArrayList<String>();
+						for (int i = 0 ; i < availableTimeslots.length ; i++) {
+							if (availableTimeslots[i] != null) {
+								resultHours.add(availableTimeslots[i]);
+							}
+						}
+						
+						System.out.println(resultHours.toString());
+						
+						if (resultHours.contains(aFormTime)) {
+							req.setAttribute("outcomeA", aFormType);
+						} else {
+							req.setAttribute("outcomeA", "not free");
+							req.setAttribute("resultHours", resultHours);
 						}
 					}
-					
-					System.out.println(availableStartHours.size()+" "+availableTimeslots.length);
-					
-					ArrayList<String> resultHours = new ArrayList<String>();
-					for (int i = 0 ; i < availableTimeslots.length ; i++) {
-						if (availableTimeslots[i] != null) {
-							resultHours.add(availableTimeslots[i]);
-						}
-					}
-					
-					System.out.println(resultHours.toString());
-					
-					
-					req.setAttribute("resultHours", resultHours);
-					req.setAttribute("outcomeA", "availablePartial");
-					req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
-					
-				}*/
 				}
-				
 
 				req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 
@@ -208,12 +203,14 @@ public class AppointmentServlet extends HttpServlet {
 					new Invoice(newInvoiceID.toString(), null,
 							pFormSIN, null, "0", "0", "0", "0", "0", "0"));
 			
+			System.out.println(newAppointmentID.toString() + " "+ pFormDate+" "+pFormTime+" "+pFormSIN+
+					pFormRoomID+" "+pFormBranchID+" "+pFormEmployees+" "+pFormAType);			
 			//insert this appointment (function fills in missing values
 			//like determining what the next ID to use is)
 			con.insertAppointment(
 					new Appointment(newAppointmentID.toString(), pFormDate,
-							pFormTime.split("-")[0],
-					        pFormTime.split("-")[1], pFormSIN, pFormRoomID, 
+							pFormTime.split("\\-")[0],
+					        pFormTime.split("\\-")[1], pFormSIN, pFormRoomID, 
 					        pFormBranchID, newInvoiceID.toString(), pFormEmployees.split(", "),
 					        pFormAType, "pending"));
 
@@ -226,14 +223,15 @@ public class AppointmentServlet extends HttpServlet {
 			String pFormDescriptionList = req.getParameter("pFormBranchID");
 			//proceduredate == pFormDate
 			
-			//
+			System.out.println(pFormToothList+ " "+pFormTypeList+ " "+pFormAmtAndMatList+ " "+pFormDescriptionList);
+			System.out.println(pFormToothList.split("\\|")[0]);
 
 			//Since some values above store multiple values (possibly multiple procedures)
 			//we have to index them and do insertions individually by index
-			String[] allTeeth = pFormToothList.split("|");
-			String[] codeTypesAndFees = pFormTypeList.split("|");
-			String[] amountAndMats = pFormAmtAndMatList.split("|");
-			String[] descriptions = pFormDescriptionList.split("|");
+			String[] allTeeth = pFormToothList.split("\\|");
+			String[] codeTypesAndFees = pFormTypeList.split("\\|");
+			String[] amountAndMats = pFormAmtAndMatList.split("\\|");
+			String[] descriptions = pFormDescriptionList.split("\\|");
 			Integer newFeeID = con.getMostRecentFeeID()+1;
 			
  			for (int i = 0 ; i < allTeeth.length ; i++) {

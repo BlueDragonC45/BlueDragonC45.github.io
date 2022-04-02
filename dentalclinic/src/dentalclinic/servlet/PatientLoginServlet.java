@@ -37,6 +37,7 @@ public class PatientLoginServlet extends HttpServlet {
 		PostgreSqlConn con = new PostgreSqlConn();
 		
 		
+		
 		String appointmentIDFetched = req.getParameter("appointmentIDFetched");
 		if (appointmentIDFetched == null) {
 			String appointmentToReview = req.getParameter("appointmentToReview");

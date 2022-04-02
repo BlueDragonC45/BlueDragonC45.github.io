@@ -78,6 +78,10 @@ public class  PostgreSqlConn{
 		            ps = db.prepareStatement("SELECT * from dentalclinic.patient "
 			                +"WHERE username=? "
 							+"AND patientpwd = crypt(?, patientpwd)");	
+	        	} else if (entity.equals("guardian")) {
+		            ps = db.prepareStatement("SELECT * from dentalclinic.guardian "
+			                +"WHERE username=? "
+							+"AND guardianpwd = crypt(?, guardianpwd)");	
 	        	} else {
 	        		return isCorrect;//false
 	        	}
@@ -340,13 +344,13 @@ public class  PostgreSqlConn{
 					String dateofBirth = rs.getString("dateofBirth");
 					String age = rs.getString("age");
 					String gender = rs.getString("gender");
-					String patientEmail = rs.getString("patientEmail");
-					String patientPhoneNumber = rs.getString("patientPhoneNumber");
+					String guardianEmail = rs.getString("guardianEmail");
+					String guardianPhoneNumber = rs.getString("guardianPhoneNumber");
 					String address = rs.getString("address");
 					
 					guardian = new Guardian(guardianSIN, userName, firstName, middleName,
 							 		      lastName, dateofBirth, age, gender,
-										  patientEmail, patientPhoneNumber, address);
+							 		     guardianEmail, guardianPhoneNumber, address);
 				}
 	            
 	        }catch(SQLException e){
@@ -639,7 +643,7 @@ public class  PostgreSqlConn{
 	            
 	            ps.executeUpdate();
 	            
-	            System.out.println("Inserted new guardian");
+	            System.out.println("Inserted new guardian "+ pwd);
 	            
 	            return true;
 
@@ -912,6 +916,115 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
+		public boolean isAppointmentNoShow(String invoiceID){
+
+			//no need to check errors since invoices are created before an appointment
+			Appointment appointment = getAppointmentByInvoiceID(invoiceID);
+			
+			boolean isNoShow = false;
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("SELECT (LOCALTIMESTAMP - '"+appointment.getAppointmentDate()+
+										"' > interval '24 hours') AS IsNoShow");
+	            rs = ps.executeQuery();
+	            
+	            System.out.println(ps.toString());
+	            
+				while(rs.next()) {
+					
+					isNoShow = rs.getBoolean("IsNoShow");
+					
+				}
+	            return isNoShow;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public boolean dateIsAfterAppointment(String invoiceID){
+
+			//no need to check errors since invoices are created before an appointment
+			Appointment appointment = getAppointmentByInvoiceID(invoiceID);
+			
+			boolean isAfterAppointment = false;
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("SELECT (LOCALTIMESTAMP > '"+appointment.getAppointmentDate()+
+										"') AS isAfterAppointment");
+	            rs = ps.executeQuery();
+	            
+	            System.out.println(ps.toString());
+	            
+				while(rs.next()) {
+					
+					isAfterAppointment = rs.getBoolean("isAfterAppointment");
+					
+				}
+	            return isAfterAppointment;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//Updates the invoice based on existing fees as well as other fees
+		//Taking into account no show or cancellation within 24 hours
+		public boolean updateInvoiceTotal(String invoiceID){
+			
+			//Checks whether localtime - appointmentDate > 24 hours
+			if (isAppointmentNoShow(invoiceID)) {
+				Integer nextFeeID = getMostRecentFeeID()+1;
+				insertFeeCharge(new FeeCharge(nextFeeID.toString(), invoiceID, "94303", "14"));
+			}
+			
+			ArrayList<FeeCharge> fees = getAllFeeChargesByInvoiceID(invoiceID);
+			Double total = 0.0;
+			for (FeeCharge fee : fees) {
+				total += Double.parseDouble(fee.getCharge());
+			}
+			
+			getConn();
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.invoice "
+									   + "SET totalfeecharge=? "
+						               + "WHERE invoiceID=?");
+					
+	            ps.setBigDecimal(1, new BigDecimal(total));
+	            ps.setInt(2, Integer.parseInt(invoiceID));	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
 		//For receptionist only; inserts a new patient
 		public boolean updateGuardianInfo(Guardian newGuardianInfo, String GuardianSIN){
 			
@@ -1075,6 +1188,50 @@ public class  PostgreSqlConn{
 			return appointment;
 		}
 		
+		//Returns an appointment based on the ID
+		public Appointment getAppointmentByInvoiceID(String invoiceID){
+			
+			getConn();
+			
+			Appointment appointment = new Appointment();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE invoiceID=? "
+						               + "ORDER BY appointmentdate");
+	            ps.setInt(1, Integer.parseInt(invoiceID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					String patientSIN = rs.getString("patientSIN");
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					//col8: invoiceID already have
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+
+				 System.out.println(Arrays.toString(appointment.getEmployeeSINList()));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointment;
+		}
+		
 		//Returns an appointmentprocedure based on its key
 		public AppointmentProcedure getAppointmentProcedureByKey(String appointmentID, String tooth, String pCode){
 			
@@ -1087,8 +1244,8 @@ public class  PostgreSqlConn{
 						               + "WHERE appointmentID=? "
 						               + "AND toothinvolved=? "
 						               + "AND procedurecode=?");
-	            ps.setString(1, appointmentID);	
-	            ps.setString(2, tooth);	
+	            ps.setInt(1, Integer.parseInt(appointmentID));	
+	            ps.setInt(2, Integer.parseInt(tooth));	
 	            ps.setString(3, pCode);	
 	            
 	            System.out.println(ps.toString());   
@@ -1121,13 +1278,12 @@ public class  PostgreSqlConn{
 			
 			getConn();
 			
-			FeeCharge appointmentP = new FeeCharge();
+			FeeCharge fee = new FeeCharge();
 			
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.feecharge "
-						               + "WHERE appointmentID=? "
-						               + "AND feeID=? ");
-	            ps.setString(1, feeID);	
+						               + "WHERE feeID=?");
+	            ps.setInt(1, Integer.parseInt(feeID));	
 	            
 	            System.out.println(ps.toString());   
 	            
@@ -1138,7 +1294,7 @@ public class  PostgreSqlConn{
 					String feeCode = rs.getString("feeCode");
 					String charge = rs.getString("charge");
 					
-					appointmentP = new FeeCharge(feeID, invoiceID, feeCode, charge);
+					fee = new FeeCharge(feeID, invoiceID, feeCode, charge);
 				 System.out.println("Fetched FeeCharge with fee code: "+feeCode);
 				}
 			} catch (SQLException e) {
@@ -1148,7 +1304,83 @@ public class  PostgreSqlConn{
 	        	closeDB();
 	        }
 						
-			return appointmentP;
+			return fee;
+		}
+		
+		//Returns a feecharges based on invoiceID
+		public ArrayList<FeeCharge> getAllFeeChargesByInvoiceID(String invoiceID){
+			
+			getConn();
+			
+			ArrayList<FeeCharge> fees = new ArrayList<FeeCharge>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.feecharge "
+						               + "WHERE invoiceID=?");
+	            ps.setInt(1, Integer.parseInt(invoiceID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()) {
+					String feeID = rs.getString("feeID");
+					//col2: invoiceID already have
+					String feeCode = rs.getString("feeCode");
+					String charge = rs.getString("charge");
+					
+					FeeCharge fee = new FeeCharge(feeID, invoiceID, feeCode, charge);
+					
+					fees.add(fee);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return fees;
+		}
+		
+		//Returns an InsuranceClaim based on its key, SIN and invoiceID
+		public InsuranceClaim getInsuranceClaim(String patientSIN, String invoiceID){
+			
+			getConn();
+			
+			InsuranceClaim claim = new InsuranceClaim();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.insuranceclaim "
+						               + "WHERE patientSIN=? "
+						               + "AND invoiceID=?");
+	            ps.setString(1, patientSIN);	
+	            ps.setInt(2, Integer.parseInt(invoiceID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					//col1: patientSIN already have
+					String insuranceCompany = rs.getString("insuranceCompany");
+					//col3: invoiceID already have
+					String insuranceAmount = rs.getBigDecimal("insuranceAmount").toString();
+					
+					claim = new InsuranceClaim(patientSIN, insuranceCompany, invoiceID, insuranceAmount);
+					/*
+					private @Getter @Setter String patientSIN;
+					private @Getter @Setter String insuranceCompany;
+					private @Getter @Setter String invoiceID;
+					private @Getter @Setter String insuranceAmount;*/
+				 System.out.println("Insurance: "+insuranceCompany+" "+insuranceAmount+" CAD");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return claim;
 		}
 		
 		//Returns appointments that involve a certain employee using their SIN
@@ -1205,7 +1437,7 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE patientsin=? "
-						               + "AND status < 'finished' "
+						               + "AND status != 'finished' "
 						               + "ORDER BY appointmentdate");
 	            ps.setString(1, patientSIN);	
 	            
@@ -1823,6 +2055,32 @@ public class  PostgreSqlConn{
 			return recentID;
 			
 		}
+		public boolean updateAppointmentStatus(String invoiceID, String status){
+			
+			getConn();
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.appointment "
+									   + "SET status=? "
+						               + "WHERE invoiceID=?");
+					
+	            ps.setString(1, status);	
+	            ps.setInt(2, Integer.parseInt(invoiceID));	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
 		
 		//For receptionist only; bills a patient based on an invoice
 		//If a guardian is found, will bill to them instead
@@ -1838,13 +2096,18 @@ public class  PostgreSqlConn{
 			}
 			
 			PatientBilling searchedBill = getPatientBillingByKey(newBill.getPatientSIN(), newBill.getInvoiceID());
-			if (!searchedBill.getEmployeeSIN().isEmpty()) {
+			if (searchedBill.getTotalAmount() != null) {
 				System.out.println("Already billed to this invoice!");
 				return 2;
 			}
 
 			if (!claim.getInsuranceCompany().isEmpty()) {
-				insertClaim(claim);
+				InsuranceClaim foundClaim = getInsuranceClaim(claim.getPatientSIN(), claim.getInvoiceID());
+				if (foundClaim.getPatientSIN() == null) {
+					insertClaim(claim);
+				} else {
+					return 5;
+				}
 			}
 			
 			getConn();
@@ -1854,7 +2117,7 @@ public class  PostgreSqlConn{
 	            String guardian = newBill.getGuardianSIN();
 	        	
 				ps = db.prepareStatement("UPDATE dentalclinic.invoice "
-									   + "SET userCharge=?, insurancecharge=?, employeecharge=? guardiansin=? "
+									   + "SET userCharge=?, insurancecharge=?, employeecharge=?, guardiansin=? "
 									   + "WHERE invoiceid=?");
 					
 	            ps.setFloat(1, Float.parseFloat(newBill.getUserPortion()));	

@@ -50,6 +50,27 @@ $(document).ready(function() {
 </script>
 <title>Sunshine Dentist Clinic</title>
 <script>
+
+function validateAppointmentCancel() {
+	var chosen = document.getElementById("appointmentCancel").value;
+	
+	if (chosen != ""){
+		return true;
+	} else
+		alert("There are no pending appointments.");
+		return false;
+}
+
+function validateAppointmentChoose() {
+	var chosen = document.getElementById("appointmentToReview").value;
+	
+	if (chosen != ""){
+		return true;
+	} else
+		alert("No completed appointments; Must have had our services to post a review.");
+		return false;
+}
+
 	function validateReview() {
 		var review = document.getElementById("review");
 		
@@ -117,6 +138,7 @@ $(document).ready(function() {
 			<div class="p-1 my-1 border border-dark row justify-content-around"
 				id="patientNav">
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('upcomingAppt')">View Appointments</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('cancelAppointment')">Cancel Appointment</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('writeReview')">Submit Review</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRecords')">View My Records</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientInfo')">View My Information</button>
@@ -124,7 +146,7 @@ $(document).ready(function() {
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="upcomingAppt">
-				<h2>Unfinished Appointments</h2>
+				<h2>Unfinished Appointments</h2><br>
 	          	<%//Appointment List
 	          	  //Will show up only when appointments is non-empty
 				  //i.e. when the employee has clicked on search at least once
@@ -163,7 +185,7 @@ $(document).ready(function() {
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="allAppointments">
-				<h2>All Appointments</h2>
+				<h2>All Appointments</h2><br>
 	          	<%//Appointment List
 	          	  //Will show up only when appointments is non-empty
 				  //i.e. when the employee has clicked on search at least once
@@ -195,6 +217,32 @@ $(document).ready(function() {
 				
 				<button onclick="resetAppointmentView()">View Unfinished</button>
 			</div>
+			
+      <div class="tab p-3 my-3" style="display: none;" id="cancelAppointment">
+						<h3>Cancel an Appointment:</h3><br>
+				<form method="post" action="patientLogin">
+						<select class="m-1 form-control" type="text" id="appointmentCancel" name="appointmentCancel">
+							<%
+							if (appointmentList != null && branchList != null) {
+								//appointmentTypeTreatmentList treatmentCountList
+								Integer branchID = 0;
+								String appointmentID = "";
+								for (int i = 0 ; i < appointmentList.size() ; i++) {
+
+									branchID = Integer.parseInt(appointmentList.get(i).getBranchID());
+									appointmentID = appointmentList.get(i).getAppointmentID();
+									%>
+									<option value=<%=appointmentID%>><%=appointmentList.get(i).toString()+" Branch location: "+branchList.get(branchID-1)+"."%></option>
+									<%
+								}
+							}
+							%>
+						</select>
+						<input class="m-1 form-control" type="hidden" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
+						<button type="submit" value="submit" onclick="return validateAppointmentCancel();">Select</button>
+						<button type="reset" value="reset" onclick="history.back();">Go Back</button>
+				</form>
+	  </div>
 			
       <div class="tab p-3 my-3" style="display: none;" id="writeReview">
         <h2> Submit a Review</h2>
@@ -231,7 +279,7 @@ $(document).ready(function() {
 							%>
 						</select>
 						<input class="m-1 form-control" type="hidden" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
-						<button type="submit" value="submit" onclick="return true;">Select</button>
+						<button type="submit" value="submit" onclick="return validateAppointmentChoose();">Select</button>
 						<button type="reset" value="reset" onclick="history.back();">Go Back</button>
 				</form>
 	  </div>
