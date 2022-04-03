@@ -3,6 +3,7 @@
 <%@page import="dentalclinic.entities.Appointment"%>
 <%@page import="dentalclinic.entities.Branch"%>
 <%@page import="dentalclinic.entities.PatientRecord"%>
+<%@page import="dentalclinic.entities.Invoice"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 
@@ -113,9 +114,29 @@ function validateAppointmentChoose() {
 			alert("Could not submit the review; you have already submitted one previously!");
 			history.back();
 			<%
+		} else if (outcome.equals("cancelSuccess")) {%>
+		
+			alert("Appointment cancelled succesfully; no fees were applied.");
+			history.back();
+			<%
+		} else if (outcome.equals("cancelSuccessFee")) {%>
+	
+			alert("Appointment cancelled, but late. Thus, fees were added to your account for 14 CAD.");
+			history.back();
+		<%
+		} else if (outcome.equals("alreadyCancelled")) {%>
+
+			alert("Appointment already cancelled.");
+			history.back();
+		<%
+		} else if (outcome.equals("dateAfterAppointment")) {%>
+
+			alert("You did not show up for the appointment. Thus, fees were added to your account for 14 CAD.");
+			history.back();
+		<%
 		}  else {
 			%>
-			alert("Unknown Error; SQL ERROR.");
+			alert("Error; already processed this request.");
 			history.back();
 			<%
 		%>
@@ -139,6 +160,7 @@ function validateAppointmentChoose() {
 				id="patientNav">
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('upcomingAppt')">View Appointments</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('cancelAppointment')">Cancel Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('pendingInvoices')">View Pending Invoices</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('writeReview')">Submit Review</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRecords')">View My Records</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientInfo')">View My Information</button>
@@ -146,42 +168,40 @@ function validateAppointmentChoose() {
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="upcomingAppt">
-				<h2>Unfinished Appointments</h2><br>
+				<h2>Pending Appointments</h2><br>
 	          	<%//Appointment List
 	          	  //Will show up only when appointments is non-empty
 				  //i.e. when the employee has clicked on search at least once
-				Object obj = request.getAttribute("appointments");
-				ArrayList<Appointment> appointmentList = null;
-				if (obj instanceof ArrayList) {
-					appointmentList = (ArrayList<Appointment>) obj;
+				Object obj5 = request.getAttribute("pendingAppointments");
+				ArrayList<Appointment> pendingAppointments = null;
+				if (obj5 instanceof ArrayList) {
+					pendingAppointments = (ArrayList<Appointment>) obj5;
 				}
-				
 				Object obj2 = request.getAttribute("branches");
 				ArrayList<Branch> branchList = null;
 				if (obj2 instanceof ArrayList) {
 					branchList = (ArrayList<Branch>) obj2;
 				}
 				
-				if (appointmentList != null && branchList != null) {
-					if (appointmentList.size() == 0 || branchList.size() == 0) {
-						%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+				if (pendingAppointments != null && branchList != null) {
+					if (pendingAppointments.size() == 0 || branchList.size() == 0) {
+						%><li>No appointments found. If you think this is an error, contact the clinic.</li><%
 					} else {
 						
 						Integer branchID = 0;
-						for (Appointment appointment : appointmentList) {
+						for (Appointment appointment : pendingAppointments) {
 							
 							branchID = Integer.parseInt(appointment.getBranchID());
 							%>
 							<li><%=appointment.toString()+" Branch location: "+branchList.get(branchID-1)+"."%></li>
 							<%
 						}
-						%><br><%
 					}
 				} else {
-				%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+				%><li>No appointments found. If you think this is an error, contact the clinic.</li><%
 				}
 				%>
-				<button onclick="viewAllAppointments()">View All Appointments</button>
+				<br><button onclick="viewAllAppointments()">View All Appointments</button>
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="allAppointments">
@@ -197,7 +217,7 @@ function validateAppointmentChoose() {
 				
 				if (allAppointmentList != null && branchList != null) {
 					if (allAppointmentList.size() == 0 || branchList.size() == 0) {
-						%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+						%><li>No appointments found. If you think this is an error, contact the clinic.</li><%
 					} else {
 						
 						Integer branchID = 0;
@@ -208,31 +228,31 @@ function validateAppointmentChoose() {
 							<li><%=appointment.toString()+" Branch location: "+branchList.get(branchID-1)+"."%></li>
 							<%
 						}
-						%><br><%
 					}
 				} else {
-				%><br><h6>No appointments found. If you think this is an error, contact the clinic.</h6><%
+				%><li>No appointments found. If you think this is an error, contact the clinic.</li><%
 				}
 				%>
 				
-				<button onclick="resetAppointmentView()">View Unfinished</button>
+				<br><button onclick="resetAppointmentView()">View Unfinished</button>
 			</div>
 			
       <div class="tab p-3 my-3" style="display: none;" id="cancelAppointment">
 						<h3>Cancel an Appointment:</h3><br>
 				<form method="post" action="patientLogin">
-						<select class="m-1 form-control" type="text" id="appointmentCancel" name="appointmentCancel">
+						<select class="m-1 form-control" type="text" id="appointmentIDCancel" name="appointmentIDCancel">
 							<%
-							if (appointmentList != null && branchList != null) {
+
+							if (pendingAppointments != null && branchList != null) {
 								//appointmentTypeTreatmentList treatmentCountList
 								Integer branchID = 0;
 								String appointmentID = "";
-								for (int i = 0 ; i < appointmentList.size() ; i++) {
+								for (int i = 0 ; i < pendingAppointments.size() ; i++) {
 
-									branchID = Integer.parseInt(appointmentList.get(i).getBranchID());
-									appointmentID = appointmentList.get(i).getAppointmentID();
+									branchID = Integer.parseInt(pendingAppointments.get(i).getBranchID());
+									appointmentID = pendingAppointments.get(i).getAppointmentID();
 									%>
-									<option value=<%=appointmentID%>><%=appointmentList.get(i).toString()+" Branch location: "+branchList.get(branchID-1)+"."%></option>
+									<option value=<%=appointmentID%>><%=pendingAppointments.get(i).toString()+" Branch location: "+branchList.get(branchID-1)+"."%></option>
 									<%
 								}
 							}
@@ -244,6 +264,38 @@ function validateAppointmentChoose() {
 				</form>
 	  </div>
 			
+			<div class="tab p-3 my-3" style="display: none;" id="pendingInvoices">
+				<h2>Pending Invoices</h2><br>
+	          	<%//Appointment List
+	          	  //Will show up only when appointments is non-empty
+				  //i.e. when the employee has clicked on search at least once
+				Object obj7 = request.getAttribute("pendingInvoices");
+				ArrayList<Invoice> pendingInvoices = null;
+				if (obj7 instanceof ArrayList) {
+					pendingInvoices = (ArrayList<Invoice>) obj7;
+				}
+				
+				if (pendingInvoices != null) {
+					if (pendingInvoices.size() == 0) {
+						%><li>No invoices found. If you think this is an error, contact the clinic.</li><%
+					} else {
+						
+						for (int i = 0 ; i < pendingInvoices.size() ; i++) {
+							%>
+							<li><%=pendingInvoices.get(i).toString()
+								+" For an appointment on the day "+pendingAppointments.get(i).getAppointmentDate()
+								+", of type "
+								+pendingAppointments.get(i).getAppointmentType()+"."%></li>
+							<%
+						}
+						
+					}
+				} else {
+				%><li>No invoices found. If you think this is an error, contact the clinic.</li><%
+				}
+				%>
+			</div>
+
       <div class="tab p-3 my-3" style="display: none;" id="writeReview">
         <h2> Submit a Review</h2>
         <div class="p-3 my-3" id="patientRecordSearchWrite">
@@ -258,10 +310,10 @@ function validateAppointmentChoose() {
 				<form method="post" action="patientLogin">
 						<select class="m-1 form-control" type="text" id="appointmentToReview" name="appointmentToReview">
 							<%
-							Object obj5 = request.getAttribute("finishedAppointments");
+							Object obj6 = request.getAttribute("finishedAppointments");
 							ArrayList<Appointment> finishedList = null;
-							if (obj5 instanceof ArrayList) {
-								finishedList = (ArrayList<Appointment>) obj5;
+							if (obj6 instanceof ArrayList) {
+								finishedList = (ArrayList<Appointment>) obj6;
 							}
 							if (finishedList != null && branchList != null) {
 								//appointmentTypeTreatmentList treatmentCountList
@@ -334,7 +386,7 @@ function validateAppointmentChoose() {
 				
 				if (recordList != null) {
 					if (recordList.size() == 0) {
-						%><br><h6>You have not completed any treatments yet. If you think this is an error, contact the clinic.</h6><%
+						%><li>You have not completed any treatments yet. If you think this is an error, contact the clinic.</li><%
 					} else {
 						
 						for (PatientRecord record : recordList) {
@@ -346,7 +398,7 @@ function validateAppointmentChoose() {
 						%><br><%
 					}
 				} else {
-				%><br><h6>You have not completed any treatments yet. If you think this is an error, contact the clinic.</h6><%
+				%><li>You have not completed any treatments yet. If you think this is an error, contact the clinic.</li><%
 				}
 				%>
 			</div>

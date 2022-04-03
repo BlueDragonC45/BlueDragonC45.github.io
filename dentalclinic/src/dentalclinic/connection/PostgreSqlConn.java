@@ -950,11 +950,10 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
-		public boolean dateIsAfterAppointment(String invoiceID){
+		//Checks if the date is after appointment
+		//Date is after appointment if date is after appointment date and end time
+		public boolean dateIsAfterAppointment(Appointment appointment){
 
-			//no need to check errors since invoices are created before an appointment
-			Appointment appointment = getAppointmentByInvoiceID(invoiceID);
-			
 			boolean isAfterAppointment = false;
 
 			getConn();
@@ -963,8 +962,11 @@ public class  PostgreSqlConn{
 	        	
 	        	//concatenating date since could not get setDate nor setTime to work
 	        	//am aware of the vulnerabilities
-				ps = db.prepareStatement("SELECT (LOCALTIMESTAMP > '"+appointment.getAppointmentDate()+
-										"') AS isAfterAppointment");
+				ps = db.prepareStatement("SELECT (LOCALTIMESTAMP > timestamp '"
+										  +appointment.getAppointmentDate()
+										  +" "
+										  +appointment.getAppointmentEndTime()
+										 +"') AS isAfterAppointment");
 	            rs = ps.executeQuery();
 	            
 	            System.out.println(ps.toString());
@@ -986,12 +988,17 @@ public class  PostgreSqlConn{
 		
 		//Updates the invoice based on existing fees as well as other fees
 		//Taking into account no show or cancellation within 24 hours
-		public boolean updateInvoiceTotal(String invoiceID){
+		public boolean updateInvoiceTotal(Appointment appointment, String invoiceID){
 			
-			//Checks whether localtime - appointmentDate > 24 hours
-			if (isAppointmentNoShow(invoiceID)) {
-				Integer nextFeeID = getMostRecentFeeID()+1;
-				insertFeeCharge(new FeeCharge(nextFeeID.toString(), invoiceID, "94303", "14"));
+			//Checks whether patient showed up
+			//If they did not, will replace all fees incurred by the procedures/treatments
+			//by a single fee charge for lateness
+			if (!appointment.getStatus().equals("finished")) {
+				if (dateIsAfterAppointment(appointment)) {
+					removeAllFees(invoiceID);
+					Integer nextFeeID = getMostRecentFeeID()+1;
+					insertFeeCharge(new FeeCharge(nextFeeID.toString(), invoiceID, "94303", "14"));
+				}
 			}
 			
 			ArrayList<FeeCharge> fees = getAllFeeChargesByInvoiceID(invoiceID);
@@ -1428,6 +1435,50 @@ public class  PostgreSqlConn{
 		}
 		
 		//Returns appointments that involve a certain employee using their SIN
+		public ArrayList<Appointment> getAllAppointmentsByPatientSINOrderByInvoiceID(String patientSIN){
+			
+			getConn();
+			
+			ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE patientsin=? "
+						               + "ORDER BY invoiceid");
+	            ps.setString(1, patientSIN);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
+					String appointmentDate = rs.getString("appointmentDate");
+					String startTime = rs.getString("appointmentstartTime");
+					String endTime = rs.getString("appointmentendTime");
+					//col5: patientSIN already have
+					String roomID = rs.getString("roomID");
+					String branchID = rs.getString("branchID");
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+					appointments.add(appointment);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointments;
+			
+		}
+		
+		//Returns appointments that involve a certain employee using their SIN
 		public ArrayList<Appointment> getUnfinishedAppointmentsByPatientSIN(String patientSIN){
 			
 			getConn();
@@ -1472,8 +1523,7 @@ public class  PostgreSqlConn{
 			
 		}
 		
-		//Returns appointments that involve a certain employee using their SIN
-		public ArrayList<Appointment> getFinishedAppointmentsByPatientSIN(String patientSIN){
+		public ArrayList<Appointment> getAppointmentsByPatientSINAndStatus(String patientSIN, String status){
 			
 			getConn();
 			
@@ -1482,9 +1532,10 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
 						               + "WHERE patientsin=? "
-						               + "AND status = 'finished' "
+						               + "AND status = ? "
 						               + "ORDER BY appointmentdate");
-	            ps.setString(1, patientSIN);	
+	            ps.setString(1, patientSIN);
+	            ps.setString(2, status);
 	            
 	            System.out.println(ps.toString());   
 	            
@@ -1500,7 +1551,7 @@ public class  PostgreSqlConn{
 					String invoiceID = rs.getString("invoiceID");
 					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
 					String appointmentType = rs.getString("appointmentType");
-					String status = rs.getString("status");
+					//col11: status aleardy have
 					Appointment appointment = new Appointment(appointmentID, appointmentDate, startTime,
 													endTime, patientSIN, roomID, branchID, invoiceID,
 													employeeSINList, appointmentType, status);
@@ -2055,7 +2106,8 @@ public class  PostgreSqlConn{
 			return recentID;
 			
 		}
-		public boolean updateAppointmentStatus(String invoiceID, String status){
+		
+		public boolean updateAppointmentStatusByInvoiceID(String invoiceID, String status){
 			
 			getConn();
 
@@ -2067,6 +2119,87 @@ public class  PostgreSqlConn{
 					
 	            ps.setString(1, status);	
 	            ps.setInt(2, Integer.parseInt(invoiceID));	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public boolean updateAppointmentStatusByAppointmentID(String appointmentID, String status){
+			
+			getConn();
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.appointment "
+									   + "SET status=? "
+						               + "WHERE appointmentID=?");
+					
+	            ps.setString(1, status);	
+	            ps.setInt(2, Integer.parseInt(appointmentID));	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return true;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public int cancelAppointment(Patient patient, Appointment appointment){
+			
+			
+			
+			getConn();
+
+	        try{
+
+				ps = db.prepareStatement("UPDATE dentalclinic.appointment "
+									   + "SET status=? "
+						               + "WHERE appointmentID=?");
+					
+	            ps.setString(1, "cancelled");	
+	            ps.setInt(2, Integer.parseInt(appointment.getAppointmentID()));	
+	            
+	            ps.executeUpdate();
+
+	            System.out.println(ps.toString());
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 4;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public boolean removeAllFees(String invoiceID){
+			
+			getConn();
+
+	        try{
+
+				ps = db.prepareStatement("DELETE dentalclinic.feecharge "
+						               + "WHERE invoiceID=?");
+					
+	            ps.setInt(1, Integer.parseInt(invoiceID));	
 	            
 	            ps.executeUpdate();
 

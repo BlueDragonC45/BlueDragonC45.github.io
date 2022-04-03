@@ -23,7 +23,7 @@ public class Appointment {
 	private @Getter @Setter String status;
 	
 	public String toString() {
-		String str = "A "+status+" "+appointmentType+" from "+appointmentDate+"; from "+appointmentStartTime
+		String str = "A "+status+" appointment ("+appointmentType+") on "+appointmentDate+", from "+appointmentStartTime
 				+" to "+appointmentEndTime+".";
 		return str;
 	}

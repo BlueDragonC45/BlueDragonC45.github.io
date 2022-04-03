@@ -583,12 +583,12 @@
 			<%
 		} else if (outcomeB.equals("employee not found")) {
 			%>
-			alert("Failed to bill; employee with that SIN does not exist.");
+			alert("The employee with that SIN does not exist.");
 			history.back();
 			<%
 		} else if (outcomeB.equals("early")) {
 			%>
-			alert("Failed to bill; the patient has not received the service.");
+			alert("Cannot bill a patient when they have yet to receive the service!");
 			history.back();
 			<%
 		} else if (outcomeB.equals("already paid in full")) {
@@ -772,14 +772,18 @@
 	%>
 	
 	<% 
-	Object obj3 = request.getAttribute("invoices");
+	Object obj3 = request.getAttribute("toBillInvoices");
 	ArrayList<Invoice> invoiceList = null;
 	if (obj3 instanceof ArrayList) 
 		invoiceList = (ArrayList<Invoice>) obj3;
+	Object obj31 = request.getAttribute("toBillAppointments");
+	ArrayList<Appointment> invoiceAppointmentList = null;
+	if (obj31 instanceof ArrayList) 
+		invoiceAppointmentList = (ArrayList<Appointment>) obj31;
 	
-	if (invoiceList != null) {
-		if (invoiceList.size() == 0) {
-			%>alert("No invoices found for this patient.");<%
+	if (invoiceList != null && invoiceAppointmentList != null) {
+		if (invoiceList.size() == 0 || invoiceAppointmentList.size() == 0) {
+			%>alert("No pending invoices found for this patient.");<%
 		} else {
 			%>
 		 	openTab('patientBilling');
@@ -1082,20 +1086,22 @@
 
 				<%//Invoice List
 			  	  //Will show up only when invoices is non-empty
-					if (invoiceList != null) {
-						if (invoiceList.size() != 0) {
+					if (invoiceList != null && invoiceAppointmentList != null) {
+						if (invoiceList.size() != 0 || invoiceAppointmentList.size() != 0) {
 							%>
 				<div class="p-3 my-3" id="invoicesView">
 					<form method="post" action="patientBilling">
-							<h3>Invoices Found:</h3><br>
+							<h3>Pending Invoices Found:</h3><br>
 							<select class="m-1 form-control" type="text" id="invoiceIDSelected" name="invoiceIDSelected">
 								<%
-								for (Invoice invoice : invoiceList) {
+								for (int i = 0 ; i < invoiceList.size() ; i++) {
 									%>
-									<option value=<%=invoice.getInvoiceID()%>><%=invoice.toString()%></option>
+									<option value=<%=invoiceList.get(i).getInvoiceID()%>><%=invoiceList.get(i).toString()
+									+" For an appointment on the day "+invoiceAppointmentList.get(i).getAppointmentDate()+", of type "
+									+invoiceAppointmentList.get(i).getAppointmentType()+"."%></option>
 									<%
 								}
-								%>
+									%>
 							</select>
 							<button type="submit" value="submit" onclick="return true">Bill Form</button>
 							<button type="reset" value="reset" onclick="resetPatientBilling()">Go Back</button>
