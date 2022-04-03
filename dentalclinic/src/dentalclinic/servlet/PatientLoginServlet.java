@@ -95,9 +95,11 @@ public class PatientLoginServlet extends HttpServlet {
 					String employeeProf = req.getParameter("employeeProf");
 					String communication = req.getParameter("communication");
 					String cleanliness = req.getParameter("cleanliness");
+					String value = req.getParameter("value");
 					String reviewText = req.getParameter("review");
 					Review review = new Review(patientSIN, appointmentIDFetched, null, null,
-							                   employeeProf, communication, cleanliness, reviewText);
+							                   employeeProf, communication, cleanliness,
+							                   value, reviewText);
 					
 					boolean resultInserted = con.insertReview(review);
 					if (resultInserted) {
@@ -117,26 +119,28 @@ public class PatientLoginServlet extends HttpServlet {
 		} else {
 			
 			String patientUsername = req.getParameter("patientUsername");
-			setReqParams(req, resp, patientUsername);
 
 			Patient patient = con.getUserInfoByPatientUsername(patientUsername);
 			Appointment appointmentToCancel = con.getAppointmentByAppointmentID(appointmentIDCancel);
 			
-			//cancelAppointment(...) also adds fees if cancelled 
-			int cancelResult = con.cancelAppointment(patient, appointmentToCancel);
-			if (cancelResult == 0) {
+			if (!con.dateIsWithinADayFromAppointment(appointmentToCancel)) {
+				
+				con.updateAppointmentStatusByAppointmentID(appointmentToCancel.getAppointmentID(), "cancelled");
+				con.removeAllFees(appointmentToCancel.getInvoiceID());
 				req.setAttribute("outcome", "cancelSuccess");
-				req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
-			} else if (cancelResult == 1) {
-				req.setAttribute("outcome", "alreadyCancelled");
-				req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
-			} else if (cancelResult == 2) {
-				req.setAttribute("outcome", "dateAfterAppointment");
-				req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
+				
 			} else {
-				req.setAttribute("outcome", "alreadyCancelled");
-				req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
+				
+				con.updateAppointmentStatusByAppointmentID(appointmentToCancel.getAppointmentID(), "cancelled");
+				con.removeAllFees(appointmentToCancel.getInvoiceID());
+				
+				Integer nextFeeID = con.getMostRecentFeeID()+1;
+				con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointmentToCancel.getInvoiceID(), "94303", "14"));
+				req.setAttribute("outcome", "cancelSuccessFee");
 			}
+			//set params will recalculate invoice total; will be 0 or 14
+			setReqParams(req, resp, patientUsername);
+			req.getRequestDispatcher("patient_view.jsp").forward(req, resp);
 			
 		}
 	}
@@ -161,8 +165,8 @@ public class PatientLoginServlet extends HttpServlet {
 				con.removeAllFees(appointment.getInvoiceID());
 				Integer nextFeeID = con.getMostRecentFeeID()+1;
 				con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointment.getInvoiceID(), "94303", "14"));
-				con.updateInvoiceTotal(appointment, appointment.getInvoiceID());
 			}
+			con.updateInvoiceTotal(appointment);
 		}
 
 		//To display all completed appointments (for review submission)
@@ -181,6 +185,7 @@ public class PatientLoginServlet extends HttpServlet {
 			pendingInvoices.add(con.getInvoiceByID(pending.getInvoiceID()));
 		}
 		req.setAttribute("pendingInvoices", pendingInvoices);
+		System.out.println(pendingInvoices.size());
 		
 		
 		//To display all non completed appointments

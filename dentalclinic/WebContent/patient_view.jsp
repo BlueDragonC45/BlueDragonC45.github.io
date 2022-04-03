@@ -53,7 +53,7 @@ $(document).ready(function() {
 <script>
 
 function validateAppointmentCancel() {
-	var chosen = document.getElementById("appointmentCancel").value;
+	var chosen = document.getElementById("appointmentIDCancel").value;
 	
 	if (chosen != ""){
 		return true;
@@ -73,10 +73,15 @@ function validateAppointmentChoose() {
 }
 
 	function validateReview() {
-		var review = document.getElementById("review");
+		var employeeProf = document.getElementById("employeeProf").value;
+		var communication = document.getElementById("communication").value;
+		var cleanliness = document.getElementById("cleanliness").value;
+		var value = document.getElementById("value").value;
+		var review = document.getElementById("review").value;
 		
-		console.log(review.value + " " + review.value.length);
-		if (review.value.length >= 20){
+		console.log(review + " " + review.length);
+		if (review.length >= 20 && employeeProf != "" && communication != ""
+				&& cleanliness != "" && value != ""){
 			return true;
 		} else
 			alert("Type at least 20 characters.");
@@ -117,22 +122,10 @@ function validateAppointmentChoose() {
 		} else if (outcome.equals("cancelSuccess")) {%>
 		
 			alert("Appointment cancelled succesfully; no fees were applied.");
-			history.back();
 			<%
 		} else if (outcome.equals("cancelSuccessFee")) {%>
 	
-			alert("Appointment cancelled, but late. Thus, fees were added to your account for 14 CAD.");
-			history.back();
-		<%
-		} else if (outcome.equals("alreadyCancelled")) {%>
-
-			alert("Appointment already cancelled.");
-			history.back();
-		<%
-		} else if (outcome.equals("dateAfterAppointment")) {%>
-
-			alert("You did not show up for the appointment. Thus, fees were added to your account for 14 CAD.");
-			history.back();
+			alert("Appointment cancelled, but within 24 hours. Thus, fees were added to your account for 14 CAD.");
 		<%
 		}  else {
 			%>
@@ -355,6 +348,13 @@ function validateAppointmentChoose() {
 						<option value="1">1/5</option>
 					</select> 
 				Cleanliness:<select class="m-1 form-control" id="cleanliness" name="cleanliness">
+						<option value="5">5/5</option>
+						<option value="4">4/5</option>
+						<option value="3">3/5</option>
+						<option value="2">2/5</option>
+						<option value="1">1/5</option>
+					</select> 
+				Value:<select class="m-1 form-control" id="value" name="value">
 						<option value="5">5/5</option>
 						<option value="4">4/5</option>
 						<option value="3">3/5</option>

@@ -803,7 +803,14 @@ public class  PostgreSqlConn{
 		
 		public Integer insertAppointment(Appointment appointment){
 
-			Appointment foundAppointment = getAppointmentByAppointmentID(appointment.getAppointmentID());
+			//appointmentDate appointmentStartTime roomID branchID
+			Appointment foundAppointment = 
+					getAppointmentByLocationAndTime(
+							appointment.getAppointmentDate(),
+							appointment.getAppointmentStartTime(), 
+							appointment.getRoomID(),
+							appointment.getBranchID());
+			
 			if (foundAppointment.getPatientSIN() != null) {
 				return 1;//already inserted
 			}
@@ -829,6 +836,8 @@ public class  PostgreSqlConn{
 	            ps.setString(8, appointment.getStatus());	
 	            
 	            ps.executeUpdate();
+	            
+	            System.out.println(ps.toString());
 	            
 	            System.out.println("Inserted new appointment with ID: "+appointment.getAppointmentID());
 	            
@@ -870,7 +879,48 @@ public class  PostgreSqlConn{
 	            
 	            ps.executeUpdate();
 	            
-	            System.out.println("Inserted new appointment with ID: "+appointmentP.getAppointmentID());
+	            System.out.println("Inserted new appointment procedure for appointment ID: "+appointmentP.getAppointmentID());
+	            
+	            return 0;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return 2;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		public Integer insertTreatment(Treatment treatment){
+
+			Treatment foundTreatment = getTreatmentByKey(
+										treatment.getAppointmentID(), 
+										treatment.getToothInvolved(), 
+										treatment.getTreatmentCode());
+			if (foundTreatment.getTreatmentType() != null) {
+				return 1;//already inserted
+			}
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("INSERT into dentalclinic.treatment "
+									   + "values(?, ?, ?, ?, ?, ?, ?, '"+treatment.getTreatmentDate()+"')");
+
+	            ps.setInt(1, Integer.parseInt(treatment.getAppointmentID()));	
+	            ps.setString(2, treatment.getToothInvolved());	
+	            ps.setString(3, treatment.getTreatmentCode());	
+	            ps.setString(4, treatment.getTreatmentType());	
+	            ps.setObject(5, treatment.getMedication(), Types.ARRAY);
+	            ps.setObject(6, treatment.getSymptoms(), Types.ARRAY);
+	            ps.setString(7, treatment.getComments());
+	            
+	            ps.executeUpdate();
+	            
+	            System.out.println("Inserted new treatment for appointment ID: "+treatment.getAppointmentID());
 	            
 	            return 0;
 
@@ -986,22 +1036,44 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
-		//Updates the invoice based on existing fees as well as other fees
-		//Taking into account no show or cancellation within 24 hours
-		public boolean updateInvoiceTotal(Appointment appointment, String invoiceID){
-			
-			//Checks whether patient showed up
-			//If they did not, will replace all fees incurred by the procedures/treatments
-			//by a single fee charge for lateness
-			if (!appointment.getStatus().equals("finished")) {
-				if (dateIsAfterAppointment(appointment)) {
-					removeAllFees(invoiceID);
-					Integer nextFeeID = getMostRecentFeeID()+1;
-					insertFeeCharge(new FeeCharge(nextFeeID.toString(), invoiceID, "94303", "14"));
+		//Checks if the date is within 24 hours of appointment
+		public boolean dateIsWithinADayFromAppointment(Appointment appointment){
+
+			boolean withinADay = false;
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("SELECT (timestamp '"
+									      +appointment.getAppointmentDate()
+				                      +" "+appointment.getAppointmentEndTime()+"' - "
+									   + "LOCALTIMESTAMP <= interval '1 day') AS withinADay");
+	            rs = ps.executeQuery();
+	            
+	            System.out.println(ps.toString());
+	            
+				while(rs.next()) {
+					
+					withinADay = rs.getBoolean("withinADay");
+					
 				}
-			}
+	            return withinADay;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//Updates the invoice based on existing fees
+		public boolean updateInvoiceTotal(Appointment appointment){
 			
-			ArrayList<FeeCharge> fees = getAllFeeChargesByInvoiceID(invoiceID);
+			ArrayList<FeeCharge> fees = getAllFeeChargesByInvoiceID(appointment.getInvoiceID());
 			Double total = 0.0;
 			for (FeeCharge fee : fees) {
 				total += Double.parseDouble(fee.getCharge());
@@ -1016,7 +1088,7 @@ public class  PostgreSqlConn{
 						               + "WHERE invoiceID=?");
 					
 	            ps.setBigDecimal(1, new BigDecimal(total));
-	            ps.setInt(2, Integer.parseInt(invoiceID));	
+	            ps.setInt(2, Integer.parseInt(appointment.getInvoiceID()));	
 	            
 	            ps.executeUpdate();
 
@@ -1195,6 +1267,54 @@ public class  PostgreSqlConn{
 			return appointment;
 		}
 		
+		//Returns an appointment based on other uniquely identifying parameters
+		//Namely, appointmentDate, appointmentStartTime, roomID and branchID
+		public Appointment getAppointmentByLocationAndTime(
+						String appointmentDate, String appointmentStartTime, String roomID, String branchID){
+			
+			getConn();
+			
+			Appointment appointment = new Appointment();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.appointment "
+						               + "WHERE appointmentDate='"+appointmentDate+"' "
+						               + "AND appointmentStartTime='"+appointmentStartTime+"' "
+						               + "AND roomID=? AND branchID=?");
+	            ps.setInt(1, Integer.parseInt(roomID));	
+	            ps.setInt(2, Integer.parseInt(branchID));	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String appointmentID = rs.getString("appointmentID");
+					//col2: appointmentDate
+					//col3 appointmentStartTime
+					String endTime = rs.getString("appointmentendTime");
+					String patientSIN = rs.getString("patientSIN");
+					//col6 roomID
+					//col7 branchID
+					String invoiceID = rs.getString("invoiceID");
+					String[] employeeSINList = (String[]) rs.getArray("employeeSINList").getArray();
+					String appointmentType = rs.getString("appointmentType");
+					String status = rs.getString("status");
+					appointment = new Appointment(appointmentID, appointmentDate, appointmentStartTime,
+													endTime, patientSIN, roomID, branchID, invoiceID,
+													employeeSINList, appointmentType, status);
+
+				 System.out.println(Arrays.toString(appointment.getEmployeeSINList()));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return appointment;
+		}
+		
 		//Returns an appointment based on the ID
 		public Appointment getAppointmentByInvoiceID(String invoiceID){
 			
@@ -1252,7 +1372,7 @@ public class  PostgreSqlConn{
 						               + "AND toothinvolved=? "
 						               + "AND procedurecode=?");
 	            ps.setInt(1, Integer.parseInt(appointmentID));	
-	            ps.setInt(2, Integer.parseInt(tooth));	
+	            ps.setString(2, tooth);	
 	            ps.setString(3, pCode);	
 	            
 	            System.out.println(ps.toString());   
@@ -1278,6 +1398,48 @@ public class  PostgreSqlConn{
 	        }
 						
 			return appointmentP;
+		}
+		
+		//Returns an appointmentprocedure based on its key
+		public Treatment getTreatmentByKey(String appointmentID, String tooth, String tCode){
+			
+			getConn();
+			
+			Treatment treatment = new Treatment();
+			
+			try {
+				ps = db.prepareStatement("SELECT * from dentalclinic.treatment "
+						               + "WHERE appointmentID=? "
+						               + "AND toothinvolved=? "
+						               + "AND treatmentcode=?");
+	            ps.setInt(1, Integer.parseInt(appointmentID));	
+	            ps.setString(2, tooth);	
+	            ps.setString(3, tCode);	
+	            
+	            System.out.println(ps.toString());   
+	            
+	            rs = ps.executeQuery();
+				while(rs.next()){
+					String treatmentType = rs.getString("treatmentType");
+					String[] medication = (String[]) rs.getArray("medication").getArray();
+					String[] symptoms = (String[]) rs.getArray("symptoms").getArray();
+					String comments = rs.getString("comments");
+					String treatmentDate = rs.getString("treatmentDate");
+					
+					treatment = new Treatment(appointmentID, tooth, tCode,
+							treatmentType, medication, symptoms,
+							comments, treatmentDate);
+
+				 System.out.println("Fetched treatment with code: "+treatment.getTreatmentCode());
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return treatment;
 		}
 		
 		//Returns a feecharge based on its id
@@ -1736,7 +1898,7 @@ public class  PostgreSqlConn{
 			
 		}
 		
-		//Returns appointments that involve a certain employee using their SIN
+		//Returns a review by its key
 		public Review getReviewByKey(String patientSIN, String appointmentID){
 			
 			getConn();
@@ -1760,11 +1922,12 @@ public class  PostgreSqlConn{
 					String professionalism = rs.getString("employeeprofessionalism");
 					String communication = rs.getString("communication");
 					String cleanliness = rs.getString("cleanliness");
+					String value = rs.getString("value");
 					String comments = rs.getString("comments");
 					
 					review = new Review(patientSIN, appointmentID, reviewDate,
 							reviewTime, professionalism, communication,
-							            cleanliness, comments);
+							            cleanliness, value, comments);
 					
 				 System.out.println(patientSIN+", "+appointmentID);
 				}
@@ -2027,7 +2190,7 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT appointmentID "
 					            	   + "FROM dentalclinic.appointment "
-									   + "ORDER BY appointmentdate DESC "
+									   + "ORDER BY appointmentID DESC "
 									   + "LIMIT 1");
 	            
 	            System.out.println(ps.toString());   
@@ -2057,7 +2220,7 @@ public class  PostgreSqlConn{
 			try {
 				ps = db.prepareStatement("SELECT invoiceID "
 					            	   + "FROM dentalclinic.invoice "
-									   + "ORDER BY dateofissue DESC "
+									   + "ORDER BY invoiceID DESC "
 									   + "LIMIT 1");
 	            
 	            System.out.println(ps.toString());   
@@ -2161,49 +2324,20 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
-		public int cancelAppointment(Patient patient, Appointment appointment){
-			
-			
-			
-			getConn();
-
-	        try{
-
-				ps = db.prepareStatement("UPDATE dentalclinic.appointment "
-									   + "SET status=? "
-						               + "WHERE appointmentID=?");
-					
-	            ps.setString(1, "cancelled");	
-	            ps.setInt(2, Integer.parseInt(appointment.getAppointmentID()));	
-	            
-	            ps.executeUpdate();
-
-	            System.out.println(ps.toString());
-	            
-	            return 0;
-
-	        }catch(SQLException e){
-	            e.printStackTrace();
-	            return 4;
-	        }finally {
-	        	closeDB();
-	        }	       
-	    }
-		
 		public boolean removeAllFees(String invoiceID){
 			
 			getConn();
 
 	        try{
 
-				ps = db.prepareStatement("DELETE dentalclinic.feecharge "
+				ps = db.prepareStatement("DELETE FROM dentalclinic.feecharge "
 						               + "WHERE invoiceID=?");
 					
 	            ps.setInt(1, Integer.parseInt(invoiceID));	
 	            
-	            ps.executeUpdate();
-
 	            System.out.println(ps.toString());
+	            
+	            ps.executeUpdate();
 	            
 	            return true;
 

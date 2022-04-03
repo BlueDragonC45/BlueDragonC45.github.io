@@ -44,8 +44,12 @@ public class PatientBillingServlet extends HttpServlet {
 						con.removeAllFees(appointment.getInvoiceID());
 						Integer nextFeeID = con.getMostRecentFeeID()+1;
 						con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointment.getInvoiceID(), "94303", "14"));
-						con.updateInvoiceTotal(appointment, appointment.getInvoiceID());
+					} else if (appointment.getStatus().equals("cancelled") && !con.dateIsWithinADayFromAppointment(appointment)) {
+						con.removeAllFees(appointment.getInvoiceID());
+						Integer nextFeeID = con.getMostRecentFeeID()+1;
+						con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointment.getInvoiceID(), "94303", "14"));
 					}
+					con.updateInvoiceTotal(appointment);
 				}
 
 				ArrayList<Invoice> toBillInvoices = new ArrayList<Invoice>();
@@ -71,7 +75,7 @@ public class PatientBillingServlet extends HttpServlet {
 
 				Appointment appointmentToCancel = con.getAppointmentByInvoiceID(invoiceIDSelected);
 
-				con.updateInvoiceTotal(appointmentToCancel, invoiceIDSelected);
+				con.updateInvoiceTotal(appointmentToCancel);
 				
 				boolean isAfterAppointment = con.dateIsAfterAppointment(appointmentToCancel);
 				

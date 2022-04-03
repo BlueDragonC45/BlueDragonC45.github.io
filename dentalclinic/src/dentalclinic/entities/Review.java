@@ -17,6 +17,7 @@ public class Review {
 	private @Getter @Setter String employeeProfessionalism;
 	private @Getter @Setter String communication;
 	private @Getter @Setter String cleanliness;
+	private @Getter @Setter String value;
 	private @Getter @Setter String comments;
 	
 	public String toString() {

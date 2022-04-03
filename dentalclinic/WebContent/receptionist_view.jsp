@@ -129,7 +129,7 @@
 			return false;
 		} else {
 			alert("Previous procedure stashed; to submit whole appointment, "+
-					"you must complete the following procedure as well. "+
+					"you must complete the following procedure form as well. "+
 					"Beware: 'Reset Default' will rid of all procedures filled thus far.");
 		}
 		
@@ -178,11 +178,6 @@
 			return false;
 		} else {
 
-			var pFormType = document.getElementById("pFormType").value;
-			var pFormTooth = document.getElementById("pFormTooth").value;
-			var pFormAmtAndMat = document.getElementById("pFormAmtAndMat").value;
-			var pFormDescription = document.getElementById("pFormDescription").value;
-			
 			var pFormTypeList = document.getElementById("pFormTypeList").value;
 			var pFormToothList = document.getElementById("pFormToothList").value;
 			var pFormAmtAndMatList = document.getElementById("pFormAmtAndMatList").value;
@@ -203,6 +198,106 @@
 			}
 			return true;
 		}
+	}
+
+	function validateTreatmentForm() {
+		var tFormType = document.getElementById("tFormType").value;
+		var tFormTooth = document.getElementById("tFormTooth").value;
+		var tFormAmtAndMed = document.getElementById("tFormAmtAndMed").value;
+		var tFormSymptoms = document.getElementById("tFormSymptoms").value;
+		var tFormComments = document.getElementById("tFormComments").value;
+		
+		console.log(tFormComments);
+		
+		if (tFormType == ""       || tFormTooth == ""
+			 || tFormAmtAndMed == ""  || tFormSymptoms == "" 
+			 || tFormComments == "") {
+			alert("You need to fill all required fields.");
+			return false;
+		} else if (tFormComments.length <= 21) {
+			alert("Type at least 20 characters in the comments.");
+			return false;
+		} else {
+
+			var tFormTypeList = document.getElementById("tFormTypeList").value;
+			var tFormToothList = document.getElementById("tFormToothList").value;
+			var tFormAmtAndMedList = document.getElementById("tFormAmtAndMedList").value;
+			var tFormSymptomList = document.getElementById("tFormSymptomList").value;
+			var tFormCommentsList = document.getElementById("tFormCommentsList").value;
+			
+			console.log(tFormTypeList);
+			
+			if (tFormTypeList == "") {//implies the rest are empty
+				document.getElementById("tFormTypeList").value = tFormType;
+				document.getElementById("tFormToothList").value = tFormTooth;
+				document.getElementById("tFormAmtAndMedList").value = tFormAmtAndMed;
+				document.getElementById("tFormSymptomList").value = tFormSymptoms;
+				document.getElementById("tFormCommentsList").value = tFormComments;
+			} else {
+				document.getElementById("tFormTypeList").value = tFormTypeList+"|"+tFormType;
+				document.getElementById("tFormToothList").value = tFormToothList+"|"+tFormTooth;
+				document.getElementById("tFormAmtAndMedList").value = tFormAmtAndMedList+"|"+tFormAmtAndMed;
+				document.getElementById("tFormSymptomList").value = tFormSymptomList+"|"+tFormSymptoms;
+				document.getElementById("tFormCommentsList").value = tFormCommentsList+"|"+tFormComments;
+			}
+			return true;
+		}
+	}
+	
+	function addTreatment() {
+		
+		var tFormType = document.getElementById("tFormType").value;
+		var tFormTooth = document.getElementById("tFormTooth").value;
+		var tFormAmtAndMed = document.getElementById("tFormAmtAndMed").value;
+		var tFormSymptoms = document.getElementById("tFormSymptoms").value;
+		var tFormComments = document.getElementById("tFormComments").value;
+		
+		console.log(tFormComments);
+		
+		if (tFormType == ""       || tFormTooth == ""
+		 || tFormAmtAndMed == ""  || tFormSymptoms == "" 
+		 || tFormComments == "") {
+			alert("You need to fill all required fields.");
+			return false;
+		} else if (tFormComments.length <= 21) {
+			alert("Type at least 20 characters in the comments.");
+			return false;
+		} else {
+			alert("Previous treatment stashed; to submit whole appointment, "+
+					"you must complete the following treatment form as well. "+
+					"Beware: 'Reset Default' will rid of all treatments filled thus far.");
+		}
+		
+		var tFormTypeList = document.getElementById("tFormTypeList").value;
+		var tFormToothList = document.getElementById("tFormToothList").value;
+		var tFormAmtAndMedList = document.getElementById("tFormAmtAndMedList").value;
+		var tFormSymptomList = document.getElementById("tFormSymptomList").value;
+		var tFormCommentsList = document.getElementById("tFormCommentsList").value;
+		
+		console.log(tFormTypeList);
+		
+		if (tFormTypeList == "") {//implies the rest are empty
+			document.getElementById("tFormTypeList").value = tFormType;
+			document.getElementById("tFormToothList").value = tFormTooth;
+			document.getElementById("tFormAmtAndMedList").value = tFormAmtAndMed;
+			document.getElementById("tFormSymptomList").value = tFormSymptoms;
+			document.getElementById("tFormCommentsList").value = tFormComments;
+		} else {
+			document.getElementById("tFormTypeList").value = tFormTypeList+"|"+tFormType;
+			document.getElementById("tFormToothList").value = tFormToothList+"|"+tFormTooth;
+			document.getElementById("tFormAmtAndMedList").value = tFormAmtAndMedList+"|"+tFormAmtAndMed;
+			document.getElementById("tFormSymptomList").value = tFormSymptomList+"|"+tFormSymptoms;
+			document.getElementById("tFormCommentsList").value = tFormCommentsList+"|"+tFormComments;
+		}
+		
+		document.getElementById("tFormType").value = "";
+		document.getElementById("tFormTooth").value = "";
+		document.getElementById("tFormAmtAndMed").value = "";
+		document.getElementById("tFormAmt").value = "";
+		document.getElementById("tFormMed").value = "";
+		document.getElementById("tFormSymptom").value = "";
+		document.getElementById("tFormSymptoms").value = "";
+		document.getElementById("tFormComments").value = "";
 	}
 
 	function validatePatientRegister() {
@@ -498,6 +593,46 @@
 		document.getElementById("pFormAmtAndMat").value = "";
 	}
 
+	function addAmountAndMedication() {
+		
+		var amount = document.getElementById("tFormAmt").value;
+		var material = document.getElementById("tFormMed").value;
+		var list = document.getElementById("tFormAmtAndMed").value;
+		
+		if (amount != "" && material != "") {
+			if (list == "") {
+				document.getElementById("tFormAmtAndMed").value = amount+" "+material;
+			} else {
+				document.getElementById("tFormAmtAndMed").value = list+", "+amount+" "+material;
+			}
+		} else {
+			alert("Must specify the amount AND medicine in order to add.");
+		}
+	}
+	
+	function clearMedicineList() {
+		
+		document.getElementById("tFormAmtAndMed").value = "";
+	}
+
+	function addSymtomToTreatment() {
+		var symptomToAdd = document.getElementById("tFormSymptom").value;
+		var prevValue = document.getElementById("tFormSymptoms").value;
+		
+		if (prevValue.search(symptomToAdd) == -1 && symptomToAdd != "") {
+			if (prevValue == "") {
+				document.getElementById("tFormSymptoms").value = symptomToAdd;
+			} else {
+				document.getElementById("tFormSymptoms").value = prevValue+", "+symptomToAdd;
+			}
+		}
+	}
+	
+	function clearSymptoms() {
+		
+		document.getElementById("tFormSymptoms").value = "";
+	}
+
 	$(document).ready(function() {
 		
 	<% Patient patientInfo = (Patient) request.getAttribute("patient");
@@ -719,18 +854,36 @@
 			openTab('procedureForm')
 			<%
 		} else if (outcomeA.equals("treatment")) {
+			String appointmentTime = newAppointmentProcedure.getAppointmentDate();
 			%>
+			document.getElementById("tFormDate").value = "<%=newAppointmentProcedure.getAppointmentDate()%>";
+			document.getElementById("tFormTime").value = "<%=pFormTime%>";
+			document.getElementById("tFormAType").value = "<%=newAppointmentProcedure.getAppointmentType()%>";
+			document.getElementById("tFormEmployees").value = "<%=(String) request.getAttribute("pFormEmployees")%>";
+			document.getElementById("tFormRoomID").value = "<%=newAppointmentProcedure.getRoomID()%>";
+			document.getElementById("tFormBranchID").value = "<%=newAppointmentProcedure.getBranchID()%>";
+			document.getElementById("tFormSIN").value = "<%=newAppointmentProcedure.getPatientSIN()%>";
+			document.getElementById("tFormBranchLocation").value = "<%=branchLocationProcedure%>";
 			openTab('treatmentForm')
 			<%
 		} else if (outcomeA.equals("not free")) {
 			
 			%>
-			alert("That time is booked already; available times: "+<%=resultHours.toString()%>);
+			alert("That time is booked already; try a time in: "+<%=resultHours.toString()%>);
+			<%
+		} else if (outcomeA.equals("successAddAppointment")) {
+			
+			%>
+			alert("Appointment of type procedure successfully added!");
+			<%
+		} else if (outcomeA.equals("successAddTreatment")) {
+			
+			%>
+			alert("Appointment of type treatment successfully added!");
 			<%
 		}  else {
 			%>
-			alert("Unknown Error; please try again from login page.");
-			history.back();
+			alert("Error; request already processed.");
 			<%
 		}
 	 }; %>
@@ -1069,6 +1222,136 @@
 					<button type="submit" value="submit" onclick="return validateProcedureForm();">Submit Appointment</button>
 					<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
 					<input type="button" value="Add Another Procedure" onclick="addProcedure()">
+				</form>
+				<br>
+			</div>
+			
+			<div class="tab p-3 my-3" style="display: none;" id="treatmentForm">
+				<h2>Add Treatment To Appointment</h2><br>
+				<form method="post" action="appointment">
+				
+					<input type="hidden" id="tFormTime" name="tFormTime"> 
+					<input type="hidden" id="tFormAType" name="tFormAType"> 
+					<input type="hidden" id="tFormEmployees" name="tFormEmployees"> 
+					<input type="hidden" id="tFormRoomID" name="tFormRoomID"> 
+					<input type="hidden" id="tFormBranchID" name="tFormBranchID"> 
+				
+					Patient SIN:<input type="text" class="m-1 form-control" id="tFormSIN" name="tFormSIN" pattern="[0-9]{9}" placeholder="123456789" required readonly> 
+					Treatment Date:<input type="text" class="m-1 form-control" id="tFormDate" name="tFormDate" required readonly> 
+					Branch Location:<input type="text" class="m-1 form-control" id="tFormBranchLocation" name="tFormBranchLocation" required readonly> 
+					
+					<input type="hidden" id="tFormTypeList" name="tFormTypeList"> 
+					Treatment Type:<select class="m-1 form-control" id="tFormType">
+							<option value="">Choose type...</option>
+						<option value="D10.25 extraction 60 10250">Extraction</option>
+						<option value="D11.47 scaling 40 11470">Scaling</option>
+						<option value="D14.48 amalgam 80 14480">Amalgam</option>
+						<option value="D15.62 crown 90 15620">Crown</option>
+						<option value="D16.41 bridge 100 16410">Bridge</option>
+					</select>	
+					
+					<input type="hidden" id="tFormToothList" name="tFormToothList"> 
+					Tooth Involved (FDI No.)<select class="m-1 form-control" type="text" id="tFormTooth" name="tFormTooth">
+						<option value="">Choose tooth...</option>
+					<%
+					//adult teeth
+					for (int i = 11 ; i <= 18 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 21 ; i <= 28 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 31 ; i <= 48 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					
+					//baby teeth
+					for (int i = 51 ; i <= 55 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 61 ; i <= 65 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 71 ; i <= 75 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+					for (int i = 81 ; i <= 85 ; i++) {
+						%>
+						<option value="<%=i%>"><%=i%></option>
+						<%
+					}
+						
+					
+					%>
+						</select>
+					Medication:
+					<div class="input-group">
+						<select class="form-control input-sm" id="tFormAmt" name="tFormAmt">
+							<option value="">Choose amount...</option>
+							<option value="5mg">5 milligrams of...</option>
+							<option value="10mg">10 milligrams of...</option>
+							<option value="20mg">20 milligrams of...</option>
+							<option value="50mg">50 milligrams of...</option>
+							<option value="100mg">100 milligrams of...</option>
+							<option value="200mg">200 milligrams of...</option>
+						</select>
+						<select class="form-control input-sm" id="tFormMed" name="tFormMed">
+							<option value="">Choose material...</option>
+							<option value="kenalog">Kenalog</option>
+							<option value="ambesol">Ambesol</option>
+							<option value="orajel">Orajel</option>
+							<option value="peridex">Peridex</option>
+							<option value="fluoride">Fluoride</option>
+							<option value="pilocarpine">Pilocarpine</option>
+							<option value="motrin">Motrin</option>
+						</select>	
+						<input type="button" value="Add to List" onclick="addAmountAndMedication()">
+					</div>
+					<input type="hidden" id="tFormAmtAndMedList" name="tFormAmtAndMedList"> 
+				<div class="input-group">
+						<input class="form-control input-sm" type="text" id="tFormAmtAndMed" name="tFormAmtAndMed" placeholder="Medication list currently empty, try adding something..." required readonly> 
+						<input type="button" value=" Empty List" onclick="clearSymptoms()">
+					</div>
+					
+					Symptoms:
+						<select onclick="addSymtomToTreatment()" class="m-1 form-control" type="text" id="tFormSymptom" name="tFormSymptom" required>
+							<option value="">Add a symptom...</option>
+							<option value="toothache">Toothache</option>
+							<option value="sensitivity">Sensitivity</option>
+							<option value="bleeding">Bleeding</option>
+							<option value="mouth sore">Mouth Sore</option>
+							<option value="bad breath">Bad Breath</option>
+							<option value="jaw pain">Jaw Pain</option>
+							<option value="dry mouth">Dry Mouth</option>
+							<option value="piercing infection">Piercing Infection</option>
+							<option value="cracked tooth">Cracked Tooth</option>
+							<option value="tooth discoloration">Tooth Discoloration</option>
+						</select>
+
+					<input type="hidden" id="tFormSymptomList" name="tFormSymptomList"> 
+					<div class="input-group">
+						<input class="form-control input-sm" type="text" id="tFormSymptoms" name="tFormSymptoms" placeholder="Symptom list currently empty, try adding something..." required readonly> 
+						<input type="button" value=" Empty List" onclick="clearSymptoms()">
+					</div>
+					
+					<input type="hidden" id="tFormCommentsList" name="tFormCommentsList"> 
+					Comments: <textarea class="m-1 form-control" cols="20" rows="20" id="tFormComments" name="tFormComments" required></textarea>
+					
+					<button type="submit" value="submit" onclick="return validateTreatmentForm();">Submit Appointment</button>
+					<button type="reset" value="reset" onclick="window.location.reload()">Reset Default</button>
+					<input type="button" value="Add Another Treatment" onclick="addTreatment()">
 				</form>
 				<br>
 			</div>
