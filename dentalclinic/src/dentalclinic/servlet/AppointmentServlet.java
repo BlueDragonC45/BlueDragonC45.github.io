@@ -245,7 +245,7 @@ public class AppointmentServlet extends HttpServlet {
 		 				
 		 				con.insertAppointmentProcedure(
 		 						new AppointmentProcedure(newAppointmentID.toString(), allTeeth[i],
-		 												 procedureCode, type, amountAndMats[i].split("[\\s,]+"), 
+		 												 procedureCode, type, amountAndMats[i].split("\\,\\s"), 
 		 												 descriptions[i], pFormDate));
 		 				con.insertFeeCharge(
 		 						new FeeCharge(newFeeID.toString(), newInvoiceID.toString(),
@@ -325,8 +325,8 @@ public class AppointmentServlet extends HttpServlet {
 						
 						con.insertTreatment(
 								new Treatment(newAppointmentID.toString(), allTeeth[i],
-											  treatmentCode, type, amountAndMeds[i].split("[\\s,]+"), 
-											  symptoms[i].split("[\\s,]+"),
+											  treatmentCode, type, amountAndMeds[i].split("\\,\\s"), 
+											  symptoms[i].split("\\,\\s"),
 											  comments[i], tFormDate));
 						con.insertFeeCharge(
 								new FeeCharge(newFeeID.toString(), newInvoiceID.toString(),
