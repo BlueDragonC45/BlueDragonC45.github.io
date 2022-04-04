@@ -361,6 +361,48 @@ public class  PostgreSqlConn{
 			return guardian;       
 	    }
 
+		//Searches and returns an array list of minors that a
+		//figure guardians over
+		public ArrayList<Patient> getMinors(String guardianSIN){
+			getConn();
+			
+			ArrayList<Patient> minors = new ArrayList<Patient>();
+			
+	        try{
+	            ps = db.prepareStatement("SELECT * from dentalclinic.patient "
+	            					   + "WHERE guardianSIN=?");
+	            ps.setString(1, guardianSIN);	
+	                           
+	            rs = ps.executeQuery();
+	
+				while(rs.next()) {
+					String patientSIN = rs.getString("patientSIN");
+					String userName = rs.getString("userName");
+					String firstName = rs.getString("firstName");
+					String middleName = rs.getString("middleName");
+					String lastName = rs.getString("lastName");
+					String dateofBirth = rs.getString("dateofBirth");
+					String age = rs.getString("age");
+					String gender = rs.getString("gender");
+					String patientEmail = rs.getString("patientEmail");
+					String patientPhoneNumber = rs.getString("patientPhoneNumber");
+					String address = rs.getString("address");
+					//col12: guardianSIN already have
+					
+					Patient minor = new Patient(patientSIN, userName, firstName, middleName,
+							 					  lastName, dateofBirth, age, gender,
+												  patientEmail, patientPhoneNumber,
+												  guardianSIN, address);
+					minors.add(minor);				}
+	            
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	        }finally {
+	        	closeDB();
+	        }
+			return minors;       
+	    }
+
 		//Searches and returns a list of PatientRecord by patient SIN
 		public PatientRecord getPatientRecordByKey(String patientSIN, String appointmentID){
 			

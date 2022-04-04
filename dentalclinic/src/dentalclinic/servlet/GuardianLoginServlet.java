@@ -1,6 +1,7 @@
 package dentalclinic.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import dentalclinic.connection.PostgreSqlConn;
 import dentalclinic.entities.Guardian;
+import dentalclinic.entities.Patient;
 
 public class GuardianLoginServlet extends HttpServlet {
 
@@ -33,6 +35,9 @@ public class GuardianLoginServlet extends HttpServlet {
 			//To display patient info
 			Guardian guardian = con.getUserInfoByGuardianUsername(userName);
 			req.setAttribute("guardian", guardian);
+			
+			ArrayList<Patient> minors = con.getMinors(guardian.getGuardianSIN());
+			req.setAttribute("minors", minors);
 			
 			req.getRequestDispatcher("guardian_view.jsp").forward(req, resp);
 			return;	

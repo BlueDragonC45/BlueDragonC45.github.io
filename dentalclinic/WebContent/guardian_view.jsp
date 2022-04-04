@@ -1,11 +1,30 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="dentalclinic.entities.Guardian"%>
+<%@page import="dentalclinic.entities.Patient"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 
 <%
 Guardian guardian = (Guardian) request.getAttribute("guardian");
 String firstName = guardian.getFirstName();
+
+
+Object obj = request.getAttribute("minors");
+ArrayList<Patient> minors = null;
+if (obj instanceof ArrayList) {
+	minors = (ArrayList<Patient>) obj;
+}
+String minorsStr = "None";
+if (minors != null) {
+	minorsStr = "";
+	for (int i = 0 ; i < minors.size() ; i++) {
+		if (i < minors.size()-1) {
+			minorsStr += minors.get(i).getPatientSIN()+", ";
+		}
+	}
+	minorsStr += minors.get(minors.size()-1).getPatientSIN();
+	
+}
 //String middleName = (String) request.getAttribute("middleName");
 //String lastName = (String) request.getAttribute("lastName");
 %>
@@ -96,6 +115,10 @@ String firstName = guardian.getFirstName();
 						<tr>
 							<td>Address</td>
 							<td><%=guardian.getAddress()%></td>
+						</tr>
+						<tr>
+							<td>Minors' SIN</td>
+							<td><%=minorsStr%></td>
 						</tr>
 					</table>
 				</div>
