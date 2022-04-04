@@ -24,7 +24,7 @@ public class Appointment {
 	
 	public String toString() {
 		String str = "A "+status+" appointment ("+appointmentType+") on "+appointmentDate+", from "+appointmentStartTime
-				+" to "+appointmentEndTime+".";
+				+" to "+appointmentEndTime+" in room "+roomID+".";
 		return str;
 	}
 }

@@ -42,18 +42,19 @@ public class WritePatientRecordServlet extends HttpServlet {
 			if (appointmentIDSelected == null) {
 				ArrayList<Appointment> appointments = con.getAppointmentsByEmployeeSIN(employeeSIN);
 				
-				ArrayList<Appointment> appointmentTypeTreatment = new ArrayList<Appointment>();
+				ArrayList<Appointment> appointmentTypeFinishedTreatment = new ArrayList<Appointment>();
 				for (int i = 0 ; i < appointments.size(); i++) {
-					if (appointments.get(i).getAppointmentType().equals("treatment")) {
-						appointmentTypeTreatment.add(appointments.get(i));
+					if (appointments.get(i).getAppointmentType().equals("treatment")
+					 && appointments.get(i).getStatus().equals("finished")) {
+						appointmentTypeFinishedTreatment.add(appointments.get(i));
 					}
 				}
-				req.setAttribute("appointmentTypeTreatment", appointmentTypeTreatment);
+				req.setAttribute("appointmentTypeTreatment", appointmentTypeFinishedTreatment);
 				
 				String tmp = "";
 				ArrayList<Integer> treatmentCount = new ArrayList<Integer>();
-				for (int i = 0 ; i < appointmentTypeTreatment.size() ; i++) {
-					tmp = appointmentTypeTreatment.get(i).getAppointmentID();
+				for (int i = 0 ; i < appointmentTypeFinishedTreatment.size() ; i++) {
+					tmp = appointmentTypeFinishedTreatment.get(i).getAppointmentID();
 					
 					treatmentCount.add(con.getTreatmentCountByAppointmentID(tmp));
 				}
