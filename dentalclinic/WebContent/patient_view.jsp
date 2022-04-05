@@ -149,15 +149,21 @@ function validateAppointmentChoose() {
 
 		<div class="content p-3 my-3 h-100 border" id="patients">
 			<h1>Patient View</h1>
-			<div class="p-1 my-1 border border-dark row justify-content-around"
-				id="patientNav">
+			<div class="p-1 my-1 border border-dark"
+				id="receptionistNav">
+				<div class="row justify-content-around">
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('upcomingAppt')">View Appointments</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('cancelAppointment')">Cancel Appointment</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('pendingInvoices')">View Pending Invoices</button>
-				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('writeReview')">Submit Review</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientRecords')">View My Records</button>
+				</div>
+				
+				<div class="row justify-content-around">
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('viewProcedures')">Procedures & Treatments</button>
+				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('writeReview')">Submit Review</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="openTab('patientInfo')">View My Information</button>
 				<button class="p-1 m-1 mx-auto" style="width: 17rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
+				</div>
 			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="upcomingAppt">
@@ -288,6 +294,38 @@ function validateAppointmentChoose() {
 				}
 				%>
 			</div>
+			
+			
+			<div class="tab p-3 my-3" style="display: none;" id="patientRecords">
+				<h2>Patient Records</h2>
+	          	<%//Appointment List
+	          	  //Will show up only when appointments is non-empty
+				  //i.e. when the employee has clicked on search at least once
+				Object obj3 = request.getAttribute("records");
+				ArrayList<PatientRecord> recordList = null;
+				if (obj3 instanceof ArrayList) {
+					recordList = (ArrayList<PatientRecord>) obj3;
+				}
+				
+				
+				if (recordList != null) {
+					if (recordList.size() == 0) {
+						%><li>You have not completed any treatments yet. If you think this is an error, contact the clinic.</li><%
+					} else {
+						
+						for (PatientRecord record : recordList) {
+							
+							%>
+							<li><%=record.toString()%></li>
+							<%
+						}
+						%><br><%
+					}
+				} else {
+				%><li>You have not completed any treatments yet. If you think this is an error, contact the clinic.</li><%
+				}
+				%>
+			</div>
 
       <div class="tab p-3 my-3" style="display: none;" id="writeReview">
         <h2> Submit a Review</h2>
@@ -296,6 +334,59 @@ function validateAppointmentChoose() {
 			<input class="m-1 form-control" type="number" id="patientSIN" name="patientSIN" value = "<%=patient.getPatientSIN()%>" readonly> 
 			<button onclick="viewReviewableAppointments()">Search</button>
         </div>
+      </div>
+      
+      <div class="tab p-3 my-3" style="display: none;" id="viewProcedures">
+       				<h3>Procedures & Cost:</h3>
+					<table class="table table-sm table-bordered">
+						<tr>
+							<td>Evaluation</td>
+							<td>50 CAD</td>
+						</tr>
+						<tr>
+							<td>Resin</td>
+							<td>30 CAD</td>
+						</tr>
+						<tr>
+							<td>Sealant</td>
+							<td>25 CAD</td>
+						</tr>
+						<tr>
+							<td>Fluoride</td>
+							<td>25 CAD</td>
+						</tr>
+						<tr>
+							<td>Prophylaxis</td>
+							<td>50 CAD</td>
+						</tr>
+						<tr>
+							<td>Varnish</td>
+							<td>25 CAD</td>
+						</tr>
+					</table>
+       				<h3>Treatments & Cost:</h3>
+					<table class="table table-sm table-bordered">
+						<tr>
+							<td>Extraction</td>
+							<td>60 CAD</td>
+						</tr>
+						<tr>
+							<td>Scaling</td>
+							<td>40 CAD</td>
+						</tr>
+						<tr>
+							<td>Amalgam</td>
+							<td>80 CAD</td>
+						</tr>
+						<tr>
+							<td>Crown</td>
+							<td>90 CAD</td>
+						</tr>
+						<tr>
+							<td>Bridge</td>
+							<td>100 CAD</td>
+						</tr>
+					</table>
       </div>
       
       <div class="tab p-3 my-3" style="display: none;" id="reviewableAppointments">
@@ -371,37 +462,6 @@ function validateAppointmentChoose() {
 				<button type="reset" value="reset" onclick="history.back();">Go Back</button>
 			</form>
 		</div>
-			
-			<div class="tab p-3 my-3" style="display: none;" id="patientRecords">
-				<h2>Patient Records</h2>
-	          	<%//Appointment List
-	          	  //Will show up only when appointments is non-empty
-				  //i.e. when the employee has clicked on search at least once
-				Object obj3 = request.getAttribute("records");
-				ArrayList<PatientRecord> recordList = null;
-				if (obj3 instanceof ArrayList) {
-					recordList = (ArrayList<PatientRecord>) obj3;
-				}
-				
-				
-				if (recordList != null) {
-					if (recordList.size() == 0) {
-						%><li>You have not completed any treatments yet. If you think this is an error, contact the clinic.</li><%
-					} else {
-						
-						for (PatientRecord record : recordList) {
-							
-							%>
-							<li><%=record.toString()%></li>
-							<%
-						}
-						%><br><%
-					}
-				} else {
-				%><li>You have not completed any treatments yet. If you think this is an error, contact the clinic.</li><%
-				}
-				%>
-			</div>
 
 			<div class="tab p-3 my-3" style="display: none;" id="patientInfo">
 				<h2>Personal Information</h2>

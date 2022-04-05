@@ -31,7 +31,7 @@ public class  PostgreSqlConn{
 				
 				Class.forName("org.postgresql.Driver"); 
 																					//DB name
-				db = DriverManager.getConnection("jdbc:postgresql://192.168.0.6:5432/postgres",
+				db = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
 						//username   password
 						"postgres", "password");
 															
