@@ -1002,15 +1002,15 @@
 			<div class="p-1 my-1 border border-dark"
 				id="receptionistNav">
 				<div class="row justify-content-around">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentQueryLocation')">New Appointment</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientRegister')">Register New Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editPatient')">Edit Patient Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('guardianRegister')">Register New Guardian</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
 				</div>
 				
 				<div class="row justify-content-around">
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('guardianRegister')">Register New Guardian</button>
-				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('editGuardian')">Edit Guardian Information</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('appointmentQueryLocation')">New Appointment</button>
+				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('patientBilling')">Bill Patient</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="openTab('listDentists')">List Branch Dentists</button>
 				<button class="p-1 m-1 mx-auto" style="width: 20rem;" onclick="location.href='/dentalclinic/'">Go Back</button>
 				</div>
