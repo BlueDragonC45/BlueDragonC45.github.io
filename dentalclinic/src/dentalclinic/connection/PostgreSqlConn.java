@@ -1057,7 +1057,7 @@ public class  PostgreSqlConn{
 				ps = db.prepareStatement("SELECT (LOCALTIMESTAMP > timestamp '"
 										  +appointment.getAppointmentDate()
 										  +" "
-										  +appointment.getAppointmentEndTime()
+										  +appointment.getAppointmentStartTime()
 										 +"') AS isAfterAppointment");
 	            rs = ps.executeQuery();
 	            
