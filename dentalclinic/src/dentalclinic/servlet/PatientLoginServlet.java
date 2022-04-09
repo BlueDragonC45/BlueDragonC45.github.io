@@ -123,20 +123,24 @@ public class PatientLoginServlet extends HttpServlet {
 			Patient patient = con.getUserInfoByPatientUsername(patientUsername);
 			Appointment appointmentToCancel = con.getAppointmentByAppointmentID(appointmentIDCancel);
 			
-			if (!con.dateIsWithinADayFromAppointment(appointmentToCancel)) {
-				
-				con.updateAppointmentStatusByAppointmentID(appointmentToCancel.getAppointmentID(), "cancelled");
-				con.removeAllFees(appointmentToCancel.getInvoiceID());
-				req.setAttribute("outcome", "cancelSuccess");
-				
+			if (!con.isAfterAppointmentStart(appointmentToCancel)) {
+				if (!con.isWithinADayFromAppointmentStart(appointmentToCancel)) {
+					
+					con.updateAppointmentStatusByAppointmentID(appointmentToCancel.getAppointmentID(), "cancelled");
+					con.removeAllFees(appointmentToCancel.getInvoiceID());
+					req.setAttribute("outcome", "cancelSuccess");
+					
+				} else {
+					
+					con.updateAppointmentStatusByAppointmentID(appointmentToCancel.getAppointmentID(), "cancelled");
+					con.removeAllFees(appointmentToCancel.getInvoiceID());
+					
+					Integer nextFeeID = con.getMostRecentFeeID()+1;
+					con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointmentToCancel.getInvoiceID(), "94303", "14"));
+					req.setAttribute("outcome", "cancelSuccessFee");
+				}
 			} else {
-				
-				con.updateAppointmentStatusByAppointmentID(appointmentToCancel.getAppointmentID(), "cancelled");
-				con.removeAllFees(appointmentToCancel.getInvoiceID());
-				
-				Integer nextFeeID = con.getMostRecentFeeID()+1;
-				con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointmentToCancel.getInvoiceID(), "94303", "14"));
-				req.setAttribute("outcome", "cancelSuccessFee");
+				req.setAttribute("outcome", "cancelLate");
 			}
 			//set params will recalculate invoice total; will be 0 or 14
 			setReqParams(req, resp, patientUsername);
@@ -160,7 +164,7 @@ public class PatientLoginServlet extends HttpServlet {
 		//Replaces all fees with the single fee of $14 for not showing up
 		ArrayList<Appointment> allAppointmentsToUpdate = con.getAllAppointmentsByPatientSIN(patientSIN);
 		for (Appointment appointment : allAppointmentsToUpdate) {
-			if (appointment.getStatus().equals("pending") && con.dateIsAfterAppointment(appointment)) {
+			if (appointment.getStatus().equals("pending") && con.isAfterAppointmentEnd(appointment)) {
 				con.updateAppointmentStatusByAppointmentID(appointment.getAppointmentID(), "no show");
 				con.removeAllFees(appointment.getInvoiceID());
 				Integer nextFeeID = con.getMostRecentFeeID()+1;

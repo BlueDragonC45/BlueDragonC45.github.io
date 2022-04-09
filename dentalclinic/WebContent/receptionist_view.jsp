@@ -723,7 +723,7 @@
 			<%
 		} else if (outcomeB.equals("early")) {
 			%>
-			alert("Cannot bill a patient when they have yet to receive the service!");
+			alert("Can only bill within appointment start and end times!");
 			history.back();
 			<%
 		} else if (outcomeB.equals("already paid in full")) {
@@ -734,7 +734,7 @@
 		%>
 		<% } else {
 			%>
-			alert("Failed to bill; bill already processed.");
+			alert("Failed to bill; request already processed.");
 			history.back();
 			<%
 		%>

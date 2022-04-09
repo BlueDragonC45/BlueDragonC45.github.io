@@ -39,12 +39,8 @@ public class PatientBillingServlet extends HttpServlet {
 				//Replaces all fees with the single fee of $14 for not showing up
 				ArrayList<Appointment> allAppointmentsToUpdate = con.getAllAppointmentsByPatientSIN(patientSINBill);
 				for (Appointment appointment : allAppointmentsToUpdate) {
-					if (appointment.getStatus().equals("pending") && con.dateIsAfterAppointment(appointment)) {
+					if (appointment.getStatus().equals("pending") && con.isAfterAppointmentEnd(appointment)) {
 						con.updateAppointmentStatusByAppointmentID(appointment.getAppointmentID(), "no show");
-						con.removeAllFees(appointment.getInvoiceID());
-						Integer nextFeeID = con.getMostRecentFeeID()+1;
-						con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointment.getInvoiceID(), "94303", "14"));
-					} else if (appointment.getStatus().equals("cancelled") && !con.dateIsWithinADayFromAppointment(appointment)) {
 						con.removeAllFees(appointment.getInvoiceID());
 						Integer nextFeeID = con.getMostRecentFeeID()+1;
 						con.insertFeeCharge(new FeeCharge(nextFeeID.toString(), appointment.getInvoiceID(), "94303", "14"));
@@ -73,31 +69,27 @@ public class PatientBillingServlet extends HttpServlet {
 				return;	
 			} else {
 
-				Appointment appointmentToCancel = con.getAppointmentByInvoiceID(invoiceIDSelected);
+				Appointment appointmentToBill = con.getAppointmentByInvoiceID(invoiceIDSelected);
 
-				con.updateInvoiceTotal(appointmentToCancel);
+				con.updateInvoiceTotal(appointmentToBill);
 				
-				boolean isAfterAppointment = con.dateIsAfterAppointment(appointmentToCancel);
+				boolean isAfterAppointmentStart = con.isAfterAppointmentStart(appointmentToBill);
 				
-				if (isAfterAppointment) {
+				if (isAfterAppointmentStart) {
 	
 					Invoice invoice = con.getInvoiceByID(invoiceIDSelected);
 					
 					PatientBilling bill = con.getPatientBillingByKey(invoice.getPatientSIN(), invoice.getInvoiceID());
-					if (bill.getTotalAmount() == null) {//has not paid
+					if (bill.getTotalAmount() == null) {//has not paid in full
 	
 						req.setAttribute("invoice", invoice);
 						req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 						
-					} else if (bill.getTotalAmount().equals(invoice.getTotalFeeCharge())) {//paid in full
+					} else {//paid in full
 	
 						req.setAttribute("outcomeB", "no pending fees");
 						req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 						
-					} else {//partially indebted
-	
-						req.setAttribute("invoice", invoice);
-						req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 					}
 				} else {
 					req.setAttribute("outcomeB", "early");

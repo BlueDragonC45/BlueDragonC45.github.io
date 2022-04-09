@@ -127,6 +127,10 @@ function validateAppointmentChoose() {
 	
 			alert("Appointment cancelled, but within 24 hours. Thus, fees were added to your account for 14 CAD.");
 		<%
+		} else if (outcome.equals("cancelLate")) {%>
+		
+			alert("Failed to cancel; cannot cancel after appointment start.");
+		<%
 		}  else {
 			%>
 			alert("Error; already processed this request.");

@@ -1042,11 +1042,10 @@ public class  PostgreSqlConn{
 	        }	       
 	    }
 		
-		//Checks if the date is after appointment
-		//Date is after appointment if date is after appointment date and end time
-		public boolean dateIsAfterAppointment(Appointment appointment){
+		//Checks if the date is after appointment start time
+		public boolean isAfterAppointmentStart(Appointment appointment){
 
-			boolean isAfterAppointment = false;
+			boolean isAfterAppointmentStart = false;
 
 			getConn();
 
@@ -1058,17 +1057,52 @@ public class  PostgreSqlConn{
 										  +appointment.getAppointmentDate()
 										  +" "
 										  +appointment.getAppointmentStartTime()
-										 +"') AS isAfterAppointment");
+										 +"') AS isAfterAppointmentStart");
 	            rs = ps.executeQuery();
 	            
 	            System.out.println(ps.toString());
 	            
 				while(rs.next()) {
 					
-					isAfterAppointment = rs.getBoolean("isAfterAppointment");
+					isAfterAppointmentStart = rs.getBoolean("isAfterAppointmentStart");
 					
 				}
-	            return isAfterAppointment;
+	            return isAfterAppointmentStart;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return false;
+	        }finally {
+	        	closeDB();
+	        }	       
+	    }
+		
+		//Checks if the date is after appointment start time
+		public boolean isAfterAppointmentEnd(Appointment appointment){
+
+			boolean isAfterAppointmentEnd = false;
+
+			getConn();
+
+	        try{
+	        	
+	        	//concatenating date since could not get setDate nor setTime to work
+	        	//am aware of the vulnerabilities
+				ps = db.prepareStatement("SELECT (LOCALTIMESTAMP > timestamp '"
+										  +appointment.getAppointmentDate()
+										  +" "
+										  +appointment.getAppointmentEndTime()
+										 +"') AS isAfterAppointmentEnd");
+	            rs = ps.executeQuery();
+	            
+	            System.out.println(ps.toString());
+	            
+				while(rs.next()) {
+					
+					isAfterAppointmentEnd = rs.getBoolean("isAfterAppointmentEnd");
+					
+				}
+	            return isAfterAppointmentEnd;
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
@@ -1079,7 +1113,7 @@ public class  PostgreSqlConn{
 	    }
 		
 		//Checks if the date is within 24 hours of appointment
-		public boolean dateIsWithinADayFromAppointment(Appointment appointment){
+		public boolean isWithinADayFromAppointmentStart(Appointment appointment){
 
 			boolean withinADay = false;
 
@@ -1091,7 +1125,7 @@ public class  PostgreSqlConn{
 	        	//am aware of the vulnerabilities
 				ps = db.prepareStatement("SELECT (timestamp '"
 									      +appointment.getAppointmentDate()
-				                      +" "+appointment.getAppointmentEndTime()+"' - "
+				                      +" "+appointment.getAppointmentStartTime()+"' - "
 									   + "LOCALTIMESTAMP <= interval '1 day') AS withinADay");
 	            rs = ps.executeQuery();
 	            
