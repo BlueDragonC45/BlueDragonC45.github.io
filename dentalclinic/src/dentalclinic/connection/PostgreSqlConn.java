@@ -2432,7 +2432,7 @@ public class  PostgreSqlConn{
 			
 			String employeeSIN = newBill.getEmployeeSIN();
 			if (!employeeSIN.isEmpty()) {
-				if (getUserInfoByEmployeeSIN(employeeSIN).getUserName().isEmpty()) {
+				if (getUserInfoByEmployeeSIN(employeeSIN).getUserName() == null) {
 					System.out.println("Employee not found!");
 					return 1;
 				}
@@ -2466,14 +2466,14 @@ public class  PostgreSqlConn{
 	            ps.setFloat(1, Float.parseFloat(newBill.getUserPortion()));	
 	            ps.setFloat(2, Float.parseFloat(newBill.getInsurancePortion()));	
 	            ps.setFloat(3, Float.parseFloat(newBill.getEmployeePortion()));
-	            ps.setInt(4, Integer.parseInt(newBill.getInvoiceID()));
 
-	            
 	            if (guardian.isEmpty()) {
-	            	ps.setNull(5, Types.VARCHAR);//since patient can have no guardian
+	            	ps.setNull(4, Types.VARCHAR);//since patient can have no guardian
 	            } else {
-					ps.setString(5, newBill.getGuardianSIN());	
+					ps.setString(4, newBill.getGuardianSIN());	
 	            }
+
+	            ps.setInt(5, Integer.parseInt(newBill.getInvoiceID()));
 	            
 	            ps.executeUpdate();
 
