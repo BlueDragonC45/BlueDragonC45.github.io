@@ -67,7 +67,7 @@ public class EmployeeRegisterServlet extends HttpServlet{
 		req.setAttribute("firstNameNEW", firstName);
 		req.setAttribute("lastNameNEW", lastName);
 		
-		int isInserted = con.insertEmployee(employee, employeeSIN);
+		int isInserted = con.insertEmployee(employee, employeePwd);
 		if (isInserted == 0) {			
 				
 				req.setAttribute("outcome", "registerSuccess");
@@ -102,7 +102,7 @@ public class EmployeeRegisterServlet extends HttpServlet{
 			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 			return;
 		} else {
-;
+
 			
 			req.setAttribute("outcome", "unknown error");
 

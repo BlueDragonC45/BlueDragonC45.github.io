@@ -422,7 +422,7 @@ function validateAppointmentChoose() {
 						</select>
 						<input class="m-1 form-control" type="hidden" id="patientUsername" name="patientUsername" value="<%=patient.getUserName()%>" readonly>
 						<button type="submit" value="submit" onclick="return validateAppointmentChoose();">Select</button>
-						<button type="reset" value="reset" onclick="history.back();">Go Back</button>
+						<button type="reset" value="reset" onclick="window.location.reload();">Go Back</button>
 				</form>
 	  </div>
 

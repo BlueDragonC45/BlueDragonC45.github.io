@@ -752,7 +752,6 @@ public class  PostgreSqlConn{
 	            ps.setString(9, employee.getMiddleName());	
 	            ps.setString(10, employee.getLastName());
 
-
 	            String str = employee.getDateofBirth();  
 	            Date date = Date.valueOf(str);
 	            ps.setDate(11, date);
@@ -762,6 +761,8 @@ public class  PostgreSqlConn{
 	            ps.setString(14, employee.getEmployeeEmail());	
 	            ps.setString(15, employee.getEmployeePhoneNumber());	
 	            ps.setString(16, employee.getAddress());	
+	            
+	            System.out.println(ps.toString());
 	            
 	            ps.executeUpdate();
 	            
@@ -1276,7 +1277,7 @@ public class  PostgreSqlConn{
 	            Date date = Date.valueOf(str);
 	            ps.setDate(10, date);
 	            
-	            ps.setInt(10, Integer.parseInt(newEmployeeInfo.getAge()));	
+	            ps.setInt(11, Integer.parseInt(newEmployeeInfo.getAge()));	
 	            ps.setString(12, newEmployeeInfo.getGender());	
 	            ps.setString(13, newEmployeeInfo.getEmployeeEmail());	
 	            ps.setString(14, newEmployeeInfo.getEmployeePhoneNumber());	

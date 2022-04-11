@@ -43,8 +43,8 @@ function validateEmployeeRegister() {
 	var role = document.getElementById("role");
 	var employeeType = document.getElementById("employeeType");
 	var salary = document.getElementById("salary");
-	var employeePwd = document.getElementById("patientPwd");
-	var employeePwdagain = document.getElementById("patientPwdagain");
+	var employeePwd = document.getElementById("employeePwd");
+	var employeePwdagain = document.getElementById("employeePwdagain");
 
 	if (employeeSIN.value == "" || userName.value == ""           || firstName.value == "" || lastName.value == ""
 							    || employeePwd.value == ""        || employeePwdagain.value == ""
@@ -53,13 +53,13 @@ function validateEmployeeRegister() {
 							    || employeeType.value == ""       || salary.value == ""	   || branchID.value == ""){
 		alert("You need to fill all required fields");
 		return false;
-	} else if(patientSIN.value.length != 9){
+	} else if(employeeSIN.value.length != 9){
 		alert("The length of SIN needs to be 9 digits long");
 		return false;
 	} else if(age.value < 18){
 		alert("Must be at least 18 years of age");
 		return false;
-	} else if(patientPwd.value != patientPwdagain.value){
+	} else if(employeePwd.value != employeePwdagain.value){
 		alert("Passwords need to match!");
 		return false;
 	} else
@@ -76,7 +76,7 @@ function validateEmployeeEdit() {
 
 	var dateOfBirth = document.getElementById("dateOfBirthEE");
 	var age = document.getElementById("ageEE");
-	document.getElementById("age").value = calcAge(dateOfBirth.value);
+	document.getElementById("ageEE").value = calcAge(dateOfBirth.value);
 	var gender = document.getElementById("genderEE");
 	var email = document.getElementById("emailEE");
 	var phoneNumber = document.getElementById("phoneEE");
@@ -91,7 +91,7 @@ function validateEmployeeEdit() {
 							    || employeeType.value == ""       || salary.value == ""	   || branchID.value == ""){
 		alert("You need to fill all required fields");
 		return false;
-	} else if(patientSIN.value.length != 9){
+	} else if(employeeSIN.value.length != 9){
 		alert("The length of SIN needs to be 9 digits long");
 		return false;
 	} else if(age.value < 18){
@@ -150,7 +150,6 @@ $(document).ready(function() {
 			history.back();
 		<% } else if (outcome.equals("registerSuccess")) { %>
 			alert("Employee entry for "+fName+" "+lName+" successfully added.");
-			history.back();
 		<% } else if (outcome.equals("duplicateSIN")) { %>
 			alert("Employee entry for "+fName+" "+lName+" could not be added; duplicate SIN.");
 			history.back();
