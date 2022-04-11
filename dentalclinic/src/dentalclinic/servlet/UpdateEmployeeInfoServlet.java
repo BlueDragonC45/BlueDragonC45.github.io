@@ -25,10 +25,18 @@ public class UpdateEmployeeInfoServlet extends HttpServlet {
 		if (employeeSINEdit == null) {
 			
 			String employeeSINEE = req.getParameter("employeeSINEE");
-			System.out.println(employeeSINEE);
+			System.out.println("Employee to edit with SIN:"+employeeSINEE);
+			
 			Employee employee = con.getUserInfoByEmployeeSIN(employeeSINEE);
 			
-			req.setAttribute("employee", employee);
+			if (employee.getRole().equals("manager")) {
+
+				req.setAttribute("firstNameNEW", employee.getFirstName());
+				req.setAttribute("lastNameNEW", employee.getLastName());
+				req.setAttribute("outcome", "cannot edit manager");
+			} else {
+				req.setAttribute("employee", employee);
+			}
 			
 			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 		} else {
@@ -77,25 +85,41 @@ public class UpdateEmployeeInfoServlet extends HttpServlet {
 			
 			String salary = req.getParameter("salaryEE");
 			newEmployeeInfo.setSalary(salary);
+
+			req.setAttribute("firstNameNEW", firstName);
+			req.setAttribute("lastNameNEW", lastName);
 			
-			if (con.updateEmployeeInfo(newEmployeeInfo, employeeSINEdit)) {//successful
-				
-				//something happens if successful
-				req.setAttribute("firstNameNEW", firstName);
-				req.setAttribute("lastNameNEW", lastName);
+			int isInserted = con.updateEmployeeInfo(newEmployeeInfo, employeeSINEdit);
+			if (isInserted == 0) {			
+
 				req.setAttribute("outcome", "updateSuccess");
-				req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 				
-			} else {//failed; could be an SQL error
+			} else if (isInserted == 1) {
 				
-				//something happens if failed
-				req.setAttribute("firstNameNEW", firstName);
-				req.setAttribute("lastNameNEW", lastName);
-				req.setAttribute("outcome", "updateFailed");
+				req.setAttribute("outcome", "duplicateUsername");
 				
-				req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
+			} else if (isInserted == 2) {
+
+				req.setAttribute("outcome", "noBranchesInDB");
 				
+			} else if (isInserted == 3) {
+
+				req.setAttribute("outcome", "branchNotFound");
+				
+			} else if (isInserted == 4) {
+
+				req.setAttribute("outcome", "more than 2 secretaries");
+				
+			} else if (isInserted == 5) {
+
+				req.setAttribute("outcome", "branch cannot have 0 secretaries");
+				
+			} else {
+
+				req.setAttribute("outcome", "unknown error");
 			}
+			
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 		}
 	}
 }

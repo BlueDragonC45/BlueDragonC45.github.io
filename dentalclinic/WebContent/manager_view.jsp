@@ -27,7 +27,7 @@ function calcAge(dateOfBirthVal) {
 
 function validateEmployeeRegister() {
 	var employeeSIN = document.getElementById("employeeSIN");
-	var userName = document.getElementById("userName");
+	var userName = document.getElementById("username");
 	var branchID = document.getElementById("branchID");
 
 	var firstName = document.getElementById("fName");
@@ -68,13 +68,13 @@ function validateEmployeeRegister() {
 
 function validateEmployeeEdit() {
 	var employeeSIN = document.getElementById("sinEE");
-	var userName = document.getElementById("userNameEE");
+	var userName = document.getElementById("usernameEE");
 	var branchID = document.getElementById("branchIDEE");
 
 	var firstName = document.getElementById("fNameEE");
 	var lastName = document.getElementById("lNameEE");
 
-	var dateOfBirth = document.getElementById("dateOfBirthEE");
+	var dateOfBirth = document.getElementById("dobEE");
 	var age = document.getElementById("ageEE");
 	document.getElementById("ageEE").value = calcAge(dateOfBirth.value);
 	var gender = document.getElementById("genderEE");
@@ -153,17 +153,24 @@ $(document).ready(function() {
 		<% } else if (outcome.equals("duplicateSIN")) { %>
 			alert("Employee entry for "+fName+" "+lName+" could not be added; duplicate SIN.");
 			history.back();
+		<% } else if (outcome.equals("more than 2 secretaries")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; cannot have more than 2 receptionists in that branch!");
+			history.back();
 		<% } else if (outcome.equals("duplicateUsername")) { %>
-			alert("Employee entry for "+fName+" "+lName+" could not be added; duplicate username.");
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; duplicate username.");
 			history.back();
 		<% } else if (outcome.equals("noBranchesInDB")) { %>
-			alert("Employee entry for "+fName+" "+lName+" could not be added; no branches available at the moment.");
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; no branches available at the moment.");
 			history.back();
 		<% } else if (outcome.equals("branchNotFound")) { %>
-			alert("Employee entry for "+fName+" "+lName+" could not be added; branch with that ID does not exist.");
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; branch with that ID does not exist.");
 			history.back();
+		<% } else if (outcome.equals("branch cannot have 0 secretaries")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; cannot change from receptionist since that would leave the branch with 0 receptionists. Try this again after adding another receptionist to the branch.");
+		<% } else if (outcome.equals("cannot edit manager")) { %>
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; no permissions to edit a manager.");
 		<% } else { %>
-			alert("Employee entry for "+fName+" "+lName+" could not be added; unknown SQL Error.");
+			alert("Employee entry for "+fName+" "+lName+" could not be processed; unknown SQL Error.");
 			history.back();
 	<% }}; %>
 	
@@ -275,7 +282,7 @@ $(document).ready(function() {
 		  <form method="post" action="employeeRegister">
 		    Social Insurance Number:<input class="m-1 form-control" type="number" id="employeeSIN" name="employeeSIN" required>
 		    Username:<input class="m-1 form-control" type="text" id="username" name="username" required>
-		    BranchID:<input class="m-1 form-control" type="text" id="branchID" name="branchID" required>
+		    BranchID:<input class="m-1 form-control" type="number" id="branchID" name="branchID" required>
 		    First Name:<input class="m-1 form-control" type="text" id="fName" name="fName" required>
 		    Middle Name:<input class="m-1 form-control" type="text" id="mName" name="mName">
 		    Last Name:<input class="m-1 form-control" type="text" id="lName" name="lName" required>
@@ -292,9 +299,9 @@ $(document).ready(function() {
 			    	<option value="receptionist">Receptionist</option>
 		    	</select>
 		    Employee Type:<select class="m-1 form-control" id="employeeType" name="employeeType" required>
-			        <option value="partTime">Part-time</option>
-			        <option value="fullTime">Full-time</option>
-			        <option value="temp">Temporary</option>
+			        <option value="part-time">Part-time</option>
+			        <option value="full-time">Full-time</option>
+			        <option value="temporary">Temporary</option>
 			        <option value="student">Student</option>
 			    </select>
 		    Salary:<input class="m-1 form-control" type="number" id="salary" name="salary" required>
@@ -309,7 +316,7 @@ $(document).ready(function() {
         <h2> Update Employee</h2>
         <div class="p-3 my-3" id="editEmployeeSearch">
 			<form method="post" action="updateEmployeeInfo">
-				Social Insurance Number:<input class="m-1 form-control" type="text" id="employeeSINEE" name="employeeSINEE">
+				Social Insurance Number:<input class="m-1 form-control" type="number" id="employeeSINEE" name="employeeSINEE">
 				<button type="submit" value="submit" onclick="return validateSIN()">Search for Employee</button>
 				<button type="reset" value="reset">Reset</button>
 			</form>
@@ -322,7 +329,7 @@ $(document).ready(function() {
 				}
 				%>
 				Username:<input class="m-1 form-control" type="text" id="usernameEE" name="usernameEE" required>
-				branchID:<input class="m-1 form-control" type="text" id="branchIDEE" name="branchIDEE" required>
+				branchID:<input class="m-1 form-control" type="number" id="branchIDEE" name="branchIDEE" required>
 				First Name:<input class="m-1 form-control" type="text"id="fNameEE" name="fNameEE" required> 
 				Middle Name:<input class="m-1 form-control" type="text" id="mNameEE" name="mNameEE"> 
 				Last Name:<input class="m-1 form-control" type="text" id="lNameEE" name="lNameEE" required> 
@@ -339,9 +346,9 @@ $(document).ready(function() {
 			    	<option value="receptionist">Receptionist</option>
 		    	</select>
 			    Employee Type:<select class="m-1 form-control" id="employeeTypeEE" name="employeeTypeEE" required>
-			        <option value="partTime">Part-time</option>
-			        <option value="fullTime">Full-time</option>
-			        <option value="temp">Temporary</option>
+			        <option value="part-time">Part-time</option>
+			        <option value="full-time">Full-time</option>
+			        <option value="temporary">Temporary</option>
 			        <option value="student">Student</option>
 			    </select>
 			    Salary:<input class="m-1 form-control" type="number" id="salaryEE" name="salaryEE" required>

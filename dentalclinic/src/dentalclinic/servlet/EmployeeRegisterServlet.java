@@ -101,6 +101,13 @@ public class EmployeeRegisterServlet extends HttpServlet{
 
 			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
 			return;
+		} else if (isInserted == 5) {
+
+			
+			req.setAttribute("outcome", "more than 2 secretaries");
+
+			req.getRequestDispatcher("manager_view.jsp").forward(req, resp);
+			return;
 		} else {
 
 			

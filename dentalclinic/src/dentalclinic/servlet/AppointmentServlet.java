@@ -92,12 +92,18 @@ public class AppointmentServlet extends HttpServlet {
 						Branch branch = con.getBranchByBranchID(appointmentBranchID);
 						ArrayList<Room> rooms = con.getAllRoomsByBranchID(appointmentBranchID);
 						
-						ArrayList<Employee> employees = con.getEmployeesByBranchID(appointmentBranchID);
+						ArrayList<Employee> allEmployees = con.getEmployeesByBranchID(appointmentBranchID);
 						
+						ArrayList<Employee> dentistsAndHygienists = new ArrayList<Employee>();
+						for (int i = 0 ; i < allEmployees.size() ; i++) {
+						    String tmpRole = allEmployees.get(i).getRole();
+							if (tmpRole.equals("dentist") || tmpRole.equals("hygienist")) {
+								dentistsAndHygienists.add(allEmployees.get(i));							}
+						}
 
 						req.setAttribute("branch", branch);
 						req.setAttribute("rooms", rooms);
-						req.setAttribute("employees", employees);
+						req.setAttribute("employees", dentistsAndHygienists);
 						req.getRequestDispatcher("receptionist_view.jsp").forward(req, resp);
 						
 					}

@@ -732,6 +732,21 @@ public class  PostgreSqlConn{
 				return 4;
 			}
 
+			if (employee.getRole().equals("receptionist")) {
+				ArrayList<Employee> employeesSameBranch = getEmployeesByBranchID(employee.getBranchID());
+				if (employeesSameBranch.size() != 0) {
+					int receptionistsFound = 0;
+					for (int i = 0 ; i < employeesSameBranch.size() ; i++) {
+						if (employeesSameBranch.get(i).getRole().equals("receptionist")) {
+							receptionistsFound++;
+						}
+					}
+					if (receptionistsFound == 2) {
+						return 5;//there are already 2 receptionists
+					}
+				}
+			}
+
 			getConn();//must be below above statement since getAllUsernamesByEntity
 			          //closed the connection
 
@@ -772,7 +787,7 @@ public class  PostgreSqlConn{
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return 5;
+	            return 6;
 	        }finally {
 	        	closeDB();
 	        }	       
@@ -1238,25 +1253,93 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For manager only; updates an employee
-		public boolean updateEmployeeInfo(Employee newEmployeeInfo, String employeeSIN) {
-			if (!getUserInfoByEmployeeSIN(employeeSIN).getUserName()
+		public int updateEmployeeInfo(Employee newEmployeeInfo, String employeeSIN) {
+			
+			Employee oldEmployeeInfo = getUserInfoByEmployeeSIN(employeeSIN);
+			
+			if (!oldEmployeeInfo.getUserName()
 					.equals(newEmployeeInfo.getUserName())) {
 				ArrayList<String> usernames = getAllUsernamesByEntity("employee");
 				for (int i = 0 ; i < usernames.size(); i++) {
 					if (newEmployeeInfo.getUserName().equals(usernames.get(i))) {
 						System.out.println("Username "+newEmployeeInfo.getUserName()+" already exists!");
-			            return false;
+			            return 1;//username taken
 					}
 				}
 			}
 			
-			getConn();//must be below above statement since getAllUsernamesByEntity
-	          		  //closed the connection
+			boolean branchExists = false;
+			ArrayList<Branch> branches = getAllBranches();
+			if (branches.size() != 0) {
+				for (int i = 0 ; i < branches.size(); i++) {
+					if (branches.get(i).getBranchID().equals(newEmployeeInfo.getBranchID())) {
+						branchExists = true;
+					}
+				}
+			} else {
+				return 2;//0 branches found in DB
+			}
+			
+			if (!branchExists) {
+				return 3;//branch entered does not exist
+			}
+			
+			//Employee previously not receptionist, but now become receptionist
+			//this means we must check that there are no more than 2 receptionists
+			//in this particular branch
+			if (newEmployeeInfo.getRole().equals("receptionist")) {
+				
+				if (oldEmployeeInfo.getRole().equals("receptionist")
+				 && oldEmployeeInfo.getBranchID().equals(newEmployeeInfo.getBranchID())) {
+					
+					//no need to check since prev. role == current role and working at same branch
+					
+				} else {
+					ArrayList<Employee> employeesSameBranch = getEmployeesByBranchID(newEmployeeInfo.getBranchID());
+					if (employeesSameBranch.size() != 0) {
+						int receptionistsFound = 0;
+						for (int i = 0 ; i < employeesSameBranch.size() ; i++) {
+							if (employeesSameBranch.get(i).getRole().equals("receptionist")) {
+								receptionistsFound++;
+							}
+						}
+						if (receptionistsFound == 2) {
+							return 4;//there are already 2 receptionists
+						}
+					}
+				}
+			} else {//Changed to a role other than receptionist
+				
+				//If the employee was a receptionist previously
+			    //we need to make sure the previous branch is not
+			    //left with 0 receptionists; it would not be able to operate!
+				if (oldEmployeeInfo.getRole().equals("receptionist")) {
+					ArrayList<Employee> employeesSameBranch = getEmployeesByBranchID(oldEmployeeInfo.getBranchID());
+					if (employeesSameBranch.size() != 0) {
+						int receptionistsFound = 0;
+						for (int i = 0 ; i < employeesSameBranch.size() ; i++) {
+							if (employeesSameBranch.get(i).getRole().equals("receptionist")) {
+								receptionistsFound++;
+							}
+						}
+						if (receptionistsFound == 1) {
+							return 5;//previously, there would have been 1 receptionist; the one
+							         //currently to be updated. But since they will have another role
+							         //we will not have any receptionists in the previous branch
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			getConn();
 
 	        try{
 
 				ps = db.prepareStatement("UPDATE dentalclinic.employee "
-									   + "SET employeesin=?, BranchID=?, username=?, role=?, employeeType=?, salary=? "
+									   + "SET employeesin=?, BranchID=?, username=?, role=?, employeeType=?, salary=?, "
 									   + "firstname=?, middlename=?, lastname=?, "
 									   + "dateofbirth=?, age=?, gender=?, EmployeeEmail=?, "
 									   + "EmployeePhoneNumber=?, address=? "
@@ -1290,11 +1373,11 @@ public class  PostgreSqlConn{
 
 	            System.out.println(ps.toString());
 	            
-	            return true;
+	            return 0;//updated just fine
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return false;
+	            return 5;//psql error
 	        }finally {
 	        	closeDB();
 	        }	       
