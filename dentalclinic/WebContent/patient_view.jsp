@@ -40,7 +40,7 @@ $(document).ready(function() {
 	<%
 	String appointmentToReview = (String) request.getAttribute("appointmentToReview");
 	Appointment appointmentInfo = (Appointment) request.getAttribute("appointmentInfo");
-	if (appointmentToReview != null) { 
+	if (appointmentToReview != null && appointmentInfo != null) { 
 		%>
 		document.getElementById("appointmentIDFetched").value = "<%=appointmentToReview%>";
 		document.getElementById("appointmentFetchedDate").value = "<%=appointmentInfo.getAppointmentDate()%>";
@@ -112,13 +112,16 @@ function validateAppointmentChoose() {
 		
 		if (outcome.equals("reviewSubmitted")) {%>
 
-			alert("The review was successfully submitted.");
+			alert("Review successfully submitted. Thanks for taking your time!");
 			
-		<%} else if (outcome.equals("reviewExists")) {%>
+		<%} else if (outcome.equals("reviewFailedNoFinished")) {%>
 			
-			alert("Could not submit the review; you have already submitted one previously!");
-			history.back();
+			alert("Could not submit review; you must have at least one finished appointment!");
 			<%
+		} else if (outcome.equals("reviewExists")) {%>
+		
+			alert("Could not submit review; you have already reviewed this appointment!");
+		<%
 		} else if (outcome.equals("cancelSuccess")) {%>
 		
 			alert("Appointment cancelled succesfully; no fees were applied.");
@@ -134,7 +137,6 @@ function validateAppointmentChoose() {
 		}  else {
 			%>
 			alert("Error; already processed this request.");
-			history.back();
 			<%
 		%>
 		<% }%>

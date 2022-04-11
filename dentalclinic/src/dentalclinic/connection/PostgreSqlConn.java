@@ -2025,12 +2025,12 @@ public class  PostgreSqlConn{
 	    }
 		
 		//For patient view; inserts a review
-		public boolean insertReview(Review review){
+		public int insertReview(Review review){
 
-			Review findReview = getReviewByKey(review.getPatientSIN(), review.getAppointmentID());
-			if (findReview.getPatientSIN() != null) {
-				System.out.println("already reviewed");
-				return false;//already exists
+			ArrayList<Appointment> finishedAppointments = getAppointmentsByPatientSINAndStatus(review.getPatientSIN(), "finished");
+			if (finishedAppointments.size() == 0) {
+				System.out.println("no finished appointments; cannot review");
+				return 1;
 			}
 			
 			getConn();
@@ -2038,7 +2038,7 @@ public class  PostgreSqlConn{
 	        try{
 	            
 				ps = db.prepareStatement("INSERT INTO dentalclinic.review "
-									   + "VALUES (?, CURRENT_DATE, LOCALTIME, ?, ?, ?, ?, ?)");
+									   + "VALUES (?, CURRENT_DATE, LOCALTIME, ?, ?, ?, ?, ?, ?)");
 		
 				ps.setString(1, review.getPatientSIN());	
 				//set date in sql
@@ -2046,18 +2046,21 @@ public class  PostgreSqlConn{
 	            ps.setInt(2, Integer.parseInt(review.getEmployeeProfessionalism()));
 	            ps.setInt(3, Integer.parseInt(review.getCommunication()));
 	            ps.setInt(4, Integer.parseInt(review.getCleanliness()));
-	            ps.setInt(5, Integer.parseInt(review.getAppointmentID()));
-				ps.setString(6, review.getComments());
+	            ps.setInt(5, Integer.parseInt(review.getValue()));
+	            ps.setInt(6, Integer.parseInt(review.getAppointmentID()));
+				ps.setString(7, review.getComments());
+				
+				System.out.println(ps.toString());
 				
 				ps.executeUpdate();
 				
 				System.out.println(ps.toString());
 	            
-	            return true;
+	            return 0;
 
 	        }catch(SQLException e){
 	            e.printStackTrace();
-	            return false;//SQL error
+	            return 2;//SQL error
 	        }finally {
 	        	closeDB();
 	        }	       

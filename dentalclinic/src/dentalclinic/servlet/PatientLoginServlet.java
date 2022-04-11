@@ -101,9 +101,11 @@ public class PatientLoginServlet extends HttpServlet {
 							                   employeeProf, communication, cleanliness,
 							                   value, reviewText);
 					
-					boolean resultInserted = con.insertReview(review);
-					if (resultInserted) {
+					int resultInserted = con.insertReview(review);
+					if (resultInserted == 0) {
 						req.setAttribute("outcome", "reviewSubmitted");
+					} else if (resultInserted == 1) {
+						req.setAttribute("outcome", "reviewFailedNoFinished");//sql error
 					} else {
 						req.setAttribute("outcome", "reviewFailed");//sql error
 					}
