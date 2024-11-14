@@ -1,6 +1,7 @@
 {
   "name": "frontend-hiring-challenge",
   "version": "1.0.0",
+  "homepage": "https://bluedragonc45.github.io/97f1acea/aircall-master",
   "description": "Leap test",
   "main": "index.js",
   "repository": "",
@@ -8,6 +9,8 @@
   "license": "",
   "private": false,
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "webpack-dev-server --mode development --open",
     "build": "webpack --mode production"
   },
@@ -22,6 +25,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "8.1.0",
     "css-loader": "^7.1.2",
+    "gh-pages": "^6.2.0",
     "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.3",
     "style-loader": "0.23.*",
