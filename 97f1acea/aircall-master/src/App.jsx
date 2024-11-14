@@ -5,7 +5,7 @@ import Content from './Content.jsx';
 
 const App = () => {
   return (
-    <div className='container-sm w-75 mx-auto'>
+    <div className='container-sm w-75 mx-auto bg-success bg-opacity-25'>
       <Header />
       <Content />
     </div>

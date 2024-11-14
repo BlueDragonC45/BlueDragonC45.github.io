@@ -63,7 +63,7 @@ const Content = () => {
     }, []);
 
     return (
-        <div className='container-sm w-100 mb-5'>
+        <div className='container-sm w-100 pb-5'>
             <div className="row justify-content-center w-100 my-3">
                 <div className="col-3">{/*Spacer*/}</div>
                 <button type="button" className="col-2 btn btn-success rounded-1 p-2 mx-2" onClick={() => setInbox(true)}>Inbox</button>

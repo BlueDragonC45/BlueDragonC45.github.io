@@ -5,7 +5,7 @@ const CallDetails = (props) => {
     const date = new Date(call.created_at);
 
     return (
-        <div className='border border-1 border-dark rounded-3 p-2 m-2 h-50'>
+        <div className='border border-1 border-dark rounded-3 p-2 m-2 h-50 bg-success bg-opacity-10'>
             <div className="row d-flex align-items-center w-100 mx-0">
 
                 <div className='col-1 text-center px-2'>
