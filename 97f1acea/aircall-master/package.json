@@ -10,7 +10,7 @@
   "private": false,
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d dist",
     "start": "webpack-dev-server --mode development --open",
     "build": "webpack --mode production"
   },
